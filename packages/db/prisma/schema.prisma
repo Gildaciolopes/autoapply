@@ -1,0 +1,236 @@
+// AutoApply data model. Source of truth for DB. See docs/architecture.md.
+// pgvector columns use Unsupported(); read/write them with $queryRaw (see src/vector.ts).
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+  moduleFormat = "esm"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ---------- Knowledge base (Zero Fabrication) ----------
+
+model Profile {
+  id          String   @id @default(cuid())
+  fullName    String
+  email       String
+  phone       String?
+  city        String?
+  state       String?
+  linkedinUrl String?
+  githubUser  String?
+  portfolio   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ResumeBase {
+  id        String   @id @default(cuid())
+  minioKey  String
+  parsed    Json // JSON Resume shape, see @autoapply/shared resume schema
+  version   Int      @default(1)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
+enum FactKind {
+  experience
+  skill
+  metric
+  project
+  education
+  certification
+  language
+  personal
+  preference
+}
+
+model Fact {
+  id             String   @id @default(cuid())
+  kind           FactKind
+  key            String // e.g. "skill:postgresql", "experience:xeno", "personal:salary_expectation"
+  value          Json
+  sources        Json // [{ type: cv|linkedin|github|user, ref, snippet }]
+  confidence     Float    @default(1)
+  verifiedByUser Boolean  @default(false)
+  conflict       Json? // set when sources disagree; resolved in UI
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@unique([kind, key])
+}
+
+model AnswerMemory {
+  id        String                       @id @default(cuid())
+  question  String
+  answer    String
+  evidence  String[] // Fact ids
+  embedding Unsupported("vector(1024)")?
+  approved  Boolean                      @default(false)
+  usedCount Int                          @default(0)
+  createdAt DateTime                     @default(now())
+}
+
+// ---------- Search ----------
+
+model SearchPreference {
+  id               String   @id @default(cuid())
+  roles            String[]
+  seniority        String[]
+  stack            String[]
+  locations        String[]
+  workModes        String[] // remote | hybrid | onsite
+  minSalary        Int?
+  blockedCompanies String[]
+  excludeKeywords  String[]
+  scoreThreshold   Int      @default(70)
+  mode             RunMode  @default(review)
+  scheduleCron     String   @default("0 23-6 * * *")
+  updatedAt        DateTime @updatedAt
+}
+
+enum RunMode {
+  dry_run
+  review
+  autopilot
+}
+
+enum SourceType {
+  linkedin_mcp
+  jobspy
+  gupy
+  greenhouse
+  lever
+  ashby
+  workable
+  remotive
+  generic
+}
+
+model Source {
+  id         String     @id @default(cuid())
+  type       SourceType @unique
+  enabled    Boolean    @default(false)
+  dailyCap   Int        @default(20)
+  config     Json       @default("{}")
+  sessionEnc String? // encrypted Playwright storageState
+  lastRunAt  DateTime?
+  jobs       Job[]
+}
+
+model Company {
+  id      String  @id @default(cuid())
+  name    String  @unique
+  atsType String?
+  atsSlug String?
+  blocked Boolean @default(false)
+  jobs    Job[]
+}
+
+model Job {
+  id          String                       @id @default(cuid())
+  sourceId    String
+  source      Source                       @relation(fields: [sourceId], references: [id])
+  externalId  String?
+  url         String
+  applyUrl    String?
+  companyId   String?
+  company     Company?                     @relation(fields: [companyId], references: [id])
+  title       String
+  description String?
+  location    String?
+  workMode    String?
+  salaryMin   Int?
+  salaryMax   Int?
+  postedAt    DateTime?
+  dedupeHash  String                       @unique
+  embedding   Unsupported("vector(1024)")?
+  createdAt   DateTime                     @default(now())
+  score       JobScore?
+  application Application?
+
+  @@index([createdAt])
+}
+
+model JobScore {
+  id      String   @id @default(cuid())
+  jobId   String   @unique
+  job     Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  score   Int
+  matched String[]
+  missing String[]
+  reasons String
+  model   String
+  createdAt DateTime @default(now())
+}
+
+// ---------- Applications ----------
+
+enum ApplicationStatus {
+  queued
+  tailoring
+  ready
+  applying
+  needs_input
+  submitted
+  failed
+  skipped
+}
+
+model Application {
+  id           String            @id @default(cuid())
+  jobId        String            @unique
+  job          Job               @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  status       ApplicationStatus @default(queued)
+  mode         RunMode
+  tailoredJson Json? // what was sent (PDF itself is not stored)
+  coverLetter  String?
+  needsReason  String?
+  error        String?
+  attempts     Int               @default(0)
+  submittedAt  DateTime?
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+  answers      FormAnswer[]
+  artifacts    Artifact[]
+  events       RunEvent[]
+
+  @@index([status])
+}
+
+model FormAnswer {
+  id            String      @id @default(cuid())
+  applicationId String
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  question      String
+  answer        String?
+  confidence    Float
+  source        String // fact | memory | llm | user
+  evidence      String[]
+  createdAt     DateTime    @default(now())
+}
+
+model Artifact {
+  id            String      @id @default(cuid())
+  applicationId String
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  type          String // screenshot_before | screenshot_after | cover_letter
+  minioKey      String
+  createdAt     DateTime    @default(now())
+}
+
+model RunEvent {
+  id            String       @id @default(cuid())
+  applicationId String?
+  application   Application? @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  queue         String?
+  level         String // info | warn | error
+  message       String
+  data          Json?
+  createdAt     DateTime     @default(now())
+
+  @@index([createdAt])
+}

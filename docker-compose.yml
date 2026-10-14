@@ -1,0 +1,74 @@
+# Infra only by default. Apps run on the host via `make dev` (fast reload).
+# `make up-full` also runs apps in containers (profile "apps").
+name: autoapply
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports: ["${POSTGRES_PORT}:5432"]
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes", "--maxmemory-policy", "noeviction"]
+    ports: ["${REDIS_PORT}:6379"]
+    volumes: [redisdata:/data]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      retries: 10
+
+  minio:
+    image: pgsty/minio:latest # official minio/* images left Docker Hub; Pigsty community build
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    ports: ["${MINIO_PORT}:9000", "${MINIO_CONSOLE_PORT}:9001"]
+    volumes: [miniodata:/data]
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 5s
+      retries: 10
+
+  minio-init:
+    image: pgsty/mc:latest
+    depends_on:
+      minio: { condition: service_healthy }
+    entrypoint: >
+      sh -c "mc alias set local http://minio:9000 ${MINIO_ROOT_USER} ${MINIO_ROOT_PASSWORD} &&
+             mc mb --ignore-existing local/${S3_BUCKET}"
+    restart: "no"
+
+  # LinkedIn MCP: opt-in (profile "linkedin"). LinkedIn ToS forbid automation → low caps.
+  # First login: `make linkedin-login` (interactive, on host).
+  linkedin-mcp:
+    image: stickerdaniel/linkedin-mcp-server:latest
+    profiles: ["linkedin"]
+    command: ["--transport", "streamable-http", "--host", "0.0.0.0", "--port", "8765", "--path", "/mcp"]
+    ports: ["127.0.0.1:${LINKEDIN_MCP_PORT}:8765"]
+    volumes: ["./data/linkedin-mcp:/home/pwuser/.linkedin-mcp"]
+
+  scraper:
+    build: ./services/scraper
+    profiles: ["apps"]
+    env_file: .env
+    environment:
+      REDIS_URL: redis://redis:6379
+    depends_on:
+      redis: { condition: service_healthy }
+
+volumes:
+  pgdata:
+  redisdata:
+  miniodata:

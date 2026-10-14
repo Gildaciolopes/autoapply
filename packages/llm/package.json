@@ -1,0 +1,17 @@
+{
+  "name": "@autoapply/llm",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch --preserveWatchOutput",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@autoapply/shared": "workspace:*",
+    "zod": "^4.6.7"
+  }
+}

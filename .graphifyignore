@@ -1,0 +1,12 @@
+# Keep the graph about OUR code/docs; skip vendored & boilerplate (token economy)
+.claude/
+.specify/scripts/
+.specify/templates/
+.specify/integrations/
+.specify/workflows/
+apps/web/src/components/ui/
+**/tsconfig*.json
+**/nest-cli.json
+**/components.json
+pnpm-lock.yaml
+services/scraper/uv.lock

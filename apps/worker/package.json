@@ -1,0 +1,33 @@
+{
+  "name": "@autoapply/worker",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "nest build",
+    "dev": "nest start --watch --preserveWatchOutput",
+    "start": "node dist/main.js",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@autoapply/db": "workspace:*",
+    "@autoapply/llm": "workspace:*",
+    "@autoapply/shared": "workspace:*",
+    "@aws-sdk/client-s3": "^3.1150.0",
+    "@modelcontextprotocol/sdk": "^1.32.1",
+    "@nestjs/bullmq": "^12.0.0",
+    "@nestjs/common": "^12.1.3",
+    "@nestjs/config": "^12.0.1",
+    "@nestjs/core": "^12.1.3",
+    "bullmq": "^6.3.13",
+    "ioredis": "^6.0.0",
+    "playwright": "^1.64.0",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.2",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@nestjs/cli": "^12.0.8",
+    "@nestjs/schematics": "^12.0.7"
+  }
+}
