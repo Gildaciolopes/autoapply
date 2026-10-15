@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@autoapply/db": "workspace:*",
+    "@autoapply/jobs": "workspace:*",
     "@autoapply/kb": "workspace:*",
     "@autoapply/llm": "workspace:*",
     "@autoapply/resume": "workspace:*",

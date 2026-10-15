@@ -238,6 +238,10 @@ model SearchPreference {
   scoreThreshold   Int      @default(70)
   mode             RunMode  @default(review)
   scheduleCron     String   @default("0 23-6 * * *")
+  minSalaryContract String? // clt | pj | any
+  judgeTopN        Int      @default(20)
+  autoDiscover     Boolean  @default(false)
+  discoveryCron    String   @default("0 7 * * *")
   updatedAt        DateTime @updatedAt
 }
 
@@ -249,7 +253,10 @@ enum RunMode {
 
 enum SourceType {
   linkedin_mcp
-  jobspy
+  jobspy // legacy, unused since F2 (one row per JobSpy site)
+  indeed
+  glassdoor
+  google_jobs
   gupy
   greenhouse
   lever
@@ -267,6 +274,8 @@ model Source {
   config     Json       @default("{}")
   sessionEnc String? // encrypted Playwright storageState
   lastRunAt  DateTime?
+  lastStatus String? // success | partial | failed | skipped
+  lastError  String?
   jobs       Job[]
 }
 
@@ -281,7 +290,7 @@ model Company {
 
 model Job {
   id          String                       @id @default(cuid())
-  sourceId    String
+  sourceId    String // first source that found it
   source      Source                       @relation(fields: [sourceId], references: [id])
   externalId  String?
   url         String
@@ -291,29 +300,96 @@ model Job {
   title       String
   description String?
   location    String?
+  city        String?
+  uf          String?
+  remote      Boolean                      @default(false)
   workMode    String?
-  salaryMin   Int?
+  seniority   String? // intern | junior | mid | senior | lead
+  salaryMin   Int? // monthly BRL when known
   salaryMax   Int?
+  salaryText  String?
   postedAt    DateTime?
   dedupeHash  String                       @unique
   embedding   Unsupported("vector(1024)")?
+  firstSeenAt DateTime                     @default(now())
+  lastSeenAt  DateTime                     @default(now())
+  hidden      Boolean                      @default(false)
+  interesting Boolean                      @default(false)
   createdAt   DateTime                     @default(now())
   score       JobScore?
   application Application?
+  origins     JobOrigin[]
 
   @@index([createdAt])
 }
 
+/// Every place a job was found (dedupe merges cross-board copies into one Job).
+model JobOrigin {
+  id          String     @id @default(cuid())
+  jobId       String
+  job         Job        @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  source      SourceType
+  externalId  String // source id, or url when the source has none
+  url         String
+  firstSeenAt DateTime   @default(now()) // daily caps count NEW origins per source
+  lastSeenAt  DateTime   @default(now())
+  runId       String?
+
+  @@unique([source, externalId])
+  @@index([source, firstSeenAt])
+}
+
 model JobScore {
-  id      String   @id @default(cuid())
-  jobId   String   @unique
-  job     Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
-  score   Int
-  matched String[]
-  missing String[]
-  reasons String
-  model   String
-  createdAt DateTime @default(now())
+  id              String   @id @default(cuid())
+  jobId           String   @unique
+  job             Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  passed          Boolean  @default(true)
+  filterReason    String? // blocked_company | excluded_keyword | location_mode | salary_below_min | seniority | off_target
+  similarity      Float?
+  score           Int
+  judged          Boolean  @default(false)
+  matched         String[]
+  matchedEvidence Json     @default("[]") // [{ skill, factIds[] }], grounded against usable facts
+  missing         String[]
+  demoted         String[] // skills the LLM claimed without evidence (audit)
+  reasons         String
+  model           String
+  profileHash     String   @default("")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+enum DiscoveryTrigger {
+  manual
+  schedule
+  rescore
+}
+
+enum DiscoveryStatus {
+  running
+  done
+  failed
+}
+
+model DiscoveryRun {
+  id         String           @id @default(cuid())
+  trigger    DiscoveryTrigger
+  localDate  String // YYYY-MM-DD America/Sao_Paulo
+  status     DiscoveryStatus  @default(running)
+  startedAt  DateTime         @default(now())
+  finishedAt DateTime?
+  outcomes   Json             @default("{}")
+  judged     Int              @default(0)
+
+  @@index([trigger, localDate])
+}
+
+/// Cached embedding of the profile text used for similarity (keyed by its sha256).
+model ProfileVector {
+  hash      String                       @id
+  text      String
+  embedding Unsupported("vector(1024)")?
+  createdAt DateTime                     @default(now())
 }
 
 // ---------- Applications ----------

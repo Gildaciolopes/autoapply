@@ -16,3 +16,9 @@ export async function resetKnowledgeBase(db: PrismaClient): Promise<void> {
     'TRUNCATE "FactRevision", "FactSource", "FactConflict", "Fact", "ResumeBase", "ProfileSource", "SyncRun", "Profile", "RunEvent" CASCADE',
   );
 }
+
+export async function resetJobs(db: PrismaClient): Promise<void> {
+  await db.$executeRawUnsafe(
+    'TRUNCATE "JobScore", "JobOrigin", "Job", "Company", "DiscoveryRun", "ProfileVector", "Source", "SearchPreference", "RunEvent" CASCADE',
+  );
+}

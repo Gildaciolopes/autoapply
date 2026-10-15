@@ -1,0 +1,19 @@
+{
+  "name": "@autoapply/jobs",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch --preserveWatchOutput",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests"
+  },
+  "dependencies": {
+    "@autoapply/kb": "workspace:*",
+    "@autoapply/shared": "workspace:*",
+    "zod": "^4.6.7"
+  }
+}

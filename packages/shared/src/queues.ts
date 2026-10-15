@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { JobSourceType } from './jobs.js';
 
 /** Pipeline: discover → normalize → enrich → embed → score → tailor → apply → notify */
 export const QUEUES = {
@@ -16,16 +17,19 @@ export const QUEUES = {
 export type QueueName = (typeof QUEUES)[keyof typeof QUEUES];
 
 export const DiscoverPayload = z.object({
-  source: z.enum(['linkedin_mcp', 'jobspy', 'gupy', 'greenhouse', 'lever', 'ashby', 'workable', 'remotive']),
+  runId: z.string(),
+  source: JobSourceType,
   query: z.string(),
   location: z.string().default('Brasil'),
   limit: z.number().int().positive().default(50),
+  hoursOld: z.number().int().positive().optional(),
 });
 export type DiscoverPayload = z.infer<typeof DiscoverPayload>;
 
 /** Raw job as emitted by any source (Python scraper must emit this exact shape). */
 export const RawJob = z.object({
-  source: DiscoverPayload.shape.source,
+  source: JobSourceType,
+  /** Source id; when the source has none, the url is used as origin key. */
   externalId: z.string().optional(),
   url: z.string().url(),
   applyUrl: z.string().url().optional(),
@@ -33,12 +37,31 @@ export const RawJob = z.object({
   title: z.string(),
   description: z.string().optional(),
   location: z.string().optional(),
+  city: z.string().optional(),
+  uf: z.string().optional(),
   workMode: z.enum(['remote', 'hybrid', 'onsite']).optional(),
   salaryMin: z.number().optional(),
   salaryMax: z.number().optional(),
+  salaryText: z.string().optional(),
   postedAt: z.string().optional(),
 });
 export type RawJob = z.infer<typeof RawJob>;
+
+/** Return value of every discover child job (worker and Python). */
+export const DiscoverResult = z.object({
+  source: JobSourceType,
+  jobs: z.array(RawJob),
+  error: z.string().optional(),
+});
+export type DiscoverResult = z.infer<typeof DiscoverResult>;
+
+/** Parent of a discovery flow (queue `score`). */
+export const ProcessRunPayload = z.object({
+  runId: z.string(),
+  rescore: z.boolean().default(false),
+  judge: z.boolean().default(true),
+});
+export type ProcessRunPayload = z.infer<typeof ProcessRunPayload>;
 
 export const JobIdPayload = z.object({ jobId: z.string() });
 export const ApplicationIdPayload = z.object({ applicationId: z.string() });

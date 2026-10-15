@@ -51,6 +51,7 @@ changed, update this file if a new convention/command appeared, run `make graph`
 | `make migrate` / `make migration name=x` / `make studio` | Prisma |
 | `make test` / `make typecheck` / `make lint` | TS (turbo, serial) + Python (pytest/ruff); `make test` first runs `make test-db` |
 | `make test-db` | create + migrate the `autoapply_test` DB used by integration tests |
+| `make jobs-eval` | job ranking eval (30 labelled postings) against live bge-m3 + qwen3 (~6 min) |
 | `make kb-eval` | resume-extraction quality eval (5 personas) against the live local LLM (~12 min) |
 | `make health` | `GET :3001/health` → db / redis / ollama |
 | `make models` | `ollama pull qwen3:8b bge-m3 qwen2.5vl:7b` |
@@ -74,6 +75,7 @@ packages/db         Prisma 7 schema + client + pgvector helpers
 packages/llm        LlmProvider + OllamaProvider (+ FakeLlmProvider for tests)
 packages/kb         pure knowledge-base logic: fact keys, merge/conflicts, provenance check, GitHub evidence
 packages/resume     PDF text (unpdf), ATS resume renderer (Playwright), atsLint
+packages/jobs       pure job logic: normalize/dedupe, hard filters, profile text, judge grounding, run planning
 docker/             postgres init (pgvector)
 docs/               architecture, roadmap
 .specify/           Spec Kit (constitution, templates, scripts)
@@ -105,6 +107,12 @@ specs/              one folder per feature (created by /speckit-specify)
 - **LinkedIn MCP** (`stickerdaniel/linkedin-mcp-server`): session volume
   `./data/linkedin-mcp:/home/pwuser/.linkedin-mcp`; first login with `make linkedin-login`. Read-only
   tools only; it cannot submit applications. LinkedIn ToS forbid automation: keep caps low.
+- **Discovery runs are BullMQ flows**: discover children (worker + Python) RETURN `DiscoverResult`;
+  the `process-run` parent on queue `score` does normalize/dedupe/score. The scraper no longer pushes to
+  `normalize` (queue name kept, unused). Children report failures as results on their last attempt.
+- **Gupy** search endpoint is `https://portal.gupy.io/api/job-search/jobs?jobName=&offset=&limit=`
+  (the old `portal.api.gupy.io` host returns 404). Unofficial: if it breaks, re-record
+  `apps/worker/test/fixtures/gupy/search-fullstack.json`.
 - Python ↔ TS payload contracts must stay in sync: `services/scraper/src/autoapply_scraper/models.py`
   ↔ `packages/shared/src/queues.ts`.
 - **Vitest + Nest decorators**: needs `oxc: { decorator: { legacy: true, emitDecoratorMetadata: true } }`
@@ -128,8 +136,8 @@ specs/              one folder per feature (created by /speckit-specify)
 
 ## Status
 
-F0 (foundation) done on 2026-10-14. F1 Knowledge base implemented on branch `001-knowledge-base`
-(spec/plan/tasks in `specs/001-knowledge-base/`). Next: **F2 Job discovery + scoring**.
+F0 done 2026-10-14. F1 Knowledge base (PR #1, branch `001-knowledge-base`). F2 Job discovery + scoring
+implemented on branch `002-job-discovery-scoring` (stacked on F1). Next: **F3 Tailoring**.
 
 ## graphify
 

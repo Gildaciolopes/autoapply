@@ -11,3 +11,4 @@ export function createPrismaClient(databaseUrl = process.env.DATABASE_URL): Pris
 export * from './facts.js';
 export * from './fact-writer.js';
 export * from './testing.js';
+export * from './discovery.js';

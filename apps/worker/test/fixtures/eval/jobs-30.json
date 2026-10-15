@@ -1,0 +1,242 @@
+[
+ {
+  "id": "e00",
+  "title": "Desenvolvedor Full Stack Sênior",
+  "company": "Fintech Alfa",
+  "description": "Buscamos pessoa desenvolvedora full stack sênior com TypeScript, React e Node.js (NestJS). Postgres, filas e testes automatizados. Remoto.",
+  "relevant": true,
+  "workMode": "remote"
+ },
+ {
+  "id": "e01",
+  "title": "Engenheira(o) de Software Sênior - Backend Node.js",
+  "company": "Logística Beta",
+  "description": "APIs em Node.js e TypeScript, NestJS, PostgreSQL, Redis e BullMQ. Microsserviços e mensageria. Modelo remoto.",
+  "relevant": true,
+  "workMode": "remote"
+ },
+ {
+  "id": "e02",
+  "title": "Desenvolvedor Front-end React Sênior",
+  "company": "Varejo Gama",
+  "description": "React, Next.js e TypeScript em e-commerce de alta escala. Testes com Jest/Testing Library. Remoto.",
+  "relevant": true,
+  "workMode": "remote"
+ },
+ {
+  "id": "e03",
+  "title": "Pessoa Desenvolvedora Full Stack Pleno/Sênior",
+  "company": "SaaS Delta",
+  "description": "Stack: Node.js, TypeScript, React, Docker. Deploy em AWS. Trabalho 100% remoto.",
+  "relevant": true,
+  "workMode": "remote"
+ },
+ {
+  "id": "e04",
+  "title": "Tech Lead Full Stack",
+  "company": "HealthTech Épsilon",
+  "description": "Liderar squad com Node.js/NestJS e React. PostgreSQL, Docker, CI/CD. Remoto.",
+  "relevant": true,
+  "workMode": "remote"
+ },
+ {
+  "id": "e05",
+  "title": "Software Engineer (Node.js / React)",
+  "company": "Global Zeta",
+  "description": "English-speaking team. Node.js, TypeScript, React, PostgreSQL. Remote from Brazil.",
+  "relevant": true,
+  "workMode": "remote"
+ },
+ {
+  "id": "e06",
+  "title": "Desenvolvedor Back-end TypeScript",
+  "company": "Edtech Eta",
+  "description": "Construção de APIs REST com TypeScript, Node.js e Prisma. PostgreSQL. Híbrido em São Paulo/SP.",
+  "relevant": true,
+  "workMode": null
+ },
+ {
+  "id": "e07",
+  "title": "Engenheiro de Software Full Stack - IA",
+  "company": "AI Startup Theta",
+  "description": "Produto com LLMs: backend Node.js/TypeScript, frontend React, filas e integrações. Remoto.",
+  "relevant": true,
+  "workMode": "remote"
+ },
+ {
+  "id": "e08",
+  "title": "Desenvolvedor Full Stack Sênior (Next.js)",
+  "company": "Agência Iota",
+  "description": "Next.js, React, Node.js e TypeScript; integração com APIs e PostgreSQL. Remoto.",
+  "relevant": true,
+  "workMode": "remote"
+ },
+ {
+  "id": "e09",
+  "title": "Desenvolvedora Back-end Sênior NestJS",
+  "company": "Seguros Kappa",
+  "description": "NestJS, TypeScript, PostgreSQL, Redis, Docker e testes. Modelo remoto.",
+  "relevant": true,
+  "workMode": "remote"
+ },
+ {
+  "id": "e10",
+  "title": "Full Stack Developer",
+  "company": "Marketplace Lambda",
+  "description": "React + Node.js + TypeScript, AWS, Docker. Remote.",
+  "relevant": true,
+  "workMode": "remote"
+ },
+ {
+  "id": "e11",
+  "title": "Engenheiro de Software Sênior (Plataforma)",
+  "company": "Banco Mu",
+  "description": "Serviços em Node.js/TypeScript, PostgreSQL, filas e observabilidade. Remoto.",
+  "relevant": true,
+  "workMode": "remote"
+ },
+ {
+  "id": "e12",
+  "title": "Desenvolvedor Full Stack JavaScript",
+  "company": "Startup Nu",
+  "description": "JavaScript/TypeScript, React, Node.js, MongoDB e PostgreSQL. Remoto.",
+  "relevant": true,
+  "workMode": "remote"
+ },
+ {
+  "id": "e13",
+  "title": "Senior Backend Engineer - Node.js",
+  "company": "Remote Xi",
+  "description": "Node.js, TypeScript, PostgreSQL, Kafka nice to have. Remote (LATAM).",
+  "relevant": true,
+  "workMode": "remote"
+ },
+ {
+  "id": "e14",
+  "title": "Desenvolvedor Web Full Stack",
+  "company": "Indústria Ômicron",
+  "description": "React e Node.js com TypeScript, APIs REST e PostgreSQL. Remoto.",
+  "relevant": true,
+  "workMode": "remote"
+ },
+ {
+  "id": "e15",
+  "title": "Cientista de Dados Sênior",
+  "company": "Varejo Pi",
+  "description": "Python, pandas, scikit-learn, modelos de churn e SQL. Remoto.",
+  "relevant": false,
+  "workMode": "remote"
+ },
+ {
+  "id": "e16",
+  "title": "Desenvolvedor iOS Sênior",
+  "company": "App Rho",
+  "description": "Swift, SwiftUI, UIKit, Combine. Publicação na App Store. Remoto.",
+  "relevant": false,
+  "workMode": "remote"
+ },
+ {
+  "id": "e17",
+  "title": "Desenvolvedor Java Spring Sênior",
+  "company": "Banco Sigma",
+  "description": "Java 17, Spring Boot, Oracle, Kafka. Presencial em São Paulo.",
+  "relevant": false,
+  "workMode": null
+ },
+ {
+  "id": "e18",
+  "title": "Engenheiro DevOps / SRE",
+  "company": "Cloud Tau",
+  "description": "Kubernetes, Terraform, Prometheus, Grafana, AWS. Remoto.",
+  "relevant": false,
+  "workMode": "remote"
+ },
+ {
+  "id": "e19",
+  "title": "Desenvolvedor PHP Laravel",
+  "company": "Agência Upsilon",
+  "description": "PHP 8, Laravel, MySQL, WordPress. Remoto.",
+  "relevant": false,
+  "workMode": "remote"
+ },
+ {
+  "id": "e20",
+  "title": "Analista Contábil",
+  "company": "Indústria Phi",
+  "description": "Rotinas contábeis, conciliações e fechamento. Presencial.",
+  "relevant": false,
+  "workMode": null
+ },
+ {
+  "id": "e21",
+  "title": "UX/UI Designer Sênior",
+  "company": "Design Chi",
+  "description": "Figma, pesquisa com usuários, design system. Remoto.",
+  "relevant": false,
+  "workMode": "remote"
+ },
+ {
+  "id": "e22",
+  "title": "Analista de Testes Manual",
+  "company": "Software Psi",
+  "description": "Testes manuais, casos de teste, Jira. Remoto.",
+  "relevant": false,
+  "workMode": "remote"
+ },
+ {
+  "id": "e23",
+  "title": "Consultor SAP ABAP",
+  "company": "Consultoria Ômega",
+  "description": "SAP ECC, ABAP, módulos FI/CO. Presencial.",
+  "relevant": false,
+  "workMode": null
+ },
+ {
+  "id": "e24",
+  "title": "Engenheiro de Dados",
+  "company": "Dados Alfa2",
+  "description": "Spark, Airflow, Python, Databricks. Remoto.",
+  "relevant": false,
+  "workMode": "remote"
+ },
+ {
+  "id": "e25",
+  "title": "Desenvolvedor .NET C#",
+  "company": "Software Beta2",
+  "description": "C#, .NET 8, SQL Server, Azure. Híbrido.",
+  "relevant": false,
+  "workMode": null
+ },
+ {
+  "id": "e26",
+  "title": "Desenvolvedor Android Kotlin",
+  "company": "App Gama2",
+  "description": "Kotlin, Jetpack Compose, Android SDK. Remoto.",
+  "relevant": false,
+  "workMode": "remote"
+ },
+ {
+  "id": "e27",
+  "title": "Analista de Suporte N1",
+  "company": "Telecom Delta2",
+  "description": "Atendimento a clientes, abertura de chamados. Presencial.",
+  "relevant": false,
+  "workMode": null
+ },
+ {
+  "id": "e28",
+  "title": "Desenvolvedor Salesforce",
+  "company": "CRM Épsilon2",
+  "description": "Apex, Lightning, Salesforce CRM. Remoto.",
+  "relevant": false,
+  "workMode": "remote"
+ },
+ {
+  "id": "e29",
+  "title": "Product Manager",
+  "company": "Produto Zeta2",
+  "description": "Discovery, roadmap, métricas de produto. Remoto.",
+  "relevant": false,
+  "workMode": "remote"
+ }
+]

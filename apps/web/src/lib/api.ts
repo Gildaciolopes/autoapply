@@ -2,6 +2,12 @@
 // DTO types are imported type-only so zod never lands in the client bundle.
 import type {
   ConflictView,
+  DiscoveryRunView,
+  JobCard,
+  JobSourceType,
+  JobsQuery,
+  Preferences,
+  SourceView,
   FactKind,
   FactRevisionView,
   FactView,
@@ -179,6 +185,61 @@ export const render = {
     }
   },
   lint: (body: Partial<RenderRequest>) => api<LintResult>("/kb/render/lint", json("POST", body)),
+};
+
+// ---------- F2: preferences / job sources / discovery / feed (specs/002-job-discovery-scoring) ----------
+
+export const preferences = {
+  get: () => api<Preferences>("/preferences"),
+  suggest: () => api<Preferences>("/preferences/suggest"),
+  /** Saves and re-applies hard filters; `refiltered` = jobs whose filter status changed. */
+  async put(body: Preferences): Promise<{ prefs: Preferences; refiltered: number }> {
+    const res = await request("/preferences", json("PUT", body));
+    const refiltered = Number(res.headers.get("x-refiltered") ?? 0);
+    return { prefs: (await res.json()) as Preferences, refiltered: Number.isFinite(refiltered) ? refiltered : 0 };
+  },
+};
+
+export const jobSources = {
+  list: () => api<SourceView[]>("/sources"),
+  patch: (type: JobSourceType, body: { enabled?: boolean; dailyCap?: number; acceptTerms?: boolean }) =>
+    api<SourceView>(`/sources/${type}`, json("PATCH", body)),
+};
+
+export const discovery = {
+  start: () => api<{ runId: string }>("/discovery/runs", json("POST")),
+  runs: (limit = 10) => api<DiscoveryRunView[]>(`/discovery/runs${qs({ limit: String(limit) })}`),
+  get: (id: string) => api<DiscoveryRunView>(`/discovery/runs/${id}`),
+  rescore: (judge: boolean) => api<{ runId: string }>("/scoring/rescore", json("POST", { judge })),
+};
+
+export type JobsFilter = Partial<Omit<JobsQuery, "minScore" | "maxScore" | "cursor" | "limit">> & {
+  minScore?: number;
+  maxScore?: number;
+  cursor?: number;
+  limit?: number;
+};
+
+export interface EvidenceFact {
+  id: string;
+  kind: string;
+  summary: string;
+}
+
+export type JobDetail = JobCard & {
+  description: string;
+  matchedEvidence: { skill: string; facts: EvidenceFact[] }[];
+};
+
+export const jobs = {
+  list: (f: JobsFilter = {}) => {
+    const params: Record<string, string | undefined> = {};
+    for (const [k, v] of Object.entries(f)) if (v !== undefined && v !== null) params[k] = String(v);
+    return api<{ items: JobCard[]; nextCursor: number | null }>(`/jobs${qs(params)}`);
+  },
+  get: (id: string) => api<JobDetail>(`/jobs/${id}`),
+  patch: (id: string, body: { hidden?: boolean; interesting?: boolean }) => api<JobCard>(`/jobs/${id}`, json("PATCH", body)),
+  blockCompany: (id: string) => api<{ company: string; hiddenJobs: number }>(`/jobs/${id}/block-company`, json("POST")),
 };
 
 export function errorMessage(err: unknown): string {
