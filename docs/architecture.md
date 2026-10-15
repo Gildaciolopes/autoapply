@@ -3,9 +3,13 @@
 ## Pipeline
 
 ```
-SearchPreference (UI)
-  └─► discover / discover-jobspy ─► normalize (dedupe by hash) ─► enrich (full description)
-        ─► embed (bge-m3 → pgvector) ─► score (hard filters → vector sim → LLM judge)
+SearchPreference (UI) ─► POST /discovery/runs (or scheduler `discovery-daily`)
+  └─► BullMQ flow: parent score:`process-run`, children per (source, role):
+        discover (worker: gupy, linkedin_mcp) · discover-jobspy (Python: indeed, glassdoor, google_jobs)
+        each child RETURNS { source, jobs: RawJob[], error? }
+  └─► process-run (fan-in): normalize + dedupe (company|title|UF hash, JobOrigin per board, daily caps)
+        ─► hard filters (reason) ─► embed (bge-m3 → pgvector) ─► cosine vs profile (usable facts)
+        ─► LLM judge top N (matched skills grounded against facts) ─► feed
         ─► score ≥ threshold? ─ no ─► feed only
                                └ yes ► tailor (resume JSON + cover letter, evidence-validated)
                                       ─► apply (adapter or generic filler, Playwright)
@@ -30,6 +34,7 @@ the user approves in the UI; `autopilot` submits when thresholds pass (constitut
 | `packages/db` | Prisma 7 (`prisma-client` generator, ESM, `@prisma/adapter-pg`) | schema, client factory, pgvector helpers |
 | `packages/llm` | TS | `LlmProvider` interface, `OllamaProvider` (JSON-schema structured output + embed, `numCtx`), `FakeLlmProvider` (tests) |
 | `packages/kb` | TS, pure (no I/O) | fact keys, normalization, date parsing, provenance check (`foundInSource`), merge/conflict rules, resume↔facts, GitHub skill evidence, manifest parsers, sync diff |
+| `packages/jobs` | TS, pure (no I/O) | job normalization (title, UF, work mode, seniority, salary), dedupe hash, hard filters, profile text, similarity calibration, judge prompt + `groundMatches`, run planning |
 | `packages/resume` | TS, Playwright + unpdf | PDF text extraction, page PNGs (vision fallback), facts → render model, ATS HTML template, `renderResumePdf`, `atsLint` |
 
 Infra (Docker Compose, Colima on the dev Mac): `pgvector/pgvector:pg16` (host 5433), `redis:7`
@@ -48,8 +53,12 @@ Ollama runs on the host (Metal GPU). From containers use `http://host.docker.int
   last snapshot), `SyncRun`, `AnswerMemory` (approved Q&A + `vector(1024)`).
   **Usable facts** outside dry-run = `usableFactsWhere` (`packages/db/src/facts.ts`): verified, active,
   no open conflict. Every consumer must use it. Writes go through `applyMerge` (`fact-writer.ts`).
-- Search: `SearchPreference`, `Source` (type unique, `dailyCap`, encrypted `sessionEnc`), `Company`,
-  `Job` (`dedupeHash` unique, `vector(1024)`), `JobScore`.
+- Search (F2, see `specs/002-job-discovery-scoring/data-model.md`): `SearchPreference` (single row
+  `default`), `Source` (one row per board: gupy, indeed, glassdoor, google_jobs, linkedin_mcp; `dailyCap`
+  counts NEW origins per local day), `Company`, `Job` (`dedupeHash` unique, parsed city/UF/remote/
+  seniority/monthly BRL salary, `vector(1024)`, hidden/interesting), `JobOrigin` (every board a job was
+  seen on), `JobScore` (filter reason, similarity, judge score, grounded `matchedEvidence`, model,
+  profileHash), `DiscoveryRun`, `ProfileVector` (cached profile embedding by hash).
 - Applications: `Application` (status machine, `tailoredJson` = what was sent; PDF not stored),
   `FormAnswer` (answer + confidence + evidence fact ids), `Artifact` (MinIO keys), `RunEvent`.
 - pgvector: columns are `Unsupported("vector(1024)")`; use `packages/db/src/vector.ts` raw SQL helpers.
@@ -82,7 +91,7 @@ Resume PDFs live in MinIO at `resumes/<id>/original.pdf`; rendered PDFs are neve
 
 | Source | Search | Apply | Risk |
 |---|---|---|---|
-| Gupy | `portal.api.gupy.io/api/job?name=` (public, unofficial) | logged-in Playwright adapter | medium |
+| Gupy | `portal.gupy.io/api/job-search/jobs?jobName=` (public, unofficial; old `portal.api.gupy.io` host is gone) | logged-in Playwright adapter | medium |
 | LinkedIn | MCP `search_jobs`, `get_job_details`, `get_job_apply_url` | Easy Apply via Playwright | high (ToS), low cap |
 | Indeed / Glassdoor / Google Jobs | JobSpy (`services/scraper`, `country_indeed="brazil"`) | usually redirects to an ATS | medium |
 | Greenhouse / Lever / Ashby / Workable | public board APIs | public forms, no login | low |

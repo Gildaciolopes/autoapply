@@ -16,9 +16,14 @@ export default function KnowledgeLayout({ children }: LayoutProps<"/conhecimento
       <header className="space-y-3">
         <div className="flex items-baseline justify-between gap-4">
           <h1 className="text-2xl font-semibold">Base de conhecimento</h1>
-          <Link href="/" className="text-muted-foreground text-sm hover:underline">
-            ← AutoApply
-          </Link>
+          <div className="flex gap-4 text-sm">
+            <Link href="/vagas" className="text-muted-foreground hover:underline">
+              Vagas
+            </Link>
+            <Link href="/" className="text-muted-foreground hover:underline">
+              ← AutoApply
+            </Link>
+          </div>
         </div>
         <nav className="flex flex-wrap gap-1 border-b pb-2">
           {NAV.map(([href, label]) => (

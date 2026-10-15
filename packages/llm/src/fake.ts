@@ -9,7 +9,10 @@ export class FakeLlmProvider implements LlmProvider {
   readonly name = 'fake';
   readonly calls: { messages: ChatMessage[]; model?: string }[] = [];
 
-  constructor(private readonly responses: unknown[] | ((messages: ChatMessage[]) => unknown)) {}
+  constructor(
+    private readonly responses: unknown[] | ((messages: ChatMessage[]) => unknown),
+    private readonly embedder?: (texts: string[]) => number[][],
+  ) {}
 
   async generateObject<T extends z.ZodType>(opts: {
     schema: T;
@@ -24,6 +27,6 @@ export class FakeLlmProvider implements LlmProvider {
   }
 
   async embed(texts: string[]): Promise<number[][]> {
-    return texts.map(() => []);
+    return this.embedder ? this.embedder(texts) : texts.map(() => []);
   }
 }

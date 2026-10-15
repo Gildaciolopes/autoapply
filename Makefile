@@ -41,6 +41,9 @@ migration: ## Nova migration: make migration name=add_x
 kb-eval: ## Avalia extração de currículo com o LLM local (SC-002, 5 personas, ~12 min)
 	cd apps/worker && KB_EVAL_LIVE=1 pnpm exec vitest run test/extraction-quality.test.ts
 
+jobs-eval: ## Avalia ranking de vagas com bge-m3 + qwen3 locais (SC-005, 30 vagas rotuladas, ~6 min)
+	cd apps/worker && JOBS_EVAL_LIVE=1 pnpm exec vitest run test/jobs-eval.test.ts
+
 test-db: ## Cria/migra o banco de testes de integração (autoapply_test)
 	-@$(COMPOSE) exec -T postgres psql -U $${POSTGRES_USER:-autoapply} -d $${POSTGRES_DB:-autoapply} -c "CREATE DATABASE autoapply_test" 2>/dev/null
 	cd packages/db && DATABASE_URL=postgresql://autoapply:autoapply@localhost:5433/autoapply_test pnpm exec prisma migrate deploy

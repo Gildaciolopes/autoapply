@@ -32,6 +32,9 @@ importers:
       '@autoapply/db':
         specifier: workspace:*
         version: link:../../packages/db
+      '@autoapply/jobs':
+        specifier: workspace:*
+        version: link:../../packages/jobs
       '@autoapply/kb':
         specifier: workspace:*
         version: link:../../packages/kb
@@ -172,6 +175,9 @@ importers:
       '@autoapply/db':
         specifier: workspace:*
         version: link:../../packages/db
+      '@autoapply/jobs':
+        specifier: workspace:*
+        version: link:../../packages/jobs
       '@autoapply/kb':
         specifier: workspace:*
         version: link:../../packages/kb
@@ -233,6 +239,9 @@ importers:
 
   packages/db:
     dependencies:
+      '@autoapply/jobs':
+        specifier: workspace:*
+        version: link:../jobs
       '@autoapply/kb':
         specifier: workspace:*
         version: link:../kb
@@ -258,6 +267,18 @@ importers:
       prisma:
         specifier: 7.10.0
         version: 7.10.0(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(magicast@0.5.5)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@5.9.3)
+
+  packages/jobs:
+    dependencies:
+      '@autoapply/kb':
+        specifier: workspace:*
+        version: link:../kb
+      '@autoapply/shared':
+        specifier: workspace:*
+        version: link:../shared
+      zod:
+        specifier: ^4.6.7
+        version: 4.6.7
 
   packages/kb:
     dependencies:
