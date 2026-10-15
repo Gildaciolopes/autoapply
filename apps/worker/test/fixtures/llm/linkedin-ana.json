@@ -1,0 +1,77 @@
+{
+  "lang": "pt",
+  "basics": {
+    "name": "Ana Beatriz Souza",
+    "headline": "Tech Lead | TypeScript · Node.js",
+    "email": null,
+    "phone": null,
+    "location": "São Paulo, São Paulo, Brasil",
+    "profiles": [
+      {
+        "network": "LinkedIn",
+        "url": "https://www.linkedin.com/in/ana-souza-example/"
+      }
+    ]
+  },
+  "work": [
+    {
+      "company": "Xeno Tecnologia",
+      "position": "Tech Lead",
+      "start": "mar de 2021",
+      "end": "o momento",
+      "highlights": [
+        "Lidero o time de pagamentos."
+      ],
+      "quote": "Lidero o time de pagamentos."
+    },
+    {
+      "company": "Loja Fácil",
+      "position": "Desenvolvedora Pleno",
+      "start": "jun de 2018",
+      "end": "fev de 2021",
+      "highlights": [],
+      "quote": "Lidero o time de pagamentos."
+    }
+  ],
+  "education": [
+    {
+      "institution": "Universidade de São Paulo",
+      "area": "Bacharelado, Ciência da Computação",
+      "start": "2014",
+      "end": "2018",
+      "quote": "Bacharelado, Ciência da Computação"
+    }
+  ],
+  "skills": [
+    {
+      "name": "TypeScript",
+      "quote": "TypeScript"
+    },
+    {
+      "name": "NestJS",
+      "quote": "NestJS"
+    },
+    {
+      "name": "PostgreSQL",
+      "quote": "PostgreSQL"
+    },
+    {
+      "name": "GraphQL",
+      "quote": "GraphQL"
+    }
+  ],
+  "languages": [
+    {
+      "language": "Português",
+      "fluency": "Nativo ou bilíngue",
+      "quote": "Português"
+    },
+    {
+      "language": "Inglês",
+      "fluency": "Proficiência profissional completa",
+      "quote": "Inglês"
+    }
+  ],
+  "certificates": [],
+  "projects": []
+}

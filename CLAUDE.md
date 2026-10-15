@@ -49,7 +49,9 @@ changed, update this file if a new convention/command appeared, run `make graph`
 | `make dev` | infra in Docker + api/worker/web/packages (turbo watch) + Python scraper on host |
 | `make infra` / `make down` | start (wait healthy + create bucket) / stop containers (volumes kept) |
 | `make migrate` / `make migration name=x` / `make studio` | Prisma |
-| `make test` / `make typecheck` / `make lint` | TS (turbo) + Python (pytest/ruff) |
+| `make test` / `make typecheck` / `make lint` | TS (turbo, serial) + Python (pytest/ruff); `make test` first runs `make test-db` |
+| `make test-db` | create + migrate the `autoapply_test` DB used by integration tests |
+| `make kb-eval` | resume-extraction quality eval (5 personas) against the live local LLM (~12 min) |
 | `make health` | `GET :3001/health` → db / redis / ollama |
 | `make models` | `ollama pull qwen3:8b bge-m3 qwen2.5vl:7b` |
 | `make linkedin-login` / `make linkedin-up` | LinkedIn MCP session (viewer on :6080) / start MCP server |
@@ -69,7 +71,9 @@ apps/worker         NestJS 12 standalone: BullMQ processors, Playwright, MCP cli
 services/scraper    Python 3.12 (uv): JobSpy → queue `normalize`
 packages/shared     Zod schemas: queue names/payloads, evidence contracts
 packages/db         Prisma 7 schema + client + pgvector helpers
-packages/llm        LlmProvider + OllamaProvider
+packages/llm        LlmProvider + OllamaProvider (+ FakeLlmProvider for tests)
+packages/kb         pure knowledge-base logic: fact keys, merge/conflicts, provenance check, GitHub evidence
+packages/resume     PDF text (unpdf), ATS resume renderer (Playwright), atsLint
 docker/             postgres init (pgvector)
 docs/               architecture, roadmap
 .specify/           Spec Kit (constitution, templates, scripts)
@@ -103,6 +107,14 @@ specs/              one folder per feature (created by /speckit-specify)
   tools only; it cannot submit applications. LinkedIn ToS forbid automation: keep caps low.
 - Python ↔ TS payload contracts must stay in sync: `services/scraper/src/autoapply_scraper/models.py`
   ↔ `packages/shared/src/queues.ts`.
+- **Vitest + Nest decorators**: needs `oxc: { decorator: { legacy: true, emitDecoratorMetadata: true } }`
+  (`apps/api|worker/vitest.config.ts`). Integration tests refuse any DB URL not ending in `_test`.
+- **Playwright** browsers must match the installed version: after bumping, `pnpm exec playwright install chromium`
+  (renderer in `packages/resume` is used by the api).
+- **qwen3:8b resume parse** takes ~2–2.5 min (num_ctx 16384). LLM test fixtures are real recorded
+  outputs; re-record with `apps/worker/scripts/record-llm-fixture.ts` after prompt changes.
+- Knowledge base: only user actions verify facts; anything that reads facts for claims must use
+  `usableFactsWhere` from `@autoapply/db`.
 - Kill stray processes from manual runs (`pgrep -fl dist/main.js`) before restarting; an orphaned
   process writing to a deleted log keeps consuming disk.
 
@@ -116,9 +128,8 @@ specs/              one folder per feature (created by /speckit-specify)
 
 ## Status
 
-F0 (foundation) done on 2026-10-14: infra up, initial migration `init` applied, `/health` all up,
-worker consumes `discover`, scraper consumes `discover-jobspy`, web builds. Next: **F1 Knowledge base**
-(`/speckit-specify` with the F1 prompt in `docs/roadmap.md`).
+F0 (foundation) done on 2026-10-14. F1 Knowledge base implemented on branch `001-knowledge-base`
+(spec/plan/tasks in `specs/001-knowledge-base/`). Next: **F2 Job discovery + scoring**.
 
 ## graphify
 

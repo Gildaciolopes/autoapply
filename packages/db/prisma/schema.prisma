@@ -23,17 +23,41 @@ model Profile {
   linkedinUrl String?
   githubUser  String?
   portfolio   String?
+  headline    String?
+  summary     String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
 
+enum ResumeStatus {
+  uploaded
+  parsing
+  image_only
+  failed
+  review
+  confirmed
+  discarded
+}
+
+enum ResumeExtraction {
+  text
+  vision
+  manual
+}
+
 model ResumeBase {
-  id        String   @id @default(cuid())
-  minioKey  String
-  parsed    Json // JSON Resume shape, see @autoapply/shared resume schema
-  version   Int      @default(1)
-  active    Boolean  @default(true)
-  createdAt DateTime @default(now())
+  id          String           @id @default(cuid())
+  minioKey    String
+  fileName    String
+  rawText     String? // extracted text; basis for foundInSource()
+  extraction  ResumeExtraction @default(text)
+  status      ResumeStatus     @default(uploaded)
+  parsed      Json? // ResumeDraft (@autoapply/shared kb.ts)
+  error       String?
+  version     Int              @default(1)
+  active      Boolean          @default(false)
+  createdAt   DateTime         @default(now())
+  confirmedAt DateTime?
 }
 
 enum FactKind {
@@ -48,19 +72,144 @@ enum FactKind {
   preference
 }
 
+enum FactStatus {
+  active
+  archived
+}
+
+enum FactOrigin {
+  resume
+  linkedin
+  github
+  user
+}
+
+/// Usable outside dry-run only when verifiedByUser && status=active && !hasOpenConflict
+/// (see usableFactsWhere in packages/db/src/facts.ts).
 model Fact {
-  id             String   @id @default(cuid())
-  kind           FactKind
-  key            String // e.g. "skill:postgresql", "experience:xeno", "personal:salary_expectation"
-  value          Json
-  sources        Json // [{ type: cv|linkedin|github|user, ref, snippet }]
-  confidence     Float    @default(1)
-  verifiedByUser Boolean  @default(false)
-  conflict       Json? // set when sources disagree; resolved in UI
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id              String         @id @default(cuid())
+  kind            FactKind
+  key             String // deterministic factKey(), e.g. "skill:postgresql", "experience:xeno:2021-03"
+  value           Json // FactValue (@autoapply/shared kb.ts)
+  verifiedByUser  Boolean        @default(false)
+  status          FactStatus     @default(active)
+  hasOpenConflict Boolean        @default(false)
+  missingFrom     String[] // origins where the item vanished on last sync
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  sources         FactSource[]
+  revisions       FactRevision[]
+  conflicts       FactConflict[]
 
   @@unique([kind, key])
+}
+
+model FactSource {
+  id         String     @id @default(cuid())
+  factId     String
+  fact       Fact       @relation(fields: [factId], references: [id], onDelete: Cascade)
+  origin     FactOrigin
+  ref        String // resume:<id>#work[2] | github:<owner/repo>:package.json | linkedin:experience[1] | user:form
+  rawValue   Json
+  snippet    String?
+  importedAt DateTime   @default(now())
+  lastSeenAt DateTime   @default(now())
+
+  @@unique([factId, origin, ref])
+  @@index([origin])
+}
+
+enum RevisionAction {
+  created
+  edited
+  verified
+  unverified
+  archived
+  restored
+  conflict_resolved
+  source_added
+}
+
+enum RevisionActor {
+  user
+  import
+  sync
+}
+
+model FactRevision {
+  id        String         @id @default(cuid())
+  factId    String
+  fact      Fact           @relation(fields: [factId], references: [id], onDelete: Cascade)
+  action    RevisionAction
+  before    Json?
+  after     Json?
+  actor     RevisionActor
+  note      String?
+  createdAt DateTime       @default(now())
+
+  @@index([factId])
+}
+
+enum ConflictType {
+  value_mismatch
+  possible_duplicate
+}
+
+enum ConflictStatus {
+  open
+  resolved
+}
+
+model FactConflict {
+  id          String         @id @default(cuid())
+  factId      String
+  fact        Fact           @relation(fields: [factId], references: [id], onDelete: Cascade)
+  type        ConflictType
+  candidates  Json // [{ origin, ref, value, importedAt }]
+  otherFactId String?
+  status      ConflictStatus @default(open)
+  resolution  Json?
+  createdAt   DateTime       @default(now())
+  resolvedAt  DateTime?
+
+  @@index([status])
+}
+
+enum SyncOutcome {
+  success
+  partial
+  failed
+}
+
+/// Knowledge sources (github, linkedin). Job sources live in `Source`.
+model ProfileSource {
+  origin     FactOrigin   @id
+  enabled    Boolean      @default(false)
+  account    String?
+  lastSyncAt DateTime?
+  lastStatus SyncOutcome?
+  lastError  String?
+  resumeAt   DateTime?
+  snapshot   Json?
+  updatedAt  DateTime     @updatedAt
+}
+
+enum SyncTrigger {
+  schedule
+  manual
+  import
+}
+
+model SyncRun {
+  id         String      @id @default(cuid())
+  trigger    SyncTrigger
+  localDate  String // YYYY-MM-DD in America/Sao_Paulo
+  startedAt  DateTime    @default(now())
+  finishedAt DateTime?
+  outcomes   Json        @default("{}")
+  summary    Json        @default("{}")
+
+  @@index([trigger, localDate])
 }
 
 model AnswerMemory {

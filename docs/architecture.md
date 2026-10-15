@@ -28,7 +28,9 @@ the user approves in the UI; `autopilot` submits when thresholds pass (constitut
 | `services/scraper` | Python 3.12, uv, JobSpy, `bullmq` (py) | consumes `discover-jobspy`, emits `RawJob` to `normalize` |
 | `packages/shared` | TS + Zod 4 | queue names, payload schemas, evidence contracts (single source of truth) |
 | `packages/db` | Prisma 7 (`prisma-client` generator, ESM, `@prisma/adapter-pg`) | schema, client factory, pgvector helpers |
-| `packages/llm` | TS | `LlmProvider` interface, `OllamaProvider` (JSON-schema structured output + embed) |
+| `packages/llm` | TS | `LlmProvider` interface, `OllamaProvider` (JSON-schema structured output + embed, `numCtx`), `FakeLlmProvider` (tests) |
+| `packages/kb` | TS, pure (no I/O) | fact keys, normalization, date parsing, provenance check (`foundInSource`), merge/conflict rules, resume↔facts, GitHub skill evidence, manifest parsers, sync diff |
+| `packages/resume` | TS, Playwright + unpdf | PDF text extraction, page PNGs (vision fallback), facts → render model, ATS HTML template, `renderResumePdf`, `atsLint` |
 
 Infra (Docker Compose, Colima on the dev Mac): `pgvector/pgvector:pg16` (host 5433), `redis:7`
 (6380), `pgsty/minio` (9010 API / 9011 console; official `minio/*` images were removed from Docker
@@ -38,8 +40,14 @@ Ollama runs on the host (Metal GPU). From containers use `http://host.docker.int
 
 ## Data model (packages/db/prisma/schema.prisma)
 
-- Knowledge base: `Profile`, `ResumeBase` (parsed JSON Resume), `Fact` (kind+key unique, `sources[]`
-  with provenance, `verifiedByUser`, `conflict`), `AnswerMemory` (approved Q&A + `vector(1024)`).
+- Knowledge base (F1, see `specs/001-knowledge-base/data-model.md`): `Profile` (single row `me`),
+  `ResumeBase` (upload → parsing → review → confirmed; `rawText`, `parsed` = ResumeDraft with quotes/flags),
+  `Fact` (kind+key unique, `verifiedByUser`, `status` active|archived, `hasOpenConflict`, `missingFrom`),
+  `FactSource` (origin resume|linkedin|github|user + ref + raw value), `FactRevision` (history),
+  `FactConflict` (value_mismatch | possible_duplicate), `ProfileSource` (github/linkedin connection +
+  last snapshot), `SyncRun`, `AnswerMemory` (approved Q&A + `vector(1024)`).
+  **Usable facts** outside dry-run = `usableFactsWhere` (`packages/db/src/facts.ts`): verified, active,
+  no open conflict. Every consumer must use it. Writes go through `applyMerge` (`fact-writer.ts`).
 - Search: `SearchPreference`, `Source` (type unique, `dailyCap`, encrypted `sessionEnc`), `Company`,
   `Job` (`dedupeHash` unique, `vector(1024)`), `JobScore`.
 - Applications: `Application` (status machine, `tailoredJson` = what was sent; PDF not stored),
@@ -57,9 +65,18 @@ Ollama runs on the host (Metal GPU). From containers use `http://host.docker.int
 5. No-evidence yes/no questions → lowest honest option or `needs_input`, never "yes".
 6. `make eval` (F3): trap questions; autopilot requires 0 fabrications.
 
-Fact sources: base resume (PDF → JSON, user reviews), LinkedIn (`get_my_profile` via MCP), GitHub
-(official API: repos, languages, READMEs, dependency manifests as skill evidence), user-entered facts.
-Conflicts between sources are surfaced in the UI for the user to resolve.
+Fact sources (F1): base resume (PDF → unpdf text → qwen3 → ResumeDraft; every item must be found in
+the PDF text or it is flagged `not_in_source`; only the user's confirm creates verified facts),
+LinkedIn (`get_my_profile` via MCP, opt-in, items not in the tool output are dropped), GitHub
+(GraphQL: languages, READMEs, dependency manifests → skills via the curated dictionary
+`packages/shared/src/skills.ts`, no LLM; metrics computed by code), user-entered facts (personal form).
+Importers never verify and never change a verified value: differences open `FactConflict`s the user
+resolves in the UI. Vanished items get `missingFrom`, never deleted.
+
+Knowledge-base jobs share the `sync-profile` queue (concurrency 1) with payload kinds `parse_resume`,
+`import_github`, `import_linkedin`, `sync_all`. The API registers BullMQ job scheduler
+`sync-profile-daily` (06:00 America/Sao_Paulo); a scheduled run executes at most once per local day.
+Resume PDFs live in MinIO at `resumes/<id>/original.pdf`; rendered PDFs are never stored.
 
 ## Job sources
 
@@ -83,5 +100,9 @@ PT/EN), `qwen2.5vl:7b` (vision fallback for hard forms). Change models via `.env
 - ESM everywhere (`"type": "module"`, `module: nodenext`): relative imports need `.js` suffix.
 - BullMQ 6: `ioredis` is an optional peer; apps that use BullMQ must depend on `ioredis`.
 - pnpm 11: native build scripts allowed via `allowBuilds` in `pnpm-workspace.yaml`.
+- Tests: Vitest (`pnpm test` runs packages serially). DB integration tests use the separate
+  `autoapply_test` database (`make test-db`); LLM is replaced by recorded real outputs
+  (`apps/worker/test/fixtures/llm`, re-record with `apps/worker/scripts/record-llm-fixture.ts`).
+  Nest decorators in Vitest need `oxc.decorator.legacy` (see `apps/*/vitest.config.ts`).
 - Python ↔ TS contracts: `services/scraper/src/autoapply_scraper/models.py` mirrors
   `packages/shared/src/queues.ts`. Change both together.

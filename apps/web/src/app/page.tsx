@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Suspense } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,14 +17,14 @@ async function getHealth(): Promise<Health | null> {
 }
 
 // Screens planned in docs/roadmap.md; each one ships with its own spec.
-const SCREENS = [
-  ["Base de conhecimento", "F1 · CV, LinkedIn, GitHub, fatos e conflitos"],
+const SCREENS: readonly (readonly [string, string, string?])[] = [
+  ["Base de conhecimento", "F1 · CV, LinkedIn, GitHub, fatos e conflitos", "/conhecimento"],
   ["Preferências", "F2 · cargos, stack, senioridade, fontes, limites"],
   ["Vagas", "F2 · feed com score e skills que batem/faltam"],
   ["Revisão", "F3–F4 · aprovar candidaturas e responder pendências"],
   ["Candidaturas", "F4 · tracker com screenshots de prova"],
   ["Ao vivo", "F6 · logs em tempo real e kill switch"],
-] as const;
+];
 
 // Dynamic (uncached) data must render inside <Suspense> with cacheComponents (Next 16).
 async function HealthBadges() {
@@ -51,14 +52,23 @@ export default function Home() {
       </section>
 
       <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {SCREENS.map(([title, desc]) => (
-          <Card key={title} className="opacity-70">
-            <CardHeader>
-              <CardTitle className="text-base">{title}</CardTitle>
-            </CardHeader>
-            <CardContent className="text-muted-foreground text-sm">{desc}</CardContent>
-          </Card>
-        ))}
+        {SCREENS.map(([title, desc, href]) => {
+          const card = (
+            <Card className={href ? "hover:bg-muted/40 h-full transition-colors" : "h-full opacity-70"}>
+              <CardHeader>
+                <CardTitle className="text-base">{title}</CardTitle>
+              </CardHeader>
+              <CardContent className="text-muted-foreground text-sm">{desc}</CardContent>
+            </Card>
+          );
+          return href ? (
+            <Link key={title} href={href}>
+              {card}
+            </Link>
+          ) : (
+            <div key={title}>{card}</div>
+          );
+        })}
       </section>
     </main>
   );

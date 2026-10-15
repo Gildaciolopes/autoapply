@@ -1,0 +1,92 @@
+{
+  "lang": "pt",
+  "basics": {
+    "name": "Bruno Lima",
+    "headline": "Tech Lead · Recife, PE",
+    "email": "bruno.lima@example.com",
+    "phone": "+55 81 90000-1111",
+    "location": "Recife, PE",
+    "profiles": [
+      {
+        "network": "GitHub",
+        "url": "github.com/bruno-example"
+      }
+    ]
+  },
+  "work": [
+    {
+      "company": "Nimbus Pagamentos S.A.",
+      "position": "Tech Lead",
+      "start": "Jan 2022",
+      "end": "Present",
+      "highlights": [
+        "Led a team of 6 engineers building a Go and Kafka event platform.",
+        "Moved CI to GitHub Actions and Terraform."
+      ],
+      "quote": "Tech Lead, Nimbus Pagamentos S.A. (Jan 2022 – Present)"
+    },
+    {
+      "company": "Rocket Delivery",
+      "position": "Backend Engineer",
+      "start": "2019",
+      "end": "2021",
+      "highlights": [
+        "Built Django REST APIs on AWS."
+      ],
+      "quote": "Backend Engineer, Rocket Delivery (2019 – 2021)"
+    }
+  ],
+  "education": [
+    {
+      "institution": "Universidade Federal de Pernambuco",
+      "area": "BSc Computer Engineering",
+      "start": "2014",
+      "end": "2018",
+      "quote": "BSc Computer Engineering — Universidade Federal de Pernambuco, 2014 – 2018"
+    }
+  ],
+  "skills": [
+    {
+      "name": "Go",
+      "quote": "Go, Kafka, Python, Django, AWS, Terraform, Kubernetes"
+    },
+    {
+      "name": "Kafka",
+      "quote": "Go, Kafka, Python, Django, AWS, Terraform, Kubernetes"
+    },
+    {
+      "name": "Python",
+      "quote": "Go, Kafka, Python, Django, AWS, Terraform, Kubernetes"
+    },
+    {
+      "name": "Django",
+      "quote": "Go, Kafka, Python, Django, AWS, Terraform, Kubernetes"
+    },
+    {
+      "name": "AWS",
+      "quote": "Go, Kafka, Python, Django, AWS, Terraform, Kubernetes"
+    },
+    {
+      "name": "Terraform",
+      "quote": "Go, Kafka, Python, Django, AWS, Terraform, Kubernetes"
+    },
+    {
+      "name": "Kubernetes",
+      "quote": "Go, Kafka, Python, Django, AWS, Terraform, Kubernetes"
+    }
+  ],
+  "languages": [
+    {
+      "language": "Portuguese",
+      "fluency": "native",
+      "quote": "Portuguese (native), English (fluent)"
+    },
+    {
+      "language": "English",
+      "fluency": "fluent",
+      "quote": "Portuguese (native), English (fluent)"
+    }
+  ],
+  "certificates": [],
+  "projects": []
+}

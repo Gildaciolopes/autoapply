@@ -17,6 +17,7 @@ export class OllamaProvider implements LlmProvider {
     messages: ChatMessage[];
     model?: string;
     temperature?: number;
+    numCtx?: number;
   }): Promise<z.infer<T>> {
     const res = await this.post<{ message: { content: string } }>('/api/chat', {
       model: opts.model ?? this.cfg.chatModel,
@@ -24,7 +25,7 @@ export class OllamaProvider implements LlmProvider {
       format: z.toJSONSchema(opts.schema),
       stream: false,
       think: false,
-      options: { temperature: opts.temperature ?? 0 },
+      options: { temperature: opts.temperature ?? 0, ...(opts.numCtx ? { num_ctx: opts.numCtx } : {}) },
     });
     return opts.schema.parse(JSON.parse(res.message.content));
   }

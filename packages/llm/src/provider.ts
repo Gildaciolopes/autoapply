@@ -14,6 +14,8 @@ export interface LlmProvider {
     messages: ChatMessage[];
     model?: string;
     temperature?: number;
+    /** Context window in tokens (Ollama defaults to 4096, too small for a resume + schema). */
+    numCtx?: number;
   }): Promise<z.infer<T>>;
   embed(texts: string[], model?: string): Promise<number[][]>;
 }

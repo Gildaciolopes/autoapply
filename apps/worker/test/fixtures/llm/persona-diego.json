@@ -1,0 +1,81 @@
+{
+  "lang": "pt",
+  "basics": {
+    "name": "Diego Rocha",
+    "headline": "Desenvolvedor Front-end Júnior",
+    "email": "diego.rocha@example.com",
+    "phone": "41 90000-3333",
+    "location": "Curitiba/PR",
+    "profiles": []
+  },
+  "work": [
+    {
+      "company": "Agência Pixel",
+      "position": "Estagiário de Desenvolvimento",
+      "start": "2023",
+      "end": "2024",
+      "highlights": [
+        "Landing pages em React e Tailwind CSS."
+      ],
+      "quote": "Estagiário de Desenvolvimento — Agência Pixel (2023 - 2024)"
+    }
+  ],
+  "education": [
+    {
+      "institution": "UTFPR",
+      "start": "2021",
+      "end": "2024",
+      "quote": "Tecnologia em Análise e Desenvolvimento de Sistemas — UTFPR, 2021 – 2024"
+    }
+  ],
+  "skills": [
+    {
+      "name": "JavaScript",
+      "quote": "JavaScript · TypeScript · React · Next.js · Vue.js · Tailwind CSS · Git"
+    },
+    {
+      "name": "TypeScript",
+      "quote": "JavaScript · TypeScript · React · Next.js · Vue.js · Tailwind CSS · Git"
+    },
+    {
+      "name": "React",
+      "quote": "JavaScript · TypeScript · React · Next.js · Vue.js · Tailwind CSS · Git"
+    },
+    {
+      "name": "Next.js",
+      "quote": "JavaScript · TypeScript · React · Next.js · Vue.js · Tailwind CSS · Git"
+    },
+    {
+      "name": "Vue.js",
+      "quote": "JavaScript · TypeScript · React · Next.js · Vue.js · Tailwind CSS · Git"
+    },
+    {
+      "name": "Tailwind CSS",
+      "quote": "JavaScript · TypeScript · React · Next.js · Vue.js · Tailwind CSS · Git"
+    },
+    {
+      "name": "Git",
+      "quote": "JavaScript · TypeScript · React · Next.js · Vue.js · Tailwind CSS · Git"
+    }
+  ],
+  "languages": [],
+  "certificates": [
+    {
+      "name": "Scrum Foundation Professional Certificate",
+      "date": "CertiProf",
+      "quote": "Scrum Foundation Professional Certificate (CertiProf)"
+    }
+  ],
+  "projects": [
+    {
+      "name": "FinTrack",
+      "description": "app de finanças pessoais com Next.js e Supabase.",
+      "quote": "FinTrack — app de finanças pessoais com Next.js e Supabase."
+    },
+    {
+      "name": "Clima Já",
+      "description": "PWA de previsão do tempo em Vue.js.",
+      "quote": "Clima Já — PWA de previsão do tempo em Vue.js."
+    }
+  ]
+}
