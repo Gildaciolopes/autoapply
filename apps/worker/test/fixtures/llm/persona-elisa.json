@@ -1,0 +1,90 @@
+{
+  "lang": "pt",
+  "basics": {
+    "name": "Elisa Prado",
+    "headline": "Engenheira DevOps/SRE — Florianópolis, SC",
+    "email": "elisa.prado@example.com",
+    "phone": "+55 48 90000-4444",
+    "location": "Florianópolis, SC",
+    "profiles": []
+  },
+  "work": [
+    {
+      "company": "Nuvem Azul",
+      "position": "SRE Sênior",
+      "start": "2021",
+      "end": "atual",
+      "highlights": [
+        "Kubernetes, Prometheus e Grafana para 300 serviços."
+      ],
+      "quote": "Kubernetes, Prometheus e Grafana para 300 serviços."
+    },
+    {
+      "company": "Datacenter Sul",
+      "position": "Analista de Infraestrutura",
+      "start": "2017",
+      "end": "2021",
+      "highlights": [
+        "Automação com Ansible e Linux."
+      ],
+      "quote": "Automação com Ansible e Linux."
+    }
+  ],
+  "education": [
+    {
+      "institution": "UFSC",
+      "area": "Engenharia de Computação",
+      "start": "2012–2016",
+      "end": "",
+      "quote": "Engenharia de Computação — UFSC (2012–2016)"
+    }
+  ],
+  "skills": [
+    {
+      "name": "Kubernetes",
+      "quote": "Kubernetes, Prometheus e Grafana para 300 serviços."
+    },
+    {
+      "name": "Docker",
+      "quote": "Ferramentas"
+    },
+    {
+      "name": "Terraform",
+      "quote": "Ferramentas"
+    },
+    {
+      "name": "Ansible",
+      "quote": "Automação com Ansible e Linux."
+    },
+    {
+      "name": "Prometheus",
+      "quote": "Kubernetes, Prometheus e Grafana para 300 serviços."
+    },
+    {
+      "name": "Grafana",
+      "quote": "Kubernetes, Prometheus e Grafana para 300 serviços."
+    },
+    {
+      "name": "Linux",
+      "quote": "Automação com Ansible e Linux."
+    },
+    {
+      "name": "Bash",
+      "quote": "Automação com Ansible e Linux."
+    }
+  ],
+  "languages": [],
+  "certificates": [
+    {
+      "name": "Certified Kubernetes Administrator (CKA)",
+      "date": "CNCF",
+      "quote": "Certified Kubernetes Administrator (CKA) — CNCF"
+    },
+    {
+      "name": "AWS Certified Solutions Architect – Associate",
+      "date": "Amazon Web Services",
+      "quote": "AWS Certified Solutions Architect – Associate — Amazon Web Services"
+    }
+  ],
+  "projects": []
+}

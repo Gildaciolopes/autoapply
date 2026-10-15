@@ -6,8 +6,8 @@ Mark status here when a feature merges.
 | # | Feature | Status | Done when |
 |---|---|---|---|
 | F0 | Foundation: monorepo, compose, Makefile, Prisma schema, health, Bull Board, scraper skeleton | ✅ done (scaffold, no spec) | `make dev` boots everything, `/health` all up |
-| F1 | Knowledge base | ⏳ next | facts from CV + LinkedIn + GitHub with provenance, conflicts resolved in UI, resume renders to PDF scoring 100 on cvlint |
-| F2 | Job discovery + scoring | — | ranked feed from Gupy API, JobSpy, LinkedIn MCP; dedupe; scores with reasons |
+| F1 | Knowledge base | ✅ implemented 2026-10-14 (branch `001-knowledge-base`) | facts from CV + LinkedIn + GitHub with provenance, conflicts resolved in UI, resume renders to PDF scoring 100 on the internal `atsLint` (stand-in for "cvlint", which could not be identified — see specs/001-knowledge-base/research.md R4) |
+| F2 | Job discovery + scoring | ⏳ next | ranked feed from Gupy API, JobSpy, LinkedIn MCP; dedupe; scores with reasons |
 | F3 | Tailoring + Zero-Fabrication validator + `make eval` | — | tailored resume/cover letter with 0 invented claims on the eval set |
 | F4 | Apply engine (dry-run): Greenhouse/Lever/Ashby adapters + generic filler | — | correct screenshots on 20 real jobs without submitting |
 | F5 | Logged-in platforms: Gupy, LinkedIn Easy Apply, session connect, daily caps | — | assisted real submissions in review mode |

@@ -1,0 +1,11 @@
+{
+  "url": "https://www.linkedin.com/in/ana-souza-example/",
+  "sections": {
+    "main_profile": "Ana Beatriz Souza\nTech Lead | TypeScript · Node.js\nSão Paulo, São Paulo, Brasil",
+    "about": "Engenheira full-stack com foco em TypeScript, Node.js e produtos B2B.",
+    "experience": "Tech Lead\nXeno Tecnologia · Tempo integral\nmar de 2021 - o momento\nSão Paulo, Brasil\nLidero o time de pagamentos.\n\nDesenvolvedora Pleno\nLoja Fácil\njun de 2018 - fev de 2021",
+    "education": "Universidade de São Paulo\nBacharelado, Ciência da Computação\n2014 - 2018",
+    "skills": "TypeScript\nNestJS\nPostgreSQL\nGraphQL",
+    "languages": "Português\nNativo ou bilíngue\nInglês\nProficiência profissional completa"
+  }
+}

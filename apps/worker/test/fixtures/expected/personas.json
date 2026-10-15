@@ -1,0 +1,42 @@
+{
+  "persona-ana": {
+    "work": [["Xeno Tecnologia", "Engenheira de Software Sênior"], ["Loja Fácil", "Desenvolvedora Pleno"]],
+    "education": ["Universidade de São Paulo"],
+    "skills": ["TypeScript", "Python", "NestJS", "Postgres", "React", "Docker"],
+    "languages": ["Português", "Inglês"],
+    "certificates": ["AWS Certified Developer – Associate"],
+    "projects": []
+  },
+  "persona-bruno": {
+    "work": [["Nimbus Pagamentos", "Tech Lead"], ["Rocket Delivery", "Backend Engineer"]],
+    "education": ["Universidade Federal de Pernambuco"],
+    "skills": ["Go", "Kafka", "Python", "Django", "AWS", "Terraform", "Kubernetes"],
+    "languages": ["Portuguese", "English"],
+    "certificates": [],
+    "projects": []
+  },
+  "persona-carla": {
+    "work": [["Banco Horizonte", "Cientista de Dados Pleno"], ["Varejo Mais", "Analista de Dados"]],
+    "education": ["UFMG", "UFMG"],
+    "skills": ["Python", "pandas", "scikit-learn", "PyTorch", "SQL"],
+    "languages": ["Inglês"],
+    "certificates": [],
+    "projects": []
+  },
+  "persona-diego": {
+    "work": [["Agência Pixel", "Estagiário de Desenvolvimento"]],
+    "education": ["UTFPR"],
+    "skills": ["JavaScript", "TypeScript", "React", "Next.js", "Vue.js", "Tailwind CSS", "Git"],
+    "languages": [],
+    "certificates": ["Scrum Foundation Professional Certificate"],
+    "projects": ["FinTrack", "Clima Já"]
+  },
+  "persona-elisa": {
+    "work": [["Nuvem Azul", "SRE Sênior"], ["Datacenter Sul", "Analista de Infraestrutura"]],
+    "education": ["UFSC"],
+    "skills": ["Kubernetes", "Docker", "Terraform", "Ansible", "Prometheus", "Grafana", "Linux", "Bash"],
+    "languages": [],
+    "certificates": ["Certified Kubernetes Administrator", "AWS Certified Solutions Architect – Associate"],
+    "projects": []
+  }
+}

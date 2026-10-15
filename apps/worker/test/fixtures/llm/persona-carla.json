@@ -1,0 +1,76 @@
+{
+  "lang": "pt",
+  "basics": {
+    "name": "Carla Mendes",
+    "headline": "Cientista de Dados",
+    "email": "carla.mendes@example.com",
+    "phone": "(31) 90000-2222",
+    "location": "Belo Horizonte - MG"
+  },
+  "work": [
+    {
+      "company": "Banco Horizonte",
+      "position": "Cientista de Dados Pleno",
+      "start": "Setembro de 2020",
+      "end": "atual",
+      "highlights": [
+        "Modelos de churn com scikit-learn em produção."
+      ],
+      "quote": "Modelos de churn com scikit-learn em produção."
+    },
+    {
+      "company": "Varejo Mais Ltda.",
+      "position": "Analista de Dados",
+      "start": "02/2018",
+      "end": "08/2020",
+      "highlights": [
+        "Dashboards em SQL e Power BI."
+      ],
+      "quote": "Dashboards em SQL e Power BI."
+    }
+  ],
+  "education": [
+    {
+      "institution": "Mestrado em Estatística — UFMG",
+      "start": "2016",
+      "end": "2018",
+      "quote": "Mestrado em Estatística — UFMG (2016 – 2018)"
+    },
+    {
+      "institution": "Bacharelado em Matemática — UFMG",
+      "start": "2012",
+      "end": "2015",
+      "quote": "Bacharelado em Matemática — UFMG (2012 – 2015)"
+    }
+  ],
+  "skills": [
+    {
+      "name": "Python",
+      "quote": "Python"
+    },
+    {
+      "name": "pandas",
+      "quote": "pandas"
+    },
+    {
+      "name": "scikit-learn",
+      "quote": "scikit-learn"
+    },
+    {
+      "name": "PyTorch",
+      "quote": "PyTorch"
+    },
+    {
+      "name": "SQL",
+      "quote": "SQL"
+    }
+  ],
+  "languages": [
+    {
+      "language": "Inglês intermediário",
+      "quote": "Inglês intermediário"
+    }
+  ],
+  "certificates": [],
+  "projects": []
+}

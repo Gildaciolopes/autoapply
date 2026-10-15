@@ -1,0 +1,93 @@
+{
+  "lang": "pt",
+  "basics": {
+    "name": "Ana Beatriz Souza",
+    "headline": "Engenheira de Software Full-Stack · São Paulo, SP",
+    "email": "ana.souza@example.com",
+    "phone": "+55 11 90000-0000",
+    "location": "São Paulo, SP",
+    "profiles": [
+      {
+        "network": "LinkedIn",
+        "url": "linkedin.com/in/ana-souza-example"
+      }
+    ]
+  },
+  "work": [
+    {
+      "company": "Xeno Tecnologia Ltda",
+      "position": "Engenheira de Software Sênior",
+      "start": "mar 2021",
+      "end": "atual",
+      "highlights": [
+        "Migrei a API de pagamentos de Express para NestJS, reduzindo a latência p95 em 40%.",
+        "Implantei filas com BullMQ e Redis para processar 2 milhões de eventos por dia."
+      ],
+      "quote": "Engenheira de Software Full-Stack · São Paulo, SP"
+    },
+    {
+      "company": "Loja Fácil",
+      "position": "Desenvolvedora Pleno",
+      "start": "06/2018",
+      "end": "02/2021",
+      "highlights": [
+        "Desenvolvi o checkout em React e Next.js usado por 300 lojas.",
+        "Modelei o banco PostgreSQL de pedidos e estoque."
+      ],
+      "quote": "Engenheira full-stack com foco em TypeScript, Node.js e produtos B2B."
+    }
+  ],
+  "education": [
+    {
+      "institution": "Universidade de São Paulo",
+      "area": "Bacharelado em Ciência da Computação",
+      "start": "2014",
+      "end": "2018",
+      "quote": "Engenheira full-stack com foco em TypeScript, Node.js e produtos B2B."
+    }
+  ],
+  "skills": [
+    {
+      "name": "TypeScript",
+      "quote": "Engenheira full-stack com foco em TypeScript, Node.js e produtos B2B."
+    },
+    {
+      "name": "Python",
+      "quote": "Engenheira full-stack com foco em TypeScript, Node.js e produtos B2B."
+    },
+    {
+      "name": "NestJS",
+      "quote": "Engenheira full-stack com foco em TypeScript, Node.js e produtos B2B."
+    },
+    {
+      "name": "Postgres",
+      "quote": "Engenheira full-stack com foco em TypeScript, Node.js e produtos B2B."
+    },
+    {
+      "name": "React",
+      "quote": "Engenheira full-stack com foco em TypeScript, Node.js e produtos B2B."
+    },
+    {
+      "name": "Docker",
+      "quote": "Engenheira full-stack com foco em TypeScript, Node.js e produtos B2B."
+    }
+  ],
+  "languages": [
+    {
+      "language": "Português",
+      "quote": "Português (nativo), Inglês (avançado)"
+    },
+    {
+      "language": "Inglês",
+      "quote": "Português (nativo), Inglês (avançado)"
+    }
+  ],
+  "certificates": [
+    {
+      "name": "AWS Certified Developer – Associate",
+      "issuer": "Amazon Web Services",
+      "quote": "AWS Certified Developer – Associate (Amazon Web Services)"
+    }
+  ],
+  "projects": []
+}

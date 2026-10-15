@@ -42,3 +42,16 @@ export type RawJob = z.infer<typeof RawJob>;
 
 export const JobIdPayload = z.object({ jobId: z.string() });
 export const ApplicationIdPayload = z.object({ applicationId: z.string() });
+
+/** Knowledge base background work (F1), all on the `sync-profile` queue, concurrency 1. */
+export const SyncProfilePayload = z.discriminatedUnion('kind', [
+  z.object({ kind: z.literal('parse_resume'), resumeId: z.string(), mode: z.enum(['text', 'vision']).default('text') }),
+  z.object({ kind: z.literal('import_github'), syncRunId: z.string() }),
+  z.object({ kind: z.literal('import_linkedin'), syncRunId: z.string() }),
+  z.object({
+    kind: z.literal('sync_all'),
+    syncRunId: z.string().optional(),
+    trigger: z.enum(['schedule', 'manual']),
+  }),
+]);
+export type SyncProfilePayload = z.infer<typeof SyncProfilePayload>;

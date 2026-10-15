@@ -38,6 +38,13 @@ migrate: ## Aplica migrations (dev)
 migration: ## Nova migration: make migration name=add_x
 	pnpm --filter @autoapply/db exec prisma migrate dev --name $(name)
 
+kb-eval: ## Avalia extração de currículo com o LLM local (SC-002, 5 personas, ~12 min)
+	cd apps/worker && KB_EVAL_LIVE=1 pnpm exec vitest run test/extraction-quality.test.ts
+
+test-db: ## Cria/migra o banco de testes de integração (autoapply_test)
+	-@$(COMPOSE) exec -T postgres psql -U $${POSTGRES_USER:-autoapply} -d $${POSTGRES_DB:-autoapply} -c "CREATE DATABASE autoapply_test" 2>/dev/null
+	cd packages/db && DATABASE_URL=postgresql://autoapply:autoapply@localhost:5433/autoapply_test pnpm exec prisma migrate deploy
+
 studio: ## Prisma Studio
 	pnpm --filter @autoapply/db run studio
 
@@ -56,8 +63,8 @@ linkedin-login: ## Login LinkedIn MCP (abre viewer em http://localhost:6080)
 linkedin-up: ## Sobe LinkedIn MCP (HTTP em LINKEDIN_MCP_URL)
 	$(COMPOSE) --profile linkedin up -d linkedin-mcp
 
-test: ## Testes TS + Python
-	pnpm exec turbo run test
+test: test-db ## Testes TS + Python (integração usa o banco autoapply_test)
+	pnpm exec turbo run test --concurrency=1
 	cd services/scraper && uv run pytest -q
 
 typecheck: packages ## Typecheck de tudo

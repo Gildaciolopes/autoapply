@@ -1,0 +1,97 @@
+{
+ "data": {
+  "rateLimit": {
+   "remaining": 4900,
+   "resetAt": "2026-10-15T03:00:00Z"
+  },
+  "user": {
+   "repositories": {
+    "pageInfo": {
+     "hasNextPage": true,
+     "endCursor": "c1"
+    },
+    "nodes": [
+     {
+      "nameWithOwner": "ana-example/payments-api",
+      "url": "https://github.com/ana-example/payments-api",
+      "isFork": false,
+      "isArchived": false,
+      "isPrivate": false,
+      "pushedAt": "2026-10-01T12:00:00Z",
+      "languages": {
+       "edges": [
+        {
+         "size": 200000,
+         "node": {
+          "name": "TypeScript"
+         }
+        },
+        {
+         "size": 800,
+         "node": {
+          "name": "Dockerfile"
+         }
+        }
+       ]
+      },
+      "f_README_md": {
+       "text": "# Payments API\nBuilt with NestJS, PostgreSQL and Redis. Deployed with Docker.",
+       "byteSize": 77
+      },
+      "f_readme_md": null,
+      "f_README": null,
+      "f_Readme_md": null,
+      "f_README_rst": null,
+      "f_package_json": {
+       "text": "{\"dependencies\": {\"@nestjs/core\": \"^12\", \"@prisma/client\": \"^7\", \"left-pad\": \"1\"}, \"devDependencies\": {\"vitest\": \"^5\", \"typescript\": \"~5.9\"}}",
+       "byteSize": 141
+      },
+      "f_pyproject_toml": null,
+      "f_requirements_txt": null,
+      "f_go_mod": null,
+      "f_Cargo_toml": null,
+      "f_pom_xml": null,
+      "f_build_gradle": null,
+      "f_composer_json": null,
+      "f_Gemfile": null
+     },
+     {
+      "nameWithOwner": "ana-example/scraper",
+      "url": "https://github.com/ana-example/scraper",
+      "isFork": false,
+      "isArchived": false,
+      "isPrivate": false,
+      "pushedAt": "2026-08-15T09:00:00Z",
+      "languages": {
+       "edges": [
+        {
+         "size": 50000,
+         "node": {
+          "name": "Python"
+         }
+        }
+       ]
+      },
+      "f_README_md": null,
+      "f_readme_md": null,
+      "f_README": null,
+      "f_Readme_md": null,
+      "f_README_rst": null,
+      "f_package_json": null,
+      "f_pyproject_toml": {
+       "text": "[project]\nname = \"scraper\"\ndependencies = [\n  \"fastapi>=0.110\",\n  \"pandas\",\n]\n",
+       "byteSize": 78
+      },
+      "f_requirements_txt": null,
+      "f_go_mod": null,
+      "f_Cargo_toml": null,
+      "f_pom_xml": null,
+      "f_build_gradle": null,
+      "f_composer_json": null,
+      "f_Gemfile": null
+     }
+    ]
+   }
+  }
+ }
+}
