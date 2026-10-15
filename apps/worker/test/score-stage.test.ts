@@ -91,4 +91,20 @@ describe('scoring stage (US3)', () => {
     expect(after.profileHash).not.toBe(before);
     expect(after).toMatchObject({ score: 90, matched: ['Kafka'] });
   });
+
+  it('jobs without description do not consume judge slots', async () => {
+    const titles: string[] = [];
+    const deps = jobsDeps((m: { content: string }[]) => (titles.push(/Title: (.*)/.exec(m[1]!.content)![1]!), { score: 70, matched: [], missing: [], reasons: 'ok' }));
+    await processRun(deps, { runId: await run(), rescore: false, judge: true }, {
+      a: {
+        source: 'gupy',
+        jobs: [
+          raw({ title: 'Desenvolvedor Full Stack TypeScript React Node.js', description: '' , company: 'SemDesc' }),
+          raw({ title: 'Desenvolvedor Full Stack React', description: 'React TypeScript', company: 'B' }),
+          raw({ title: 'Desenvolvedor Full Stack Node', description: 'Node.js', company: 'C' }),
+        ],
+      },
+    });
+    expect(titles).toHaveLength(2); // judgeTopN=2 filled by jobs that have a description
+  });
 });

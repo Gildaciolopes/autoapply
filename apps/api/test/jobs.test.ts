@@ -128,4 +128,22 @@ describe('feed (US4)', () => {
     const d = await feed.get(j.id);
     expect(d.matchedEvidence).toEqual([{ skill: 'TypeScript', facts: [{ id: f.id, kind: 'skill', summary: 'TypeScript' }] }]);
   });
+
+});
+
+describe('review regressions', () => {
+  it('filter then un-filter keeps the judged score', async () => {
+    await prefs.put(P());
+    const j = await job('Acme', 'Desenvolvedor Full Stack', 85);
+    await prefs.put(P({ excludeKeywords: ['full'] }));
+    expect(await db.jobScore.findUniqueOrThrow({ where: { jobId: j.id } })).toMatchObject({ passed: false, score: 85, judged: true });
+    await prefs.put(P());
+    expect(await db.jobScore.findUniqueOrThrow({ where: { jobId: j.id } })).toMatchObject({ passed: true, score: 85 });
+  });
+
+  it('invalid runs limit falls back instead of 500', async () => {
+    const svc = new DiscoveryService(prisma, flows);
+    await expect(svc.list(Number('abc'))).resolves.toEqual([]);
+    await expect(svc.list(-5)).resolves.toEqual([]);
+  });
 });

@@ -20,10 +20,7 @@ export async function upsertResults(db: PrismaClient, runId: string, results: Di
 
   for (const r of results) {
     const o = (outcomes[r.source] ??= { status: 'success', found: 0, new: 0, duplicates: 0, filtered: 0 });
-    if (r.error) {
-      o.status = o.found ? 'success' : 'failed';
-      o.error = r.error;
-    }
+    if (r.error) o.error = r.error;
     const jobs = r.jobs
       .map((j) => RawJob.safeParse(j))
       .filter((p) => p.success)
@@ -48,7 +45,7 @@ export async function upsertResults(db: PrismaClient, runId: string, results: Di
       const loc = parseLocation(raw.location, raw.city, raw.uf);
       const workMode = detectWorkMode(raw.workMode, raw.title, raw.location, raw.description?.slice(0, 3000));
       const remote = loc.remote || workMode === 'remote';
-      const salary = parseSalary(raw.salaryMin, raw.salaryMax, raw.salaryText ?? raw.description);
+      const salary = parseSalary(raw.salaryMin, raw.salaryMax, raw.salaryText ?? raw.description, { requireContext: !raw.salaryText });
       const hash = dedupeHash(raw.company, raw.title, { ...loc, remote });
 
       const existing = await db.job.findUnique({ where: { dedupeHash: hash } });
@@ -100,5 +97,7 @@ export async function upsertResults(db: PrismaClient, runId: string, results: Di
       touched.add(jobId);
     }
   }
+  // A source failed only if no (source, role) child brought anything; children settle in any order.
+  for (const o of Object.values(outcomes)) if (o.error && !o.found) o.status = 'failed';
   return { outcomes, jobIds: [...touched] };
 }

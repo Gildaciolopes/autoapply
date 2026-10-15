@@ -16,7 +16,7 @@ const HYBRID_RE = /\b(hibrido|hibrida|hybrid)\b/;
 const ONSITE_RE = /\b(presencial|on-site|onsite|on site)\b/;
 
 const SENIORITY_WORDS =
-  /\b(estagio|estagiari[oa]s?|intern(ship)?|trainee|junior|jr|pleno|pl|mid|middle|senior|sr|especialista|specialist|staff|principal|lead|tech lead|lider tecnic[oa]|i{1,3}|iv)\b/g;
+  /\b(estagio|estagiari[oa]s?|intern(ship)?|trainee|junior|jr|pleno|pl(?! sql\b)|mid|middle|senior|sr|especialista|specialist|staff|principal|lead|tech lead|lider tecnic[oa]|i{1,3}|iv)\b/g;
 
 /**
  * Title for dedupe: lowercase, no accents, no gender markers "(a)", "(o/a)", "/a",
@@ -92,7 +92,7 @@ export function detectSeniority(title: string): Seniority | null {
   if (/\b(estagio|estagiari[oa]s?|intern|internship|trainee)\b/.test(t)) return 'intern';
   if (/\b(tech lead|lider tecnic[oa]|staff|principal|especialista|specialist|lead)\b/.test(t)) return 'lead';
   if (/\b(senior|sr|iii)\b/.test(t)) return 'senior';
-  if (/\b(pleno|pl|mid|middle|ii)\b/.test(t)) return 'mid';
+  if (/\b(pleno|pl(?! sql\b)|mid|middle|ii)\b/.test(t)) return 'mid';
   if (/\b(junior|jr|i)\b/.test(t)) return 'junior';
   return null;
 }
@@ -105,19 +105,31 @@ export interface ParsedSalary {
 
 const num = (s: string): number => {
   const k = /k$/i.test(s);
-  const clean = s.replace(/k$/i, '').replace(/\./g, '').replace(',', '.');
+  // "." is a thousands separator only before exactly 3 digits ("180.000"); "3.5k" keeps its decimal point.
+  const clean = s.replace(/k$/i, '').replace(/\.(?=\d{3}(?!\d))/g, '').replace(',', '.');
   const v = Number(clean);
   return k ? v * 1000 : v;
 };
 
+const SALARY_RE = /R\$\s*([\d.,]+k?)(?:\s*(?:-|–|a|até)\s*(?:R\$\s*)?([\d.,]+k?))?\s*(\/\s*(m[eê]s|ano|hora|h)|por\s+(m[eê]s|ano|hora))?/gi;
+/** Words that mark an amount as pay (not VR/VA, auxílio home office, bônus…) in free text. */
+const SALARY_CONTEXT = /sal[aá]ri|remunera|faixa|pretens[aã]o|bolsa/i;
+
 /**
  * Monthly BRL salary. Structured values (already monthly BRL) win; otherwise parses "R$ 8.000 - 12.000",
  * "R$ 15k/mês", "R$ 180.000/ano" (÷12). Hourly, "a combinar" and non-BRL → unknown (null).
+ * `requireContext` (free-text descriptions): only amounts preceded by a salary word count, so benefit
+ * amounts ("vale refeição de R$ 800") never become the salary.
  */
-export function parseSalary(min: number | null | undefined, max: number | null | undefined, text: string | null | undefined): ParsedSalary {
-  if (min || max) return { min: min ? Math.round(min) : null, max: max ? Math.round(max) : null, text: text ?? null };
+export function parseSalary(
+  min: number | null | undefined,
+  max: number | null | undefined,
+  text: string | null | undefined,
+  opts: { requireContext?: boolean } = {},
+): ParsedSalary {
+  if (min || max) return { min: min ? Math.round(min) : null, max: max ? Math.round(max) : null, text: opts.requireContext ? null : (text ?? null) };
   if (!text) return { min: null, max: null, text: null };
-  const m = /R\$\s*([\d.,]+k?)(?:\s*(?:-|–|a|até)\s*(?:R\$\s*)?([\d.,]+k?))?\s*(\/\s*(m[eê]s|ano|hora|h)|por\s+(m[eê]s|ano|hora))?/i.exec(text);
+  const m = [...text.matchAll(SALARY_RE)].find((x) => !opts.requireContext || SALARY_CONTEXT.test(text.slice(Math.max(0, x.index - 60), x.index)));
   if (!m) return { min: null, max: null, text: null };
   const period = (m[4] ?? m[5] ?? 'mes').toLowerCase();
   if (period.startsWith('h')) return { min: null, max: null, text: m[0].trim() };
@@ -128,15 +140,29 @@ export function parseSalary(min: number | null | undefined, max: number | null |
   return { min: Math.round(a), max: b && Number.isFinite(b) ? Math.round(b) : null, text: m[0].trim() };
 }
 
+const NAMED_ENTITIES: Record<string, string> = { nbsp: ' ', amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", ordm: 'º', ordf: 'ª' };
+const ENTITY_MARKS: Record<string, string> = { acute: '\u0301', grave: '\u0300', tilde: '\u0303', circ: '\u0302', cedil: '\u0327', uml: '\u0308' };
+
+/** Numeric (&#233; &#xE9;), basic named and accented-letter (&ccedil; &Atilde;) entities; unknown → space. */
+function decodeEntity(name: string): string {
+  if (name[0] === '#') {
+    const code = name[1] === 'x' || name[1] === 'X' ? parseInt(name.slice(2), 16) : parseInt(name.slice(1), 10);
+    return Number.isInteger(code) && code > 0 && code <= 0x10ffff ? String.fromCodePoint(code) : ' ';
+  }
+  const named = NAMED_ENTITIES[name.toLowerCase()];
+  if (named !== undefined) return named;
+  const accented = /^([a-z])(acute|grave|tilde|circ|cedil|uml)$/i.exec(name);
+  return accented ? `${accented[1]}${ENTITY_MARKS[accented[2]!.toLowerCase()]}`.normalize('NFC') : ' ';
+}
+
 /** Gupy descriptions carry HTML entities and tags. */
 export function cleanDescription(html: string | null | undefined): string | null {
   if (!html) return null;
-  const ents: Record<string, string> = { '&nbsp;': ' ', '&amp;': '&', '&lt;': '<', '&gt;': '>', '&quot;': '"', '&#39;': "'" };
   return html
     .replace(/<br\s*\/?>/gi, '\n')
     .replace(/<\/?(p|li|div|h\d)[^>]*>/gi, '\n')
     .replace(/<[^>]+>/g, '')
-    .replace(/&[a-z#0-9]+;/gi, (e) => ents[e.toLowerCase()] ?? ' ')
+    .replace(/&(#x[0-9a-f]+|#\d+|[a-z]+);/gi, (_e, name: string) => decodeEntity(name))
     .replace(/[ \t]+/g, ' ')
     .replace(/\n{3,}/g, '\n\n')
     .trim();

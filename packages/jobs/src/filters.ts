@@ -16,6 +16,22 @@ export interface FilterableJob {
   salaryMax?: number | null;
 }
 
+/** Maps a Job row (with its company) to the filter input; shared by the scoring stage and API re-filter. */
+export function toFilterable(j: Omit<FilterableJob, 'company'> & { company: { name: string } | null }): FilterableJob {
+  return {
+    company: j.company?.name ?? '',
+    title: j.title,
+    description: j.description,
+    city: j.city,
+    uf: j.uf,
+    remote: j.remote,
+    workMode: j.workMode,
+    seniority: j.seniority,
+    salaryMin: j.salaryMin,
+    salaryMax: j.salaryMax,
+  };
+}
+
 export interface FilterResult {
   passed: boolean;
   reason: FilterReason | null;

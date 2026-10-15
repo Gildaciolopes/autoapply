@@ -61,4 +61,14 @@ describe('process-run (US2)', () => {
     expect((await db.job.findFirstOrThrow()).lastSeenAt.getTime()).toBeGreaterThan(before.getTime());
     expect((await db.discoveryRun.findUniqueOrThrow({ where: { id: runId } })).outcomes).toMatchObject({ gupy: { new: 0, duplicates: 1 } });
   });
+
+  it('a source with one failed role and one successful role is not marked failed (order-independent)', async () => {
+    const runId = await newRun();
+    await processRun(jobsDeps(), { runId, rescore: false, judge: false }, {
+      a: { source: 'gupy', jobs: [], error: 'timeout' },
+      b: { source: 'gupy', jobs: [raw({})] },
+    });
+    const run = await db.discoveryRun.findUniqueOrThrow({ where: { id: runId } });
+    expect(run.outcomes).toMatchObject({ gupy: { status: 'success', new: 1, error: 'timeout' } });
+  });
 });

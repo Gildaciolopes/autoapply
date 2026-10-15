@@ -47,7 +47,7 @@ export class DiscoveryService {
   }
 
   async list(limit = 10): Promise<DiscoveryRunView[]> {
-    return (await this.prisma.client.discoveryRun.findMany({ orderBy: { startedAt: 'desc' }, take: Math.min(limit, 50) })).map(view);
+    return (await this.prisma.client.discoveryRun.findMany({ orderBy: { startedAt: 'desc' }, take: Number.isInteger(limit) && limit > 0 ? Math.min(limit, 50) : 10 })).map(view);
   }
 
   async get(id: string): Promise<DiscoveryRunView> {

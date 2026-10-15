@@ -1,5 +1,5 @@
 import { hasProfileVector, loadPreferences, jobSimilarities, jobsWithoutEmbedding, setJobEmbedding, setProfileVector, usableFactsWhere, type Prisma } from '@autoapply/db';
-import { applyHardFilters, buildJudgeMessages, groundMatches, profileHash, profileText, similarityToScore, type ProfileFact } from '@autoapply/jobs';
+import { applyHardFilters, buildJudgeMessages, groundMatches, profileHash, profileText, similarityToScore, toFilterable, type ProfileFact } from '@autoapply/jobs';
 import { JudgeResult, type FilterReason } from '@autoapply/shared';
 import { runEvent, type KbDeps } from '../kb/deps.js';
 
@@ -38,10 +38,7 @@ export async function scoreJobs(deps: KbDeps, jobIds: string[], opts: ScoreOptio
   // 1. hard filters
   const passing: typeof jobs = [];
   for (const j of jobs) {
-    const r = applyHardFilters(
-      { company: j.company?.name ?? '', title: j.title, description: j.description, city: j.city, uf: j.uf, remote: j.remote, workMode: j.workMode, seniority: j.seniority, salaryMin: j.salaryMin, salaryMax: j.salaryMax },
-      prefs,
-    );
+    const r = applyHardFilters(toFilterable(j), prefs);
     if (!r.passed) {
       for (const o of j.origins) stats.filtered[o.source] = (stats.filtered[o.source] ?? 0) + 1;
       await upsertScore(db, j.id, { passed: false, filterReason: r.reason, score: 0, judged: false, reasons: '', model: 'filters' });
@@ -92,19 +89,23 @@ export async function scoreJobs(deps: KbDeps, jobIds: string[], opts: ScoreOptio
   // 4. judge top N by similarity (skipped without description or without usable facts)
   if (!opts.judge || prefs.judgeTopN === 0) return stats;
   const hasEvidence = facts.some((f) => f.kind === 'skill' || f.kind === 'experience');
-  const candidates = passing
+  const pending = passing
     .filter((j) => !(j.score?.judged && j.score.profileHash === phash && !opts.force))
-    .sort((a, b) => (sims.get(b.id) ?? -1) - (sims.get(a.id) ?? -1))
-    .slice(0, prefs.judgeTopN);
+    .sort((a, b) => (sims.get(b.id) ?? -1) - (sims.get(a.id) ?? -1));
   if (!hasEvidence) {
     await runEvent(db, 'warn', 'judge skipped: no verified skill/experience facts yet');
     return stats;
   }
-  for (const j of candidates) {
-    if (!j.description?.trim()) {
+  // Jobs without a description can't be judged: they don't take one of the top-N judge slots.
+  const candidates: typeof pending = [];
+  for (const j of pending) {
+    if (j.description?.trim()) {
+      if (candidates.length < prefs.judgeTopN) candidates.push(j);
+    } else if (candidates.length < prefs.judgeTopN) {
       await db.jobScore.update({ where: { jobId: j.id }, data: { reasons: 'Sem descrição: avaliado só pela similaridade do título.' } });
-      continue;
     }
+  }
+  for (const j of candidates) {
     try {
       const raw = await deps.llm.generateObject({
         schema: JudgeResult,

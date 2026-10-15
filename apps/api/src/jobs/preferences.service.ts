@@ -2,7 +2,7 @@ import { InjectQueue } from '@nestjs/bullmq';
 import { Injectable } from '@nestjs/common';
 import type { Queue } from 'bullmq';
 import { loadPreferences, usableFactsWhere } from '@autoapply/db';
-import { applyHardFilters, suggestPreferences } from '@autoapply/jobs';
+import { applyHardFilters, suggestPreferences, toFilterable } from '@autoapply/jobs';
 import { Preferences, QUEUES } from '@autoapply/shared';
 import { PrismaService } from '../prisma/prisma.service.js';
 
@@ -49,13 +49,11 @@ export class PreferencesService {
     let changed = 0;
     let newlyFiltered = 0;
     for (const j of jobs) {
-      const r = applyHardFilters(
-        { company: j.company?.name ?? '', title: j.title, description: j.description, city: j.city, uf: j.uf, remote: j.remote, workMode: j.workMode, seniority: j.seniority, salaryMin: j.salaryMin, salaryMax: j.salaryMax },
-        p,
-      );
+      const r = applyHardFilters(toFilterable(j), p);
       if (r.passed !== j.score!.passed || r.reason !== j.score!.filterReason) {
-        // Newly passing jobs get a similarity score on the next run / rescore.
-        await this.db.jobScore.update({ where: { jobId: j.id }, data: { passed: r.passed, filterReason: r.reason, ...(r.passed ? {} : { score: 0 }) } });
+        // Only the filter verdict changes: the score (and any judgement) is kept, so a job that is
+        // filtered and later un-filtered gets its ranking back (the scoring stage keeps judgements as-is).
+        await this.db.jobScore.update({ where: { jobId: j.id }, data: { passed: r.passed, filterReason: r.reason } });
         changed++;
         if (!r.passed && j.score!.passed) newlyFiltered++;
       }
