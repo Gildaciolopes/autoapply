@@ -86,4 +86,21 @@ describe('importLinkedin (US5)', () => {
     expect(await db.fact.count()).toBe(before);
     expect((await db.profileSource.findUniqueOrThrow({ where: { origin: 'linkedin' } })).lastError).toBe('session_expired');
   });
+
+  it('extraction failure records a failed outcome (and rethrows for retry)', async () => {
+    await expect(run(true, mcp(async () => profileOutput), [new Error('ollama down')])).rejects.toThrow('ollama down');
+    const r = await db.syncRun.findFirstOrThrow();
+    expect(r.outcomes).toMatchObject({ linkedin: { status: 'failed', error: 'extraction_failed' } });
+    expect(r.finishedAt).not.toBeNull();
+  });
+
+  it('a dropped (misread) item does not flag existing facts of that kind as missing', async () => {
+    await run(true, mcp(async () => profileOutput)); // first import: LinkedIn sources on skills/experience
+    const misread = structuredClone(recordedMapping) as { skills: { name: string; quote: string }[] };
+    misread.skills = misread.skills.map((s) => (s.name === 'GraphQL' ? { name: 'GraphQLL', quote: 'GraphQLL' } : s));
+    const runId = (await db.syncRun.create({ data: { trigger: 'manual', localDate: '2026-10-15' } })).id;
+    await importLinkedin(deps([misread]), runId, mcp(async () => profileOutput));
+    const gql = await db.fact.findFirstOrThrow({ where: { key: 'skill:graphql' } });
+    expect(gql.missingFrom).toEqual([]);
+  });
 });

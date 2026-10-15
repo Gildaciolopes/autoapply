@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { refreshConflictFlag, type Prisma } from '@autoapply/db';
+import { sameValue } from '@autoapply/kb';
 import { FactValueSchemas, type ConflictCandidate, type ConflictView, type ResolveConflictBody } from '@autoapply/shared';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { ApiError } from './api-error.js';
@@ -47,6 +48,8 @@ export class ConflictsService {
         throw new ApiError(400, 'invalid_strategy', `estratégia "${body.strategy}" não se aplica a ${c.type}`);
       }
       const factIds = [fact.id];
+      /** Candidates the user turned down; remembered so the next sync does not re-open the conflict. */
+      let rejected: ConflictCandidate[] = [];
       const revision = (factId: string, before: unknown, after: unknown, note: string) =>
         tx.factRevision.create({ data: { factId, action: 'conflict_resolved', before: json(before), after: json(after), actor: 'user', note } });
 
@@ -57,6 +60,7 @@ export class ConflictsService {
           await tx.fact.update({ where: { id: fact.id }, data: { value: json(chosen.value), verifiedByUser: true } });
           await upsertSource(tx, fact.id, chosen);
           await revision(fact.id, fact.value, chosen.value, `chose ${chosen.origin}`);
+          rejected = candidates.filter((x) => !sameValue(fact.kind, x.value, chosen.value));
           break;
         }
         case 'edit': {
@@ -64,6 +68,7 @@ export class ConflictsService {
           if (!parsed.success) throw new ApiError(400, 'invalid_value', 'valor inválido', parsed.error.issues);
           await tx.fact.update({ where: { id: fact.id }, data: { value: json(parsed.data), verifiedByUser: true } });
           await revision(fact.id, fact.value, parsed.data, 'edited');
+          rejected = candidates.filter((x) => !sameValue(fact.kind, x.value, parsed.data));
           break;
         }
         case 'split': {
@@ -111,7 +116,11 @@ export class ConflictsService {
 
       await tx.factConflict.update({
         where: { id },
-        data: { status: 'resolved', resolvedAt: new Date(), resolution: json(body) },
+        data: {
+          status: 'resolved',
+          resolvedAt: new Date(),
+          resolution: json({ ...body, rejected: rejected.map((r) => ({ origin: r.origin, ref: r.ref, value: r.value })) }),
+        },
       });
       for (const fid of factIds) await refreshConflictFlag(tx, fid);
       return { factIds };

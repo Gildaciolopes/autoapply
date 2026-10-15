@@ -32,5 +32,7 @@ describe('parseLooseDate', () => {
   it('splits ranges', () => {
     expect(splitRange('2021 – hoje')).toEqual(['2021', 'hoje']);
     expect(splitRange('mar 2019 - dez 2020')).toEqual(['mar 2019', 'dez 2020']);
+    expect(splitRange('2021 até hoje')).toEqual(['2021', 'hoje']);
+    expect(splitRange('Java 2020')).toEqual(['Java 2020', null]);
   });
 });

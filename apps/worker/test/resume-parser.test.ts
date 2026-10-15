@@ -69,4 +69,11 @@ describe('parseResume', () => {
     const row = await db.resumeBase.findUniqueOrThrow({ where: { id: 'r4' } });
     expect(row).toMatchObject({ status: 'failed', error: 'ollama down' });
   });
+
+  it('does not resurrect a resume discarded while the job was queued', async () => {
+    await db.resumeBase.create({ data: { id: 'r5', minioKey: 'k5', fileName: 'cv.pdf', status: 'discarded' } });
+    const d = deps([recorded], { k5: resumeFixture('persona-ana.pdf') });
+    await parseResume(d, 'r5', 'text');
+    expect((await db.resumeBase.findUniqueOrThrow({ where: { id: 'r5' } })).status).toBe('discarded');
+  });
 });

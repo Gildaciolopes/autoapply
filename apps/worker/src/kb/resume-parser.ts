@@ -10,6 +10,11 @@ import { runEvent, type KbDeps } from './deps.js';
 export async function parseResume(deps: KbDeps, resumeId: string, mode: 'text' | 'vision'): Promise<{ status: string }> {
   const { db } = deps;
   const row = await db.resumeBase.findUniqueOrThrow({ where: { id: resumeId } });
+  // The user may discard (or a stale retry may target a confirmed resume) while the job waits in the queue.
+  if (row.status === 'discarded' || row.status === 'confirmed') {
+    await runEvent(db, 'info', `parse_resume ${resumeId} skipped (status ${row.status})`);
+    return { status: row.status };
+  }
   await db.resumeBase.update({ where: { id: resumeId }, data: { status: 'parsing', error: null } });
   await runEvent(db, 'info', `parse_resume ${resumeId} (${mode})`);
 

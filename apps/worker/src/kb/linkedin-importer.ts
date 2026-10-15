@@ -65,15 +65,24 @@ export async function importLinkedin(deps: KbDeps, syncRunId: string, mcp: McpCa
   }
 
   const text = mcpToText(raw);
-  const draft = await extractDraft(deps.llm, text, { model: deps.models.chat });
-  const dropped = [draft.work, draft.education, draft.skills, draft.languages, draft.certificates, draft.projects]
-    .flat()
-    .filter((i) => i.flags.includes('not_in_source'))
-    .map((i) => i.id);
-  if (dropped.length) await runEvent(db, 'warn', `linkedin: ${dropped.length} item(s) not found in profile output were dropped`, { dropped });
+  let counts: Awaited<ReturnType<typeof applyImport>>;
+  try {
+    const draft = await extractDraft(deps.llm, text, { model: deps.models.chat });
+    const dropped = [draft.work, draft.education, draft.skills, draft.languages, draft.certificates, draft.projects]
+      .flat()
+      .filter((i) => i.flags.includes('not_in_source'))
+      .map((i) => i.id);
+    if (dropped.length) await runEvent(db, 'warn', `linkedin: ${dropped.length} item(s) not found in profile output were dropped`, { dropped });
 
-  const candidates = draftToCandidates(withoutFlagged(draft), '', 'linkedin');
-  const counts = await applyImport(db, 'linkedin', candidates, { complete: true, actor: opts.actor ?? 'import' });
+    const candidates = draftToCandidates(withoutFlagged(draft), '', 'linkedin');
+    // A dropped item may be an existing fact the LLM misread: don't flag its kind as missing this run.
+    const uncertainKinds = [...new Set(draftToCandidates(draft, '', 'linkedin').filter((c) => c.itemId && dropped.includes(c.itemId)).map((c) => c.kind))];
+    counts = await applyImport(db, 'linkedin', candidates, { complete: true, actor: opts.actor ?? 'import', uncertainKinds });
+  } catch (err) {
+    // Record the outcome so the SyncRun/ProfileSource never stay stale (BullMQ still retries).
+    await recordOutcome(db, syncRunId, 'linkedin', { status: 'failed', error: 'extraction_failed' });
+    throw err;
+  }
   await recordOutcome(db, syncRunId, 'linkedin', { status: 'success', counts: countsOf(counts) }, counts, {
     snapshot: { fetchedAt: new Date().toISOString(), raw } as Prisma.InputJsonValue,
   });

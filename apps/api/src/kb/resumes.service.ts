@@ -144,7 +144,15 @@ export class ResumesService {
       note: `resume v${row.version} confirmed`,
     });
 
+    const seenKeys = new Set(candidates.map((c) => `${c.kind}|${c.key}`));
+    const returned = existing.filter((f) => seenKeys.has(`${f.kind}|${f.key}`) && f.missingFrom?.includes('resume'));
+
     await this.db.$transaction(async (tx) => {
+      // Items back in this resume: drop the stale missingFrom flag (applyMerge only clears it for unverified facts).
+      for (const r of returned) {
+        const f = await tx.fact.findUniqueOrThrow({ where: { id: r.id }, select: { missingFrom: true } });
+        await tx.fact.update({ where: { id: r.id }, data: { missingFrom: f.missingFrom.filter((o) => o !== 'resume') } });
+      }
       for (const r of diff.removed) {
         const f = await tx.fact.findUniqueOrThrow({ where: { id: r.factId }, select: { missingFrom: true } });
         if (!f.missingFrom.includes('resume')) {

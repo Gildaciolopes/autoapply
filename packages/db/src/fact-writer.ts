@@ -21,7 +21,13 @@ export interface ApplyResult {
 
 /** Loads active + archived facts in the shape the pure merge logic expects. */
 export async function loadFactLikes(db: PrismaClient | Tx, where: Prisma.FactWhereInput = {}): Promise<FactLike[]> {
-  const rows = await db.fact.findMany({ where, include: { sources: { select: { origin: true, ref: true } } } });
+  const rows = await db.fact.findMany({
+    where,
+    include: {
+      sources: { select: { origin: true, ref: true } },
+      conflicts: { where: { status: 'resolved', type: 'value_mismatch' }, select: { resolution: true } },
+    },
+  });
   return rows.map((f) => ({
     id: f.id,
     kind: f.kind,
@@ -31,6 +37,7 @@ export async function loadFactLikes(db: PrismaClient | Tx, where: Prisma.FactWhe
     status: f.status,
     sources: f.sources,
     missingFrom: f.missingFrom,
+    rejected: f.conflicts.flatMap((c) => ((c.resolution as { rejected?: FactLike['rejected'] } | null)?.rejected ?? [])),
   }));
 }
 
@@ -123,7 +130,11 @@ export async function applyMerge(db: PrismaClient, merge: MergeResult, opts: App
       const open = await tx.factConflict.findFirst({ where: { factId: c.factId, status: 'open', type: 'value_mismatch' } });
       if (open) {
         // Same open conflict: refresh/append this origin's candidate instead of stacking conflicts.
-        const list = (open.candidates as ConflictCandidate[]).filter((x) => !(x.origin === cand.origin && x.ref === cand.ref));
+        // Index 0 is the stored value (see existingAsCandidate): never drop it, even when its
+        // origin/ref equals the incoming candidate's (verified fact re-imported from the same source).
+        const list = (open.candidates as ConflictCandidate[]).filter(
+          (x, i) => i === 0 || !(x.origin === cand.origin && x.ref === cand.ref),
+        );
         await tx.factConflict.update({ where: { id: open.id }, data: { candidates: json([...list, cand]) } });
         out.conflicts.push(open.id);
         continue;

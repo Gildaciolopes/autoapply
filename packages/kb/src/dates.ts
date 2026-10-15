@@ -60,7 +60,8 @@ export function parseLooseDate(input: string | null | undefined): LooseDate | nu
 
 /** Splits "mar 2021 – atual" / "2019 - 2021" / "2021 até hoje" into [start, end] raw strings. */
 export function splitRange(input: string): [string, string | null] {
-  const parts = input.split(/\s*(?:–|—|-|\bate\b|\baté\b|\bto\b|\ba\b)\s*/i).filter(Boolean);
+  // Letter lookarounds instead of \b: without them "até" never matches (é is not a \w char).
+  const parts = input.split(/\s*(?:–|—|-|(?<!\p{L})(?:ate|até|to|a)(?!\p{L}))\s*/iu).filter(Boolean);
   if (parts.length >= 2) return [parts[0]!, parts.slice(1).join(' ')];
   return [input, null];
 }

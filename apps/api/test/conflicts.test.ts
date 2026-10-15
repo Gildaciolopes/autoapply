@@ -82,4 +82,27 @@ describe('conflicts (US6)', () => {
     await applyMerge(db, mergeCandidates(await loadFactLikes(db), [cand(exp('Tech Lead'), 'linkedin')]), { actor: 'sync', verify: false });
     expect(await db.factConflict.count()).toBe(1);
   });
+
+  it('a resolved conflict is not re-opened by the next sync with the rejected value (daily sync)', async () => {
+    const id = await seedConflict();
+    await svc.resolve(id, { strategy: 'choose', chosenIndex: 0 }); // keep resume, reject LinkedIn "Tech Lead"
+    await applyMerge(db, mergeCandidates(await loadFactLikes(db), [cand(exp('Tech Lead'), 'linkedin')]), { actor: 'sync', verify: false });
+    expect(await db.factConflict.count({ where: { status: 'open' } })).toBe(0);
+    expect(await db.fact.count({ where: usableFactsWhere })).toBe(1);
+    // a NEW different value from LinkedIn still opens a conflict
+    await applyMerge(db, mergeCandidates(await loadFactLikes(db), [cand(exp('Head of Engineering'), 'linkedin')]), { actor: 'sync', verify: false });
+    expect(await db.factConflict.count({ where: { status: 'open' } })).toBe(1);
+  });
+
+  it('after split, re-import of the split value lands on the sibling, no new conflict', async () => {
+    const id = await seedConflict();
+    const { factIds } = await svc.resolve(id, { strategy: 'split' });
+    await applyMerge(db, mergeCandidates(await loadFactLikes(db), [cand(exp('Tech Lead'), 'linkedin', 'experience:xeno:2021', 'linkedin:experience[3]')]), {
+      actor: 'sync',
+      verify: false,
+    });
+    expect(await db.factConflict.count({ where: { status: 'open' } })).toBe(0);
+    const sib = await db.fact.findUniqueOrThrow({ where: { id: factIds[1]! }, include: { sources: true } });
+    expect(sib.sources.map((s) => s.ref)).toContain('linkedin:experience[3]');
+  });
 });

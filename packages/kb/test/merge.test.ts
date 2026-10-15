@@ -63,4 +63,20 @@ describe('mergeCandidates', () => {
     expect(r.create).toHaveLength(1);
     expect(r.create[0]!.sources).toHaveLength(2);
   });
+
+  it('never re-raises a value the user already rejected from that origin', () => {
+    const f = fact({ rejected: [{ origin: 'linkedin', value: exp('Tech Lead') }] });
+    const r = mergeCandidates([f], [cand(exp('Tech  lead'))]);
+    expect(r.conflicts).toHaveLength(0);
+    expect(r.ignored).toEqual([expect.objectContaining({ factId: 'f1' })]);
+    // a different new value still conflicts
+    expect(mergeCandidates([f], [cand(exp('Staff Engineer'))]).conflicts).toHaveLength(1);
+  });
+
+  it('routes a value that matches a split sibling (<key>:n) to that sibling', () => {
+    const sib = fact({ id: 'f2', key: 'experience:xeno:2021:2', value: exp('Tech Lead'), sources: [{ origin: 'linkedin', ref: 'linkedin:experience[0]' }] });
+    const r = mergeCandidates([fact(), sib], [cand(exp('Tech Lead'))]);
+    expect(r.conflicts).toHaveLength(0);
+    expect(r.addSource).toEqual([expect.objectContaining({ factId: 'f2' })]);
+  });
 });

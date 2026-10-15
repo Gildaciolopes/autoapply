@@ -18,7 +18,7 @@ const orgField: Partial<Record<FactKind, string>> = { experience: 'company', edu
  * Invariant: without `trusted`, a verified fact's value is never changed.
  */
 export function mergeCandidates(existing: FactLike[], candidates: Candidate[], opts: MergeOptions = {}): MergeResult {
-  const result: MergeResult = { create: [], addSource: [], update: [], conflicts: [], duplicates: [] };
+  const result: MergeResult = { create: [], addSource: [], update: [], conflicts: [], ignored: [], duplicates: [] };
   const byKey = new Map(existing.map((f) => [`${f.kind}|${f.key}`, f]));
   const created = new Map<string, NewFact>();
   const refreshed = new Set<string>();
@@ -38,6 +38,19 @@ export function mergeCandidates(existing: FactLike[], candidates: Candidate[], o
         } else {
           result.addSource.push({ factId: fact.id, source: c.source });
         }
+        continue;
+      }
+      // A split sibling (`<key>:n`, created by resolving a conflict as "distinct items") holds this value.
+      const sibling = existing.find(
+        (f) => f.kind === c.kind && f.status === 'active' && f.key.startsWith(`${c.key}:`) && sameValue(c.kind, f.value, c.value),
+      );
+      if (sibling) {
+        result.addSource.push({ factId: sibling.id, source: c.source });
+        continue;
+      }
+      // The user already rejected this value from this origin when resolving a conflict.
+      if (!opts.trusted && fact.rejected?.some((r) => r.origin === c.source.origin && sameValue(c.kind, r.value, c.value))) {
+        result.ignored.push({ factId: fact.id, source: c.source });
         continue;
       }
       if (opts.trusted || (!fact.verifiedByUser && onlySameOrigin)) {

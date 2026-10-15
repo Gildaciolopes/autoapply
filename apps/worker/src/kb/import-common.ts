@@ -1,6 +1,6 @@
 import { applyMerge, loadFactLikes, type Prisma, type PrismaClient } from '@autoapply/db';
 import { diffSnapshot, mergeCandidates, type Candidate } from '@autoapply/kb';
-import { SourceOutcome, SyncSummary, type FactOrigin } from '@autoapply/shared';
+import { SourceOutcome, SyncSummary, type FactKind, type FactOrigin } from '@autoapply/shared';
 
 export interface ImportCounts {
   added: string[];
@@ -18,7 +18,12 @@ export async function applyImport(
   db: PrismaClient,
   origin: FactOrigin,
   candidates: Candidate[],
-  opts: { complete: boolean; actor: 'import' | 'sync' },
+  opts: {
+    complete: boolean;
+    actor: 'import' | 'sync';
+    /** Kinds whose snapshot is not trustworthy this run (e.g. LLM items dropped): never flag them missing. */
+    uncertainKinds?: FactKind[];
+  },
 ): Promise<ImportCounts> {
   const existing = await loadFactLikes(db);
   const merge = mergeCandidates(existing, candidates, {});
@@ -29,6 +34,7 @@ export async function applyImport(
     const diff = diffSnapshot(existing, candidates, origin);
     for (const id of diff.missing) {
       const f = existing.find((x) => x.id === id)!;
+      if (opts.uncertainKinds?.includes(f.kind)) continue;
       await db.fact.update({ where: { id }, data: { missingFrom: [...(f.missingFrom ?? []), origin] } });
       missing.push(id);
     }

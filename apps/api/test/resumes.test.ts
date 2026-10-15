@@ -96,6 +96,11 @@ describe('ResumesService', () => {
     const react = await db.fact.findFirstOrThrow({ where: { key: 'skill:react' } });
     expect(react).toMatchObject({ status: 'active', missingFrom: ['resume'] });
     expect(await db.resumeBase.count({ where: { active: true } })).toBe(1);
+
+    // v3 lists React again → the 'resume' missing flag is cleared even though the fact is verified
+    await inReview('r3', draft({ skills: draft().skills.slice(0, 2) }), 3);
+    await svc.confirm('r3', []);
+    expect((await db.fact.findFirstOrThrow({ where: { key: 'skill:react' } })).missingFrom).toEqual([]);
   });
 
   it('status guards (409)', async () => {

@@ -28,6 +28,8 @@ export interface FactLike {
   status: 'active' | 'archived';
   sources: { origin: FactOrigin; ref: string }[];
   missingFrom?: string[];
+  /** Values the user rejected when resolving conflicts on this fact (never re-raised). */
+  rejected?: { origin: FactOrigin; value: unknown }[];
 }
 
 export interface NewFact {
@@ -47,6 +49,8 @@ export interface MergeResult {
   update: { factId: string; before: unknown; value: unknown; source: CandidateSource }[];
   /** Same key, different value, cannot be updated silently → FactConflict(value_mismatch). */
   conflicts: { factId: string; existingValue: unknown; candidate: Candidate }[];
+  /** Candidate equal to a value the user already rejected for this fact → silently ignored. */
+  ignored: { factId: string; source: CandidateSource }[];
   /** New fact that looks like an existing one (e.g. "Itaú" vs "Itau Unibanco") → FactConflict(possible_duplicate). */
   duplicates: { newKey: string; kind: FactKind; existingFactId: string }[];
 }
