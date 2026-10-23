@@ -1,6 +1,6 @@
-import { Processor, WorkerHost } from '@nestjs/bullmq';
+import { InjectQueue, Processor, WorkerHost } from '@nestjs/bullmq';
 import { Inject, Logger, type OnModuleDestroy } from '@nestjs/common';
-import { FlowProducer, type Job } from 'bullmq';
+import { FlowProducer, type Job, type Queue } from 'bullmq';
 import { localDate } from '@autoapply/kb';
 import { ProcessRunPayload, QUEUES } from '@autoapply/shared';
 import { KB_DEPS } from './sync-profile.processor.js';
@@ -14,7 +14,10 @@ export class ScoreProcessor extends WorkerHost implements OnModuleDestroy {
   private readonly logger = new Logger(ScoreProcessor.name);
   private readonly flows = new FlowProducer({ connection: { url: process.env.REDIS_URL ?? 'redis://localhost:6380' } });
 
-  constructor(@Inject(KB_DEPS) private readonly deps: KbDeps) {
+  constructor(
+    @Inject(KB_DEPS) private readonly deps: KbDeps,
+    @InjectQueue(QUEUES.tailor) private readonly tailorQueue: Queue,
+  ) {
     super();
   }
 
@@ -30,7 +33,9 @@ export class ScoreProcessor extends WorkerHost implements OnModuleDestroy {
       return startDiscoveryFlow(this.deps.db, this.flows as never, 'schedule');
     }
     const payload = ProcessRunPayload.parse(job.data);
-    const res = await processRun(this.deps, payload, await childrenOf(job));
+    const res = await processRun(this.deps, payload, await childrenOf(job), {
+      enqueueTailor: (p) => this.tailorQueue.add('tailor', p, { attempts: 2, backoff: { type: 'exponential', delay: 60_000 }, removeOnComplete: 200, removeOnFail: 200 }),
+    });
     this.logger.log(`run ${payload.runId}: ${JSON.stringify(res)}`);
     return res;
   }

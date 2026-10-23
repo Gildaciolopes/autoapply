@@ -134,6 +134,18 @@ export const SKILLS: SkillDef[] = [
   s('firebase', 'Firebase', 'cloud', { pkg: { npm: ['firebase', 'firebase-admin'] } }),
   s('s3', 'Amazon S3', 'cloud', { syn: ['minio', 's3'], pkg: { npm: ['@aws-sdk/client-s3'] } }),
   s('stripe', 'Stripe', 'tool', { pkg: { npm: ['stripe'], pypi: ['stripe'] } }),
+  s('serverless', 'Serverless', 'cloud', { syn: ['serverless framework', 'arquitetura serverless', 'faas'], pkg: { npm: ['serverless'] } }),
+  s('aws-lambda', 'AWS Lambda', 'cloud', { syn: ['lambda functions', 'funções lambda'] }),
+  s('grpc', 'gRPC', 'backend', { syn: ['grpc'], pkg: { npm: ['@grpc/grpc-js'], pypi: ['grpcio'], go: ['google.golang.org/grpc'] } }),
+  s('eks', 'Amazon EKS', 'devops', { syn: ['eks', 'aws eks'] }),
+  s('helm', 'Helm', 'devops', {}),
+  s('sqs', 'Amazon SQS', 'cloud', { syn: ['sqs', 'aws sqs'] }),
+  s('dynamodb', 'DynamoDB', 'data', { syn: ['dynamo db'], pkg: { npm: ['@aws-sdk/client-dynamodb'] } }),
+  s('cloudformation', 'CloudFormation', 'devops', { syn: ['aws cloudformation'] }),
+  s('prometheus', 'Prometheus', 'devops', {}),
+  s('grafana', 'Grafana', 'devops', {}),
+  s('ansible', 'Ansible', 'devops', {}),
+  s('power-bi', 'Power BI', 'data', { syn: ['powerbi'] }),
 ];
 
 const norm = (t: string) =>

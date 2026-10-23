@@ -9,7 +9,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { ApiRequestError, errorMessage, jobSources, preferences } from "@/lib/api";
+import { Badge } from "@/components/ui/badge";
+import { ApiRequestError, errorMessage, evals, jobSources, preferences } from "@/lib/api";
 import { checkboxClass, fmtDateTime, nativeSelectClass } from "../kb/format";
 import { useLoad } from "../kb/use-load";
 import { SENIORITY_LABEL, SOURCE_LABEL, WORK_MODE_LABEL, cronHour } from "./format";
@@ -22,6 +23,7 @@ export function PreferencesView() {
       {loading && !data && <p className="text-muted-foreground text-sm">Carregando…</p>}
       {data && <PreferencesForm initial={data} />}
       <SourcesTable />
+      <EvalCard />
     </div>
   );
 }
@@ -199,6 +201,37 @@ function PreferencesForm({ initial }: { initial: Preferences }) {
             </div>
           </Field>
         </div>
+
+        <fieldset className="space-y-3">
+          <legend className="text-sm font-medium">Adaptação de currículo</legend>
+          <label className="flex items-center gap-3 text-sm">
+            <Switch checked={form.autoTailor} onCheckedChange={(v) => set("autoTailor", v)} />
+            Adaptar automaticamente as melhores vagas após cada busca
+          </label>
+          <div className="grid gap-5 md:grid-cols-3">
+            <Field label="Quantas vagas adaptar por busca" htmlFor="autoTailorN" hint="1–20.">
+              <Input
+                id="autoTailorN"
+                type="number"
+                min={1}
+                max={20}
+                disabled={!form.autoTailor}
+                value={form.autoTailorN}
+                onChange={(e) => set("autoTailorN", Math.min(20, Math.max(1, Math.trunc(Number(e.target.value) || 1))))}
+              />
+            </Field>
+            <Field label="Nota mínima" htmlFor="scoreThreshold" hint="Só adapta vagas com score ≥ esta nota (0–100).">
+              <Input
+                id="scoreThreshold"
+                type="number"
+                min={0}
+                max={100}
+                value={form.scoreThreshold}
+                onChange={(e) => set("scoreThreshold", Math.min(100, Math.max(0, Math.trunc(Number(e.target.value) || 0))))}
+              />
+            </Field>
+          </div>
+        </fieldset>
       </CardContent>
     </Card>
   );
@@ -331,5 +364,42 @@ function CapInput({ source, disabled, onSave }: { source: SourceView; disabled: 
         if (n !== source.dailyCap) onSave(n);
       }}
     />
+  );
+}
+
+// ---------- tailoring eval ----------
+
+function EvalCard() {
+  const { data, loading } = useLoad(() => evals.runs("tailor"));
+  const last = data?.[0];
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-base">Avaliação anti-invenção</CardTitle>
+      </CardHeader>
+      <CardContent className="text-sm">
+        {loading && !data && <p className="text-muted-foreground">Carregando…</p>}
+        {data && !last && (
+          <p className="text-muted-foreground">
+            Nenhuma avaliação ainda — rode <code className="bg-muted rounded px-1">make eval</code>.
+          </p>
+        )}
+        {last && (
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+            {last.passed ? (
+              <Badge className="bg-emerald-600/15 text-emerald-700 dark:text-emerald-400">passou</Badge>
+            ) : (
+              <Badge variant="destructive">falhou</Badge>
+            )}
+            <span>{fmtDateTime(last.createdAt)}</span>
+            <span className="text-muted-foreground">modelo {last.model}</span>
+            <span>{last.cases} casos</span>
+            <span className={last.fabrications > 0 ? "text-destructive font-medium" : ""}>
+              {last.fabrications} {last.fabrications === 1 ? "invenção" : "invenções"}
+            </span>
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 }

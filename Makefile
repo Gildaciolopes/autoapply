@@ -41,6 +41,9 @@ migration: ## Nova migration: make migration name=add_x
 kb-eval: ## Avalia extração de currículo com o LLM local (SC-002, 5 personas, ~12 min)
 	cd apps/worker && KB_EVAL_LIVE=1 pnpm exec vitest run test/extraction-quality.test.ts
 
+eval: ## Avaliação anti-invenção (vagas-armadilha) com o LLM local; grava EvalRun (gate do autopilot)
+	cd apps/worker && pnpm exec tsx --env-file=../../.env scripts/record-tailor-eval.ts --store
+
 jobs-eval: ## Avalia ranking de vagas com bge-m3 + qwen3 locais (SC-005, 30 vagas rotuladas, ~6 min)
 	cd apps/worker && JOBS_EVAL_LIVE=1 pnpm exec vitest run test/jobs-eval.test.ts
 

@@ -1,0 +1,545 @@
+{
+ "facts": [
+  {
+   "id": "f-exp1",
+   "kind": "experience",
+   "value": {
+    "company": "Xeno Tecnologia",
+    "title": "Engenheira de Software Sênior",
+    "start": {
+     "year": 2021,
+     "month": 3,
+     "precision": "month"
+    },
+    "end": "present",
+    "highlights": [
+     "Migrei a API de pagamentos de Express para NestJS, reduzindo a latência p95 em 40%.",
+     "Implantei filas com BullMQ e Redis para processar 2 milhões de eventos por dia."
+    ]
+   }
+  },
+  {
+   "id": "f-exp0",
+   "kind": "experience",
+   "value": {
+    "company": "Loja Fácil",
+    "title": "Desenvolvedora Pleno",
+    "start": {
+     "year": 2018,
+     "month": 6,
+     "precision": "month"
+    },
+    "end": {
+     "year": 2021,
+     "month": 2,
+     "precision": "month"
+    },
+    "highlights": [
+     "Desenvolvi o checkout em React e Next.js usado por 300 lojas.",
+     "Modelei o banco PostgreSQL de pedidos e estoque."
+    ]
+   }
+  },
+  {
+   "id": "f-edu",
+   "kind": "education",
+   "value": {
+    "institution": "Universidade de São Paulo",
+    "degree": "Bacharelado",
+    "area": "Ciência da Computação",
+    "start": {
+     "year": 2014,
+     "precision": "year"
+    },
+    "end": {
+     "year": 2018,
+     "precision": "year"
+    }
+   }
+  },
+  {
+   "id": "f-ts",
+   "kind": "skill",
+   "value": {
+    "name": "TypeScript"
+   }
+  },
+  {
+   "id": "f-py",
+   "kind": "skill",
+   "value": {
+    "name": "Python"
+   }
+  },
+  {
+   "id": "f-nest",
+   "kind": "skill",
+   "value": {
+    "name": "NestJS"
+   }
+  },
+  {
+   "id": "f-pg",
+   "kind": "skill",
+   "value": {
+    "name": "Postgres"
+   }
+  },
+  {
+   "id": "f-react",
+   "kind": "skill",
+   "value": {
+    "name": "React"
+   }
+  },
+  {
+   "id": "f-docker",
+   "kind": "skill",
+   "value": {
+    "name": "Docker"
+   }
+  },
+  {
+   "id": "f-aws",
+   "kind": "certification",
+   "value": {
+    "name": "AWS Certified Developer – Associate",
+    "issuer": "Amazon Web Services"
+   }
+  }
+ ],
+ "knownOrgs": [
+  "Xeno Tecnologia",
+  "Loja Fácil",
+  "Universidade de São Paulo",
+  "Google",
+  "Nubank",
+  "Acme Pagamentos"
+ ],
+ "targetCompany": "Acme Pagamentos",
+ "bad": [
+  {
+   "text": "Tenho experiência com Go em APIs de alta escala.",
+   "factIds": [
+    "f-exp1"
+   ],
+   "expect": "tech_without_evidence"
+  },
+  {
+   "text": "Atuo com Kubernetes e Docker em produção.",
+   "factIds": [
+    "f-docker"
+   ],
+   "expect": "tech_without_evidence"
+  },
+  {
+   "text": "Desenvolvi microsserviços em Java.",
+   "factIds": [
+    "f-exp1"
+   ],
+   "expect": "tech_without_evidence"
+  },
+  {
+   "text": "Experiência sólida com AWS Lambda e Terraform.",
+   "factIds": [
+    "f-aws"
+   ],
+   "expect": "tech_without_evidence"
+  },
+  {
+   "text": "Construí pipelines com Kafka.",
+   "factIds": [
+    "f-exp1"
+   ],
+   "expect": "tech_without_evidence"
+  },
+  {
+   "text": "Uso GraphQL no dia a dia.",
+   "factIds": [
+    "f-ts"
+   ],
+   "expect": "tech_without_evidence"
+  },
+  {
+   "text": "Trabalhei com Vue.js no checkout.",
+   "factIds": [
+    "f-exp0"
+   ],
+   "expect": "tech_without_evidence"
+  },
+  {
+   "text": "Domino Angular e RxJS.",
+   "factIds": [
+    "f-react"
+   ],
+   "expect": "tech_without_evidence"
+  },
+  {
+   "text": "Migrei a API para Go, reduzindo a latência em 40%.",
+   "factIds": [
+    "f-exp1"
+   ],
+   "expect": "tech_without_evidence"
+  },
+  {
+   "text": "Atuei com MongoDB e Redis.",
+   "factIds": [
+    "f-exp1"
+   ],
+   "expect": "tech_without_evidence"
+  },
+  {
+   "text": "Reduzi a latência em 60%.",
+   "factIds": [
+    "f-exp1"
+   ],
+   "expect": "number_without_evidence"
+  },
+  {
+   "text": "Processei 5 milhões de eventos por dia.",
+   "factIds": [
+    "f-exp1"
+   ],
+   "expect": "number_without_evidence"
+  },
+  {
+   "text": "O checkout atendia 500 lojas.",
+   "factIds": [
+    "f-exp0"
+   ],
+   "expect": "number_without_evidence"
+  },
+  {
+   "text": "Tenho cinco anos de experiência com React.",
+   "factIds": [
+    "f-react"
+   ],
+   "expect": "number_without_evidence"
+  },
+  {
+   "text": "Liderei um time de 8 pessoas.",
+   "factIds": [
+    "f-exp1"
+   ],
+   "expect": "title_without_evidence"
+  },
+  {
+   "text": "Atuei como Tech Lead na Xeno Tecnologia.",
+   "factIds": [
+    "f-exp1"
+   ],
+   "expect": "title_without_evidence"
+  },
+  {
+   "text": "Fui gerente de engenharia na Loja Fácil.",
+   "factIds": [
+    "f-exp0"
+   ],
+   "expect": "title_without_evidence"
+  },
+  {
+   "text": "Sou arquiteta de software com foco em pagamentos.",
+   "factIds": [
+    "f-exp1"
+   ],
+   "expect": "title_without_evidence"
+  },
+  {
+   "text": "Como Staff Engineer, desenhei a plataforma.",
+   "factIds": [
+    "f-exp1"
+   ],
+   "expect": "title_without_evidence"
+  },
+  {
+   "text": "Trabalhei no Google com APIs de pagamentos.",
+   "factIds": [
+    "f-exp1"
+   ],
+   "expect": "org_without_evidence"
+  },
+  {
+   "text": "Na Nubank, construí filas com BullMQ.",
+   "factIds": [
+    "f-exp1"
+   ],
+   "expect": "org_without_evidence"
+  },
+  {
+   "text": "Desenvolvi o checkout da Loja Fácil em React.",
+   "factIds": [
+    "f-react"
+   ],
+   "expect": "org_without_evidence"
+  },
+  {
+   "text": "Tenho certificação AWS Professional.",
+   "factIds": [
+    "f-aws"
+   ],
+   "expect": "cert_without_evidence"
+  },
+  {
+   "text": "Sou certificada CKA.",
+   "factIds": [
+    "f-docker"
+   ],
+   "expect": "cert_without_evidence"
+  },
+  {
+   "text": "Possuo certificação PMP.",
+   "factIds": [
+    "f-exp1"
+   ],
+   "expect": "cert_without_evidence"
+  },
+  {
+   "text": "Sou certificada em Scrum (PSM).",
+   "factIds": [
+    "f-aws"
+   ],
+   "expect": "cert_without_evidence"
+  },
+  {
+   "text": "Engenheira full-stack apaixonada por tecnologia.",
+   "factIds": [],
+   "expect": "uncited"
+  },
+  {
+   "text": "Tenho experiência com NestJS.",
+   "factIds": [
+    "f-inexistente"
+   ],
+   "expect": "unusable_fact"
+  },
+  {
+   "text": "Programo em TypeScript há {{anos:Rust}} anos.",
+   "factIds": [
+    "f-ts"
+   ],
+   "expect": "placeholder_unresolved"
+  },
+  {
+   "text": "Desenvolvi 3 aplicativos mobile em Flutter.",
+   "factIds": [
+    "f-exp0"
+   ],
+   "expect": "tech_without_evidence"
+  },
+  {
+   "text": "Implantei filas com RabbitMQ para 2 milhões de eventos.",
+   "factIds": [
+    "f-exp1"
+   ],
+   "expect": "tech_without_evidence"
+  },
+  {
+   "text": "Trabalho com C# e .NET.",
+   "factIds": [
+    "f-ts"
+   ],
+   "expect": "tech_without_evidence"
+  },
+  {
+   "text": "Construí APIs em Node.js e TypeScript.",
+   "factIds": [
+    "f-exp1",
+    "f-ts"
+   ],
+   "expect": "tech_without_evidence"
+  },
+  {
+   "text": "Tenho 5 anos de experiência com desenvolvimento web.",
+   "factIds": [
+    "f-exp1",
+    "f-exp0"
+   ],
+   "expect": "number_without_evidence"
+  },
+  {
+   "text": "Quero aprender Go, mas já trabalhei com Go em produção.",
+   "factIds": [
+    "f-exp1"
+   ],
+   "expect": "tech_without_evidence"
+  },
+  {
+   "text": "Possuo conhecimento em TypeScript e arquitetura serverless.",
+   "factIds": [
+    "f-ts"
+   ],
+   "expect": "tech_without_evidence"
+  },
+  {
+   "text": "Experiência com filas SQS e Redis.",
+   "factIds": [
+    "f-exp1"
+   ],
+   "expect": "tech_without_evidence"
+  },
+  {
+   "text": "Implantei serviços em EKS.",
+   "factIds": [
+    "f-docker"
+   ],
+   "expect": "tech_without_evidence"
+  },
+  {
+   "text": "Construí APIs gRPC com NestJS.",
+   "factIds": [
+    "f-exp1"
+   ],
+   "expect": "tech_without_evidence"
+  }
+ ],
+ "good": [
+  {
+   "text": "Engenheira de Software Sênior na Xeno Tecnologia, com foco em APIs de pagamentos.",
+   "factIds": [
+    "f-exp1"
+   ]
+  },
+  {
+   "text": "Migrei a API de pagamentos para NestJS, reduzindo a latência p95 em 40%.",
+   "factIds": [
+    "f-exp1"
+   ]
+  },
+  {
+   "text": "Implantei filas com BullMQ e Redis para processar 2 milhões de eventos por dia.",
+   "factIds": [
+    "f-exp1"
+   ]
+  },
+  {
+   "text": "Desenvolvi o checkout em React e Next.js usado por 300 lojas.",
+   "factIds": [
+    "f-exp0"
+   ]
+  },
+  {
+   "text": "Experiência com PostgreSQL na modelagem de pedidos e estoque.",
+   "factIds": [
+    "f-exp0"
+   ]
+  },
+  {
+   "text": "Trabalho com TypeScript, NestJS e React.",
+   "factIds": [
+    "f-ts",
+    "f-nest",
+    "f-react"
+   ]
+  },
+  {
+   "text": "Uso Postgres e Docker no dia a dia.",
+   "factIds": [
+    "f-pg",
+    "f-docker"
+   ]
+  },
+  {
+   "text": "Tenho experiência com Python.",
+   "factIds": [
+    "f-py"
+   ]
+  },
+  {
+   "text": "Sou certificada AWS Certified Developer – Associate.",
+   "factIds": [
+    "f-aws"
+   ]
+  },
+  {
+   "text": "Bacharel em Ciência da Computação pela Universidade de São Paulo.",
+   "factIds": [
+    "f-edu"
+   ]
+  },
+  {
+   "text": "Atuei como Desenvolvedora Pleno na Loja Fácil.",
+   "factIds": [
+    "f-exp0"
+   ]
+  },
+  {
+   "text": "Tenho {{anos}} anos de experiência com desenvolvimento web.",
+   "factIds": [
+    "f-exp1",
+    "f-exp0"
+   ]
+  },
+  {
+   "text": "Combino back-end em NestJS com front-end em React.",
+   "factIds": [
+    "f-nest",
+    "f-react"
+   ]
+  },
+  {
+   "text": "Construí APIs em NestJS e TypeScript.",
+   "factIds": [
+    "f-exp1",
+    "f-ts"
+   ]
+  },
+  {
+   "text": "Prezada equipe da Acme Pagamentos,",
+   "factIds": [
+    "f-exp1"
+   ],
+   "role": "greeting"
+  },
+  {
+   "text": "Atenciosamente, obrigada pela atenção da Acme Pagamentos.",
+   "factIds": [
+    "f-exp1"
+   ],
+   "role": "closing"
+  },
+  {
+   "text": "Tenho interesse em aprender Go no time de vocês.",
+   "factIds": [
+    "f-exp1"
+   ]
+  },
+  {
+   "text": "Experiência com filas e processamento assíncrono usando Redis.",
+   "factIds": [
+    "f-exp1"
+   ]
+  },
+  {
+   "text": "Reduzi a latência p95 em quarenta por cento ao migrar a API.",
+   "factIds": [
+    "f-exp1"
+   ]
+  },
+  {
+   "text": "Experiência com Express e NestJS em APIs de pagamentos.",
+   "factIds": [
+    "f-exp1"
+   ]
+  },
+  {
+   "text": "Modelei bancos relacionais em PostgreSQL.",
+   "factIds": [
+    "f-exp0",
+    "f-pg"
+   ]
+  },
+  {
+   "text": "Construí APIs REST e HTTP em NestJS.",
+   "factIds": [
+    "f-exp1",
+    "f-nest"
+   ]
+  },
+  {
+   "text": "Certificação AWS Certified Developer – Associate.",
+   "factIds": [
+    "f-aws"
+   ]
+  }
+ ]
+}

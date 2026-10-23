@@ -5,7 +5,9 @@ import { useParams } from "next/navigation";
 import type { JobCard } from "@autoapply/shared";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { jobs, type JobDetail } from "@/lib/api";
+import { buttonVariants } from "@/components/ui/button";
+import { jobs, tailor, type JobDetail } from "@/lib/api";
+import { TailorStatusBadge } from "../tailor/review";
 import { useLoad } from "../kb/use-load";
 import { ScoreBadge } from "./feed";
 import {
@@ -71,6 +73,7 @@ export function JobDetailView() {
               .join(" · ")}
           </p>
           <JobActions job={job} onChange={update} onBlocked={() => void reload(true)} />
+          <TailorLink jobId={job.id} />
         </div>
       </div>
 
@@ -172,6 +175,19 @@ export function JobDetailView() {
           <div className="text-sm leading-relaxed whitespace-pre-line">{job.description || "Sem descrição."}</div>
         </CardContent>
       </Card>
+    </div>
+  );
+}
+
+function TailorLink({ jobId }: { jobId: string }) {
+  const { data } = useLoad(() => tailor.forJob(jobId), jobId);
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      <Link href={`/vagas/${jobId}/curriculo`} className={buttonVariants({ size: "sm" })}>
+        {data?.resume ? "Ver currículo adaptado" : "Adaptar currículo"}
+      </Link>
+      {data?.resume && <TailorStatusBadge doc={data.resume} />}
+      {data?.coverLetter && <span className="text-muted-foreground text-xs">+ carta</span>}
     </div>
   );
 }

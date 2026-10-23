@@ -21,6 +21,18 @@ export async function closeRenderer(): Promise<void> {
   if (b) await (await b).close();
 }
 
+/** Generic HTML → A4 PDF with the shared browser (used by the cover letter). */
+export async function renderHtmlToPdf(html: string): Promise<Buffer> {
+  const page = await (await getBrowser()).newPage();
+  try {
+    await page.setContent(html, { waitUntil: 'load' });
+    await page.evaluate(() => document.fonts.ready);
+    return await page.pdf({ format: 'A4', printBackground: false, preferCSSPageSize: true });
+  } finally {
+    await page.close();
+  }
+}
+
 export type RenderResult =
   | { overflow: false; pdf: Buffer; pages: 1 }
   | { overflow: true; pages: number; items: RenderItem[] };
