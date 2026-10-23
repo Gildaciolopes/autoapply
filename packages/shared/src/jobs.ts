@@ -24,6 +24,9 @@ export const Preferences = z.object({
   judgeTopN: z.number().int().min(0).max(50).default(20),
   autoDiscover: z.boolean().default(false),
   discoveryCron: z.string().default('0 7 * * *'),
+  autoTailor: z.boolean().default(false),
+  autoTailorN: z.number().int().min(1).max(20).default(5),
+  scoreThreshold: z.number().int().min(0).max(100).default(70),
   saved: z.boolean().default(false),
 });
 export type Preferences = z.infer<typeof Preferences>;

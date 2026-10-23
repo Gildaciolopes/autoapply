@@ -1,0 +1,122 @@
+{
+ "name": "Ana Beatriz Souza",
+ "facts": [
+  {
+   "id": "f-exp1",
+   "kind": "experience",
+   "value": {
+    "company": "Xeno Tecnologia",
+    "title": "Engenheira de Software Sênior",
+    "start": {
+     "year": 2021,
+     "month": 3,
+     "precision": "month"
+    },
+    "end": "present",
+    "highlights": [
+     "Migrei a API de pagamentos de Express para NestJS, reduzindo a latência p95 em 40%.",
+     "Implantei filas com BullMQ e Redis para processar 2 milhões de eventos por dia."
+    ]
+   }
+  },
+  {
+   "id": "f-exp0",
+   "kind": "experience",
+   "value": {
+    "company": "Loja Fácil",
+    "title": "Desenvolvedora Pleno",
+    "start": {
+     "year": 2018,
+     "month": 6,
+     "precision": "month"
+    },
+    "end": {
+     "year": 2021,
+     "month": 2,
+     "precision": "month"
+    },
+    "highlights": [
+     "Desenvolvi o checkout em React e Next.js usado por 300 lojas.",
+     "Modelei o banco PostgreSQL de pedidos e estoque."
+    ]
+   }
+  },
+  {
+   "id": "f-edu",
+   "kind": "education",
+   "value": {
+    "institution": "Universidade de São Paulo",
+    "degree": "Bacharelado",
+    "area": "Ciência da Computação",
+    "start": {
+     "year": 2014,
+     "precision": "year"
+    },
+    "end": {
+     "year": 2018,
+     "precision": "year"
+    }
+   }
+  },
+  {
+   "id": "f-ts",
+   "kind": "skill",
+   "value": {
+    "name": "TypeScript"
+   }
+  },
+  {
+   "id": "f-py",
+   "kind": "skill",
+   "value": {
+    "name": "Python"
+   }
+  },
+  {
+   "id": "f-nest",
+   "kind": "skill",
+   "value": {
+    "name": "NestJS"
+   }
+  },
+  {
+   "id": "f-pg",
+   "kind": "skill",
+   "value": {
+    "name": "Postgres"
+   }
+  },
+  {
+   "id": "f-react",
+   "kind": "skill",
+   "value": {
+    "name": "React"
+   }
+  },
+  {
+   "id": "f-docker",
+   "kind": "skill",
+   "value": {
+    "name": "Docker"
+   }
+  },
+  {
+   "id": "f-aws",
+   "kind": "certification",
+   "value": {
+    "name": "AWS Certified Developer – Associate",
+    "issuer": "Amazon Web Services"
+   }
+  }
+ ],
+ "knownOrgs": [
+  "Xeno Tecnologia",
+  "Loja Fácil",
+  "Universidade de São Paulo",
+  "Amazon Web Services",
+  "Google",
+  "Nubank",
+  "iFood",
+  "Mercado Livre"
+ ]
+}

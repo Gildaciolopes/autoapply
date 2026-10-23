@@ -35,6 +35,7 @@ the user approves in the UI; `autopilot` submits when thresholds pass (constitut
 | `packages/llm` | TS | `LlmProvider` interface, `OllamaProvider` (JSON-schema structured output + embed, `numCtx`), `FakeLlmProvider` (tests) |
 | `packages/kb` | TS, pure (no I/O) | fact keys, normalization, date parsing, provenance check (`foundInSource`), merge/conflict rules, resume↔facts, GitHub skill evidence, manifest parsers, sync diff |
 | `packages/jobs` | TS, pure (no I/O) | job normalization (title, UF, work mode, seniority, salary), dedupe hash, hard filters, profile text, similarity calibration, judge prompt + `groundMatches`, run planning |
+| `packages/tailor` | TS, pure (no I/O) | F3: deterministic ranking/selection of resume items, Zero-Fabrication validator, years-of-experience computation + placeholders, summary/letter prompts, diff, cover-letter detection, facts hash |
 | `packages/resume` | TS, Playwright + unpdf | PDF text extraction, page PNGs (vision fallback), facts → render model, ATS HTML template, `renderResumePdf`, `atsLint` |
 
 Infra (Docker Compose, Colima on the dev Mac): `pgvector/pgvector:pg16` (host 5433), `redis:7`
@@ -59,12 +60,25 @@ Ollama runs on the host (Metal GPU). From containers use `http://host.docker.int
   seniority/monthly BRL salary, `vector(1024)`, hidden/interesting), `JobOrigin` (every board a job was
   seen on), `JobScore` (filter reason, similarity, judge score, grounded `matchedEvidence`, model,
   profileHash), `DiscoveryRun`, `ProfileVector` (cached profile embedding by hash).
+- Tailoring (F3): `TailoredDocument` (per job × kind resume|cover_letter; status queued → generating →
+  draft|needs_review → approved → outdated), `EvalRun` (suite, fabrications, passed).
 - Applications: `Application` (status machine, `tailoredJson` = what was sent; PDF not stored),
   `FormAnswer` (answer + confidence + evidence fact ids), `Artifact` (MinIO keys), `RunEvent`.
 - pgvector: columns are `Unsupported("vector(1024)")`; use `packages/db/src/vector.ts` raw SQL helpers.
   Extension is created by `docker/postgres/init.sql` in the app DB and `template1` (shadow DBs).
 
 ## Zero Fabrication (constitution §I)
+
+Implemented in F3 (`packages/tailor`, see `specs/003-tailoring/research.md` R3):
+bullets are never rewritten (only selected/ordered by `rankForJob`); the LLM writes only the summary
+and cover letter as sentences with `factIds`; durations are `{{anos}}`/`{{anos:<tech>}}` placeholders
+computed from fact dates; `validateSentences` (no LLM) checks every technology (dictionary aliases,
+ambiguous ones case-sensitive), organization, title/seniority word, certification and number against
+the cited usable facts; one retry with the findings, then `needs_review`. Job text is fenced as
+untrusted data in prompts (prompt injection). `TailoredDocument` keeps plan, cited sentences,
+validation report and a `factsHash`; any change in included/cited facts → `outdated`, approval lost.
+`make eval` runs trap jobs (missing skills, inflated years, foreign orgs, cert bait, prompt injection)
+with an independent checker and stores `EvalRun` (autopilot requires the latest to pass).
 
 1. LLM gets only retrieved `Fact`s with ids (closed context).
 2. Output schemas (`packages/shared/src/evidence.ts`) require `evidence: factId[]` (min 1).

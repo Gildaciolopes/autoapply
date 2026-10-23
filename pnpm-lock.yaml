@@ -47,6 +47,9 @@ importers:
       '@autoapply/shared':
         specifier: workspace:*
         version: link:../../packages/shared
+      '@autoapply/tailor':
+        specifier: workspace:*
+        version: link:../../packages/tailor
       '@aws-sdk/client-s3':
         specifier: ^3.1150.0
         version: 3.1150.0
@@ -190,6 +193,9 @@ importers:
       '@autoapply/shared':
         specifier: workspace:*
         version: link:../../packages/shared
+      '@autoapply/tailor':
+        specifier: workspace:*
+        version: link:../../packages/tailor
       '@aws-sdk/client-s3':
         specifier: ^3.1150.0
         version: 3.1150.0
@@ -328,6 +334,21 @@ importers:
 
   packages/shared:
     dependencies:
+      zod:
+        specifier: ^4.6.7
+        version: 4.6.7
+
+  packages/tailor:
+    dependencies:
+      '@autoapply/jobs':
+        specifier: workspace:*
+        version: link:../jobs
+      '@autoapply/kb':
+        specifier: workspace:*
+        version: link:../kb
+      '@autoapply/shared':
+        specifier: workspace:*
+        version: link:../shared
       zod:
         specifier: ^4.6.7
         version: 4.6.7

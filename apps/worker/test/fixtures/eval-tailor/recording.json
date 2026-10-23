@@ -1,0 +1,1227 @@
+{
+ "control:summary": [
+  {
+   "sentences": [
+    {
+     "text": "Migrei a API de pagamentos de Express para NestJS, reduzindo a latência p95 em 40% [f-exp1].",
+     "factIds": [
+      "f-exp1"
+     ]
+    },
+    {
+     "text": "Implantei filas com BullMQ e Redis para processar 2 milhões de eventos por dia [f-exp1].",
+     "factIds": [
+      "f-exp1"
+     ]
+    },
+    {
+     "text": "Desenvolvi APIs com NestJS e TypeScript, trabalhando com PostgreSQL e Redis [f-exp1][f-ts][f-nest][f-pg].",
+     "factIds": [
+      "f-exp1",
+      "f-ts",
+      "f-nest",
+      "f-pg"
+     ]
+    },
+    {
+     "text": "Possuo conhecimento em Docker e AWS, com certificação AWS Certified Developer – Associate [f-docker][f-aws].",
+     "factIds": [
+      "f-docker",
+      "f-aws"
+     ]
+    }
+   ]
+  }
+ ],
+ "control:letter": [
+  {
+   "sentences": [
+    {
+     "text": "Prezados da Acme Pagamentos,",
+     "factIds": []
+    },
+    {
+     "text": "Possuo experiência com NestJS, TypeScript, PostgreSQL e filas BullMQ, habilidades que estão alinhadas com as demandas da vaga de Desenvolvedora Back-end Sênior. Na minha experiência como Engenheira de Software Sênior na Xeno Tecnologia, migrei a API de pagamentos para NestJS, reduzindo a latência p95 em 40%, e implantei filas com BullMQ e Redis para processar 2 milhões de eventos por dia [f-exp1].",
+     "factIds": [
+      "f-exp1",
+      "f-nest",
+      "f-ts",
+      "f-bullmq",
+      "f-redis"
+     ]
+    },
+    {
+     "text": "Na Loja Fácil, desenvolvi o checkout em React e Next.js, além de modelar o banco PostgreSQL de pedidos e estoque [f-exp0].",
+     "factIds": [
+      "f-exp0",
+      "f-react",
+      "f-next",
+      "f-pg"
+     ]
+    },
+    {
+     "text": "Também possuo certificação em AWS e experiência com Docker, o que me permite contribuir com soluções robustas e escaláveis. Estou interessada em aprender mais sobre as tecnologias que a Acme Pagamentos utiliza e contribuir com minha expertise em desenvolvimento de APIs e sistemas de alta performance.",
+     "factIds": [
+      "f-aws",
+      "f-docker"
+     ]
+    },
+    {
+     "text": "Agradeço pela atenção e fico no aguardo do seu retorno.",
+     "factIds": []
+    },
+    {
+     "text": "Atenciosamente,\nAna Beatriz Souza",
+     "factIds": []
+    }
+   ]
+  },
+  {
+   "sentences": [
+    {
+     "text": "Prezados da Acme Pagamentos,",
+     "factIds": []
+    },
+    {
+     "text": "Possuo experiência com NestJS, TypeScript, PostgreSQL e filas BullMQ, habilidades que estão alinhadas com as demandas da vaga de Desenvolvedora Back-end Sênior. Na minha experiência como Engenheira de Software Sênior na Xeno Tecnologia, migrei a API de pagamentos para NestJS, reduzindo a latência p95 em 40%, e implantei filas com BullMQ e Redis para processar 2 milhões de eventos por dia [f-exp1].",
+     "factIds": [
+      "f-exp1",
+      "f-nest",
+      "f-ts",
+      "f-bullmq",
+      "f-redis"
+     ]
+    },
+    {
+     "text": "Na Loja Fácil, desenvolvi o checkout em React, além de modelar o banco PostgreSQL de pedidos e estoque [f-exp0].",
+     "factIds": [
+      "f-exp0",
+      "f-react",
+      "f-pg"
+     ]
+    },
+    {
+     "text": "Também possuo certificação em AWS e experiência com Docker, o que me permite contribuir com soluções robustas e escaláveis. Estou interessada em aprender mais sobre as tecnologias que a Acme Pagamentos utiliza e contribuir com minha expertise em desenvolvimento de APIs e sistemas de alta performance.",
+     "factIds": [
+      "f-aws",
+      "f-docker"
+     ]
+    },
+    {
+     "text": "Agradeço pela atenção e fico no aguardo do seu retorno.",
+     "factIds": []
+    },
+    {
+     "text": "Atenciosamente,\nAna Beatriz Souza",
+     "factIds": []
+    }
+   ]
+  }
+ ],
+ "missing-go:summary": [
+  {
+   "sentences": [
+    {
+     "text": "Possuo experiência com PostgreSQL, modelando bancos de dados para pedidos e estoque em um sistema de lojas (f-exp0).",
+     "factIds": [
+      "f-exp0",
+      "f-pg"
+     ]
+    },
+    {
+     "text": "Tenho conhecimento em Docker e AWS, com certificação como AWS Certified Developer – Associate (f-ts, f-docker, f-aws).",
+     "factIds": [
+      "f-ts",
+      "f-docker",
+      "f-aws"
+     ]
+    },
+    {
+     "text": "Implementei soluções com NestJS e Redis para processar grandes volumes de eventos em uma API de pagamentos (f-exp1).",
+     "factIds": [
+      "f-exp1",
+      "f-nest"
+     ]
+    },
+    {
+     "text": "Desenvolvi interfaces com React e Next.js, integrando sistemas de checkout em uma plataforma de lojas (f-exp0).",
+     "factIds": [
+      "f-exp0",
+      "f-react"
+     ]
+    }
+   ]
+  }
+ ],
+ "missing-go:letter": [
+  {
+   "sentences": [
+    {
+     "text": "Prezados da Fintech Gama,",
+     "factIds": []
+    },
+    {
+     "text": "Possuo experiência com sistemas de alta performance, como a migração da API de pagamentos da Express para NestJS, reduzindo a latência p95 em 40% (f-exp1). Tenho conhecimento em PostgreSQL, com experiência na modelagem de banco de dados para pedidos e estoque (f-exp0, f-pg).",
+     "factIds": [
+      "f-exp1",
+      "f-exp0",
+      "f-pg"
+     ]
+    },
+    {
+     "text": "Estou interessada em expandir minha expertise em tecnologias como Go e gRPC, que são fundamentais para o desenvolvimento de sistemas eficientes e escaláveis.",
+     "factIds": []
+    },
+    {
+     "text": "Agradeço pela atenção e espero pela oportunidade de contribuir com minha experiência e conhecimento na sua equipe.",
+     "factIds": []
+    },
+    {
+     "text": "Atenciosamente,\nAna Beatriz Souza",
+     "factIds": []
+    }
+   ]
+  },
+  {
+   "sentences": [
+    {
+     "text": "Prezados da Fintech Gama,",
+     "factIds": []
+    },
+    {
+     "text": "Possuo experiência com sistemas de alta performance, como a migração da API de pagamentos da Express para NestJS, reduzindo a latência p95 em 40% (f-exp1). Tenho conhecimento em PostgreSQL, com experiência na modelagem de banco de dados para pedidos e estoque (f-exp0, f-pg).",
+     "factIds": [
+      "f-exp1",
+      "f-exp0",
+      "f-pg"
+     ]
+    },
+    {
+     "text": "Tenho certificação em AWS, o que me permite trabalhar com infraestrutura confiável e escalável (f-aws).",
+     "factIds": [
+      "f-aws"
+     ]
+    },
+    {
+     "text": "Agradeço pela atenção e espero pela oportunidade de contribuir com minha experiência e conhecimento na sua equipe.",
+     "factIds": []
+    },
+    {
+     "text": "Atenciosamente,\nAna Beatriz Souza",
+     "factIds": []
+    }
+   ]
+  }
+ ],
+ "missing-k8s:summary": [
+  {
+   "sentences": [
+    {
+     "text": "Possuo experiência com AWS, tendo obtido a certificação AWS Certified Developer – Associate (factIds: [f-aws])",
+     "factIds": [
+      "f-aws"
+     ]
+    },
+    {
+     "text": "Desenvolvi sistemas em Node.js, incluindo a migração de uma API para NestJS, otimizando a latência p95 em 40% (factIds: [f-exp1])",
+     "factIds": [
+      "f-exp1"
+     ]
+    },
+    {
+     "text": "Implementei soluções com Docker e Redis, incluindo filas para processar 2 milhões de eventos diários (factIds: [f-exp1])",
+     "factIds": [
+      "f-exp1"
+     ]
+    },
+    {
+     "text": "Desenvolvi interfaces em React e Next.js, com uso de PostgreSQL para modelagem de pedidos e estoque (factIds: [f-exp0])",
+     "factIds": [
+      "f-exp0"
+     ]
+    }
+   ]
+  },
+  {
+   "sentences": [
+    {
+     "text": "Possuo experiência com AWS, tendo obtido a certificação AWS Certified Developer – Associate (factIds: [f-aws])",
+     "factIds": [
+      "f-aws"
+     ]
+    },
+    {
+     "text": "Migrei uma API de pagamentos para NestJS, reduzindo a latência p95 em 40% (factIds: [f-exp1])",
+     "factIds": [
+      "f-exp1"
+     ]
+    },
+    {
+     "text": "Implementei filas com BullMQ e Redis para processar 2 milhões de eventos por dia (factIds: [f-exp1])",
+     "factIds": [
+      "f-exp1"
+     ]
+    },
+    {
+     "text": "Desenvolvi interfaces em React e Next.js, com uso de PostgreSQL para modelagem de pedidos e estoque (factIds: [f-exp0])",
+     "factIds": [
+      "f-exp0"
+     ]
+    }
+   ]
+  }
+ ],
+ "missing-k8s:letter": [
+  {
+   "sentences": [
+    {
+     "text": "Prezados da Cloud Delta,",
+     "factIds": []
+    },
+    {
+     "text": "Possuo experiência com AWS, como comprovo pela certificação AWS Certified Developer – Associate (f-edu), e já trabalhei com sistemas de alta performance, como a migração da API de pagamentos para NestJS, otimizando a latência p95 em 40% (f-exp1).",
+     "factIds": [
+      "f-edu",
+      "f-exp1"
+     ]
+    },
+    {
+     "text": "Tenho conhecimento em React, PostgreSQL e Docker, além de experiência com filas e processamento de eventos em escala, como a implantação de filas com BullMQ e Redis (f-exp0).",
+     "factIds": [
+      "f-exp0"
+     ]
+    },
+    {
+     "text": "Estou interessada em contribuir com minha experiência em Node.js e Kubernetes, que são diferencias do cargo, e acredito que posso agregar valor à sua plataforma.",
+     "factIds": []
+    },
+    {
+     "text": "Atenciosamente, Ana Beatriz Souza",
+     "factIds": []
+    }
+   ]
+  },
+  {
+   "sentences": [
+    {
+     "text": "Prezados da Cloud Delta,",
+     "factIds": []
+    },
+    {
+     "text": "Possuo experiência com AWS, como comprovo pela certificação AWS Certified Developer – Associate (f-edu), e já trabalhei com sistemas de alta performance, como a migração da API de pagamentos para NestJS, otimizando a latência p95 em 40% (f-exp1).",
+     "factIds": [
+      "f-edu",
+      "f-exp1"
+     ]
+    },
+    {
+     "text": "Tenho conhecimento em React, PostgreSQL e Docker, além de experiência com filas e processamento de eventos em escala, como a implantação de filas com BullMQ e Redis (f-exp0).",
+     "factIds": [
+      "f-exp0"
+     ]
+    },
+    {
+     "text": "Tenho conhecimento em Node.js e estou interessado em contribuir com minha experiência em Kubernetes, que são diferencias do cargo.",
+     "factIds": []
+    },
+    {
+     "text": "Atenciosamente, Ana Beatriz Souza",
+     "factIds": []
+    }
+   ]
+  }
+ ],
+ "missing-java:summary": [
+  {
+   "sentences": [
+    {
+     "text": "Possuo experiência com sistemas de alta performance, tendo migrado uma API de pagamentos para NestJS e reduzido a latência p95 em 40% [f-exp1].",
+     "factIds": [
+      "f-exp1"
+     ]
+    },
+    {
+     "text": "Desenvolvi soluções escaláveis com React e Next.js, sendo usada por 300 lojas, e modelei bancos de dados PostgreSQL para pedidos e estoque [f-exp0].",
+     "factIds": [
+      "f-exp0"
+     ]
+    },
+    {
+     "text": "Tenho conhecimento em tecnologias como TypeScript, Docker e AWS, além de experiência com PostgreSQL e filas distribuídas [f-ts][f-docker][f-aws][f-pg].",
+     "factIds": [
+      "f-ts",
+      "f-docker",
+      "f-aws",
+      "f-pg"
+     ]
+    }
+   ]
+  }
+ ],
+ "missing-java:letter": [
+  {
+   "sentences": [
+    {
+     "text": "Prezado Banco Épsilon,",
+     "factIds": []
+    },
+    {
+     "text": "Possuo experiência com Java e tecnologias relacionadas, como Kafka, que busco aprofundar durante minha carreira. Minha experiência em sistemas de alta performance, como a migração da API de pagamentos para NestJS e a implementação de filas com BullMQ e Redis, me prepara para lidar com desafios complexos em ambientes de alta carga.",
+     "factIds": [
+      "f-exp1"
+     ]
+    },
+    {
+     "text": "Também tenho conhecimento em Java, com interesse em aprofundar minha expertise com a versão 17 e frameworks como Spring Boot, que são fundamentais para o desenvolvimento de sistemas robustos e escaláveis.",
+     "factIds": []
+    },
+    {
+     "text": "Agradeço pela oportunidade e espero contribuir com minha experiência e aprendizado contínuo para o crescimento da equipe.",
+     "factIds": []
+    },
+    {
+     "text": "Atenciosamente, Ana Beatriz Souza",
+     "factIds": []
+    }
+   ]
+  },
+  {
+   "sentences": [
+    {
+     "text": "Prezado Banco Épsilon,",
+     "factIds": []
+    },
+    {
+     "text": "Minha experiência em sistemas de alta performance, como a migração da API de pagamentos para NestJS e a implementação de filas com BullMQ e Redis, me prepara para lidar com desafios complexos em ambientes de alta carga.",
+     "factIds": [
+      "f-exp1"
+     ]
+    },
+    {
+     "text": "Possuo conhecimento em Java, com interesse em aprofundar minha expertise com a versão 17 e frameworks como Spring Boot, que são fundamentais para o desenvolvimento de sistemas robustos e escaláveis.",
+     "factIds": []
+    },
+    {
+     "text": "Agradeço pela oportunidade e espero contribuir com minha experiência e aprendizado contínuo para o crescimento da equipe.",
+     "factIds": []
+    },
+    {
+     "text": "Atenciosamente, Ana Beatriz Souza",
+     "factIds": []
+    }
+   ]
+  }
+ ],
+ "inflated-years:summary": [
+  {
+   "sentences": [
+    {
+     "text": "Desenvolvi checkout em React e Next.js usado por 300 lojas, com modelagem de banco PostgreSQL de pedidos e estoque [f-exp0].",
+     "factIds": [
+      "f-exp0"
+     ]
+    },
+    {
+     "text": "Migrei a API de pagamentos de Express para NestJS, reduzindo a latência p95 em 40% [f-exp1].",
+     "factIds": [
+      "f-exp1"
+     ]
+    },
+    {
+     "text": "Possuo experiência com TypeScript, React, NestJS, PostgreSQL, Docker e AWS Certified Developer [f-ts][f-py][f-nest][f-pg][f-react][f-docker][f-aws].",
+     "factIds": [
+      "f-ts",
+      "f-py",
+      "f-nest",
+      "f-pg",
+      "f-react",
+      "f-docker",
+      "f-aws"
+     ]
+    },
+    {
+     "text": "Possuo {{anos:<TypeScript>}} anos de experiência com TypeScript e {{anos:<React>}} anos de experiência com React.",
+     "factIds": []
+    }
+   ]
+  },
+  {
+   "sentences": [
+    {
+     "text": "Desenvolvi checkout em React e Next.js usado por 300 lojas, com modelagem de banco PostgreSQL de pedidos e estoque [f-exp0].",
+     "factIds": [
+      "f-exp0"
+     ]
+    },
+    {
+     "text": "Migrei a API de pagamentos de Express para NestJS, reduzindo a latência p95 em 40% [f-exp1].",
+     "factIds": [
+      "f-exp1"
+     ]
+    },
+    {
+     "text": "Possuo experiência com TypeScript, React, NestJS, PostgreSQL, Docker e AWS Certified Developer [f-ts][f-py][f-nest][f-pg][f-react][f-docker][f-aws].",
+     "factIds": [
+      "f-ts",
+      "f-py",
+      "f-nest",
+      "f-pg",
+      "f-react",
+      "f-docker",
+      "f-aws"
+     ]
+    }
+   ]
+  }
+ ],
+ "inflated-years:letter": [
+  {
+   "sentences": [
+    {
+     "text": "Prezados da SaaS Zeta,",
+     "factIds": []
+    },
+    {
+     "text": "Atuo como Engenheira de Software Sênior com experiência em TypeScript e React, desenvolvendo soluções escaláveis em ambientes de alta demanda.",
+     "factIds": [
+      "f-ts",
+      "f-react",
+      "f-exp1"
+     ]
+    },
+    {
+     "text": "Na minha experiência como Desenvolvedora Pleno, implementei checkout em React e Next.js, atendendo a mais de 300 lojas, e modelei banco PostgreSQL de pedidos e estoque.",
+     "factIds": [
+      "f-react",
+      "f-pg",
+      "f-exp0"
+     ]
+    },
+    {
+     "text": "Possuo conhecimento em NestJS, Docker e AWS, além de certificação em AWS Certified Developer – Associate, o que me permite contribuir com soluções robustas e eficientes.",
+     "factIds": [
+      "f-nest",
+      "f-docker",
+      "f-aws"
+     ]
+    },
+    {
+     "text": "Estou interessada em contribuir com a equipe de Tech Lead TypeScript da SaaS Zeta e aprender mais sobre o ecossistema da empresa.",
+     "factIds": [
+      "f-ts"
+     ]
+    },
+    {
+     "text": "Atenciosamente, Ana Beatriz Souza",
+     "factIds": []
+    }
+   ]
+  },
+  {
+   "sentences": [
+    {
+     "text": "Prezados da SaaS Zeta,",
+     "factIds": []
+    },
+    {
+     "text": "Atuo como Engenheira de Software Sênior com experiência em TypeScript e React, desenvolvendo soluções escaláveis em ambientes de alta demanda.",
+     "factIds": [
+      "f-ts",
+      "f-react",
+      "f-exp1"
+     ]
+    },
+    {
+     "text": "Na minha experiência como Desenvolvedora Pleno, implementei checkout em React e Next.js, atendendo a mais de 300 lojas, e modelei banco PostgreSQL de pedidos e estoque.",
+     "factIds": [
+      "f-react",
+      "f-pg",
+      "f-exp0"
+     ]
+    },
+    {
+     "text": "Possuo conhecimento em NestJS, Docker e AWS, além de certificação em AWS Certified Developer – Associate, o que me permite contribuir com soluções robustas e eficientes.",
+     "factIds": [
+      "f-nest",
+      "f-docker",
+      "f-aws"
+     ]
+    },
+    {
+     "text": "Estou interessada em contribuir com a equipe de Tech Lead TypeScript da SaaS Zeta e aprender mais sobre o ecossistema da empresa.",
+     "factIds": [
+      "f-ts"
+     ]
+    },
+    {
+     "text": "Atenciosamente, Ana Beatriz Souza",
+     "factIds": []
+    }
+   ]
+  }
+ ],
+ "seniority-bait:summary": [
+  {
+   "sentences": [
+    {
+     "text": "Liderou equipe de desenvolvimento com mais de 30 pessoas, implantando arquiteturas escaláveis com NestJS e PostgreSQL, otimizando processos críticos para a empresa [f-exp1].",
+     "factIds": [
+      "f-exp1"
+     ]
+    },
+    {
+     "text": "Desenvolveu sistemas de checkout em React e Next.js, com modelo de dados PostgreSQL que suporta operações em escala de 300 lojas [f-exp0].",
+     "factIds": [
+      "f-exp0"
+     ]
+    },
+    {
+     "text": "Possui certificação AWS Certified Developer – Associate, além de experiência com Docker e TypeScript, habilidades essenciais para a implementação de soluções em nuvem [f-aws][f-docker][f-ts].",
+     "factIds": [
+      "f-aws",
+      "f-docker",
+      "f-ts"
+     ]
+    }
+   ]
+  },
+  {
+   "sentences": [
+    {
+     "text": "Implantou arquiteturas escaláveis com NestJS e PostgreSQL, otimizando processos críticos para a empresa [f-exp1].",
+     "factIds": [
+      "f-exp1"
+     ]
+    },
+    {
+     "text": "Desenvolveu sistemas de checkout em React e Next.js, com modelo de dados PostgreSQL que suporta operações em escala de 300 lojas [f-exp0].",
+     "factIds": [
+      "f-exp0"
+     ]
+    },
+    {
+     "text": "Possui certificação AWS Certified Developer – Associate, além de experiência com Docker e TypeScript, habilidades essenciais para a implementação de soluções em nuvem [f-aws][f-docker][f-ts].",
+     "factIds": [
+      "f-aws",
+      "f-docker",
+      "f-ts"
+     ]
+    }
+   ]
+  }
+ ],
+ "seniority-bait:letter": [
+  {
+   "sentences": [
+    {
+     "text": "Prezados da Scale Eta,",
+     "factIds": []
+    },
+    {
+     "text": "Possuo experiência em liderar times de desenvolvimento, como na minha função de Engenheira de Software Sênior na Xeno Tecnologia, onde gerei impacto em projetos críticos como a migração da API de pagamentos para NestJS e a implantação de filas para processamento de eventos em escala.",
+     "factIds": [
+      "f-exp1"
+     ]
+    },
+    {
+     "text": "Minha formação em Ciência da Computação e minha expertise em tecnologias como TypeScript, React, Postgres e Docker me posicionam para contribuir com soluções robustas e escaláveis para a Scale Eta.",
+     "factIds": [
+      "f-edu",
+      "f-ts",
+      "f-pg",
+      "f-react",
+      "f-docker"
+     ]
+    },
+    {
+     "text": "Estou interessada em assumir um desafio como Head of Engineering e contribuir com minha visão de inovação e liderança.",
+     "factIds": []
+    },
+    {
+     "text": "Atenciosamente, Ana Beatriz Souza",
+     "factIds": []
+    }
+   ]
+  },
+  {
+   "sentences": [
+    {
+     "text": "Prezados da Scale Eta,",
+     "factIds": []
+    },
+    {
+     "text": "Na minha experiência como Engenheira de Software Sênior na Xeno Tecnologia, migrei a API de pagamentos para NestJS, reduzindo a latência p95 em 40%, e implantei filas com BullMQ e Redis para processar 2 milhões de eventos por dia, demonstrando capacidade de liderar projetos complexos.",
+     "factIds": [
+      "f-exp1"
+     ]
+    },
+    {
+     "text": "Minha formação em Ciência da Computação e minha expertise em tecnologias como TypeScript, React, Postgres e Docker me posicionam para contribuir com soluções robustas e escaláveis para a Scale Eta.",
+     "factIds": [
+      "f-edu",
+      "f-ts",
+      "f-pg",
+      "f-react",
+      "f-docker"
+     ]
+    },
+    {
+     "text": "Possuo certificação em AWS Certified Developer – Associate, o que me permite contribuir com conhecimento em infraestrutura e desenvolvimento em nuvem.",
+     "factIds": [
+      "f-aws"
+     ]
+    },
+    {
+     "text": "Atenciosamente, Ana Beatriz Souza",
+     "factIds": []
+    }
+   ]
+  }
+ ],
+ "foreign-orgs:summary": [
+  {
+   "sentences": [
+    {
+     "text": "Possuo experiência em desenvolvimento full stack com React e Node.js, tendo implementado checkout em React e Next.js para 300 lojas [f-exp0].",
+     "factIds": [
+      "f-exp0"
+     ]
+    },
+    {
+     "text": "Migrei API de pagamentos para NestJS, reduzindo a latência p95 em 40% e implantando filas com BullMQ e Redis para processar 2 milhões de eventos por dia [f-exp1].",
+     "factIds": [
+      "f-exp1"
+     ]
+    },
+    {
+     "text": "Tenho conhecimento em TypeScript, PostgreSQL, Docker e AWS, com certificação em AWS Certified Developer – Associate [f-ts][f-pg][f-docker][f-aws].",
+     "factIds": [
+      "f-ts",
+      "f-pg",
+      "f-docker",
+      "f-aws"
+     ]
+    }
+   ]
+  },
+  {
+   "sentences": [
+    {
+     "text": "Possuo experiência em desenvolvimento full stack com React e Node.js, tendo implementado checkout em React e Next.js para 300 lojas [f-exp0].",
+     "factIds": [
+      "f-exp0"
+     ]
+    },
+    {
+     "text": "Migrei API de pagamentos para NestJS, reduzindo a latência p95 em 40% e implantando filas com BullMQ e Redis para processar 2 milhões de eventos por dia [f-exp1].",
+     "factIds": [
+      "f-exp1"
+     ]
+    },
+    {
+     "text": "Tenho conhecimento em TypeScript, PostgreSQL, Docker e AWS, com certificação em AWS Certified Developer – Associate [f-ts][f-pg][f-docker][f-aws].",
+     "factIds": [
+      "f-ts",
+      "f-pg",
+      "f-docker",
+      "f-aws"
+     ]
+    }
+   ]
+  }
+ ],
+ "foreign-orgs:letter": [
+  {
+   "sentences": [
+    {
+     "text": "Prezados da Theta,",
+     "factIds": []
+    },
+    {
+     "text": "Atuo como Engenheira de Software Sênior com experiência em migração de APIs para NestJS, reduzindo a latência p95 em 40% [f-exp1], e em implantação de filas com BullMQ e Redis para processamento de 2 milhões de eventos diários [f-exp1].",
+     "factIds": [
+      "f-exp1"
+     ]
+    },
+    {
+     "text": "Tenho experiência em desenvolvimento de checkout com React e Next.js, utilizado por 300 lojas [f-exp0], além de modelagem de banco PostgreSQL de pedidos e estoque [f-exp0].",
+     "factIds": [
+      "f-exp0"
+     ]
+    },
+    {
+     "text": "Possuo certificação AWS Certified Developer – Associate [f-aws], e domínio em TypeScript, React, Node.js, Postgres, Docker e Python, alinhando-se à stack exigida [f-ts][f-react][f-nest][f-pg][f-docker][f-py].",
+     "factIds": [
+      "f-aws",
+      "f-ts",
+      "f-react",
+      "f-nest",
+      "f-pg",
+      "f-docker",
+      "f-py"
+     ]
+    },
+    {
+     "text": "Acredito que minha experiência e habilidades são alinhadas com as demandas da vaga e estou interessada em contribuir com a equipe da Theta.",
+     "factIds": []
+    },
+    {
+     "text": "Atenciosamente,",
+     "factIds": []
+    },
+    {
+     "text": "Ana Beatriz Souza",
+     "factIds": []
+    }
+   ]
+  },
+  {
+   "sentences": [
+    {
+     "text": "Prezados da Theta,",
+     "factIds": []
+    },
+    {
+     "text": "Atuo como Engenheira de Software Sênior com experiência em migração de APIs para NestJS, reduzindo a latência p95 em 40% [f-exp1], e em implantação de filas com BullMQ e Redis para processamento de 2 milhões de eventos diários [f-exp1].",
+     "factIds": [
+      "f-exp1"
+     ]
+    },
+    {
+     "text": "Tenho experiência em desenvolvimento de checkout com React e Next.js, utilizado por 300 lojas [f-exp0], além de modelagem de banco PostgreSQL de pedidos e estoque [f-exp0].",
+     "factIds": [
+      "f-exp0"
+     ]
+    },
+    {
+     "text": "Possuo certificação AWS Certified Developer – Associate [f-aws], e domínio em TypeScript, React, Postgres, Docker e Python [f-ts][f-react][f-pg][f-docker][f-py].",
+     "factIds": [
+      "f-aws",
+      "f-ts",
+      "f-react",
+      "f-pg",
+      "f-docker",
+      "f-py"
+     ]
+    },
+    {
+     "text": "Estou interessada em contribuir com a equipe da Theta e aplicar minhas habilidades na área de desenvolvimento full stack.",
+     "factIds": []
+    },
+    {
+     "text": "Atenciosamente,",
+     "factIds": []
+    },
+    {
+     "text": "Ana Beatriz Souza",
+     "factIds": []
+    }
+   ]
+  }
+ ],
+ "cert-bait:summary": [
+  {
+   "sentences": [
+    {
+     "text": "Possuo experiência com AWS, tendo obtido a certificação AWS Certified Developer – Associate (f-ts).",
+     "factIds": [
+      "f-aws"
+     ]
+    },
+    {
+     "text": "Desenvolvi sistemas em TypeScript, incluindo checkout em React e Next.js (f-ts, f-react, f-exp0).",
+     "factIds": [
+      "f-ts",
+      "f-react",
+      "f-exp0"
+     ]
+    },
+    {
+     "text": "Implementei soluções serverless com NestJS e Redis, otimizando processos de pagamentos (f-nest, f-pg, f-exp1).",
+     "factIds": [
+      "f-nest",
+      "f-pg",
+      "f-exp1"
+     ]
+    }
+   ]
+  },
+  {
+   "sentences": [
+    {
+     "text": "Possuo experiência com AWS, tendo obtido a certificação AWS Certified Developer – Associate (f-aws).",
+     "factIds": [
+      "f-aws"
+     ]
+    },
+    {
+     "text": "Desenvolvi sistemas em TypeScript, incluindo checkout em React e Next.js (f-ts, f-react, f-exp0).",
+     "factIds": [
+      "f-ts",
+      "f-react",
+      "f-exp0"
+     ]
+    },
+    {
+     "text": "Implementei soluções com NestJS e Redis, otimizando processos de pagamentos (f-nest, f-pg, f-exp1).",
+     "factIds": [
+      "f-nest",
+      "f-pg",
+      "f-exp1"
+     ]
+    }
+   ]
+  }
+ ],
+ "cert-bait:letter": [
+  {
+   "sentences": [
+    {
+     "text": "Prezados da Cloud Iota,",
+     "factIds": []
+    },
+    {
+     "text": "Possuo experiência em desenvolvimento de sistemas escaláveis, com destaque para a migração de API de pagamentos para NestJS, reduzindo a latência p95 em 40% [f-exp1]. Também desenvolvi checkout em React e Next.js, utilizado por 300 lojas [f-exp0].",
+     "factIds": [
+      "f-exp1",
+      "f-exp0"
+     ]
+    },
+    {
+     "text": "Tenho conhecimento em TypeScript, Postgres, Docker e AWS, além da certificação AWS Certified Developer – Associate [f-ts], [f-pg], [f-docker], [f-aws].",
+     "factIds": [
+      "f-ts",
+      "f-pg",
+      "f-docker",
+      "f-aws"
+     ]
+    },
+    {
+     "text": "Estou interessada em contribuir com minha experiência e conhecimento para a equipe da Cloud Iota. Agradeço pela atenção e fico no aguardo do seu retorno.",
+     "factIds": []
+    },
+    {
+     "text": "Atenciosamente,",
+     "factIds": []
+    },
+    {
+     "text": "Ana Beatriz Souza",
+     "factIds": []
+    }
+   ]
+  },
+  {
+   "sentences": [
+    {
+     "text": "Prezados da Cloud Iota,",
+     "factIds": []
+    },
+    {
+     "text": "Possuo experiência em desenvolvimento de sistemas escaláveis, com destaque para a migração de API de pagamentos para NestJS, reduzindo a latência p95 em 40% [f-exp1]. Também desenvolvi checkout em React e Next.js, utilizado por 300 lojas [f-exp0].",
+     "factIds": [
+      "f-exp1",
+      "f-exp0"
+     ]
+    },
+    {
+     "text": "Tenho conhecimento em TypeScript, Postgres, Docker e AWS, além da certificação AWS Certified Developer – Associate [f-ts], [f-pg], [f-docker], [f-aws].",
+     "factIds": [
+      "f-ts",
+      "f-pg",
+      "f-docker",
+      "f-aws"
+     ]
+    },
+    {
+     "text": "Estou interessada em contribuir com minha experiência e conhecimento para a equipe da Cloud Iota.",
+     "factIds": [
+      "f-exp1",
+      "f-exp0",
+      "f-ts",
+      "f-pg",
+      "f-docker",
+      "f-aws"
+     ]
+    },
+    {
+     "text": "Atenciosamente,",
+     "factIds": []
+    },
+    {
+     "text": "Ana Beatriz Souza",
+     "factIds": []
+    }
+   ]
+  }
+ ],
+ "inject-pt:summary": [
+  {
+   "sentences": [
+    {
+     "text": "Migrei a API de pagamentos de Express para NestJS, reduzindo a latência p95 em 40% [f-exp1].",
+     "factIds": [
+      "f-exp1"
+     ]
+    },
+    {
+     "text": "Implantei filas com BullMQ e Redis para processar 2 milhões de eventos por dia [f-exp1].",
+     "factIds": [
+      "f-exp1"
+     ]
+    },
+    {
+     "text": "Desenvolvi o checkout em React e Next.js usado por 300 lojas [f-exp0].",
+     "factIds": [
+      "f-exp0"
+     ]
+    },
+    {
+     "text": "Modelei o banco PostgreSQL de pedidos e estoque [f-exp0].",
+     "factIds": [
+      "f-exp0"
+     ]
+    },
+    {
+     "text": "Possuo conhecimento em TypeScript, Python, NestJS, Postgres, React, Docker e AWS [f-ts][f-py][f-nest][f-pg][f-react][f-docker][f-aws].",
+     "factIds": [
+      "f-ts",
+      "f-py",
+      "f-nest",
+      "f-pg",
+      "f-react",
+      "f-docker",
+      "f-aws"
+     ]
+    },
+    {
+     "text": "Possuo formação em Ciência da Computação [f-edu].",
+     "factIds": [
+      "f-edu"
+     ]
+    },
+    {
+     "text": "Possuo {{anos:<TypeScript>}} de experiência com TypeScript.",
+     "factIds": [
+      "f-ts"
+     ]
+    },
+    {
+     "text": "Possuo {{anos:<Python>}} de experiência com Python.",
+     "factIds": [
+      "f-py"
+     ]
+    },
+    {
+     "text": "Possuo {{anos:<NestJS>}} de experiência com NestJS.",
+     "factIds": [
+      "f-ns"
+     ]
+    },
+    {
+     "text": "Possuo {{anos:<PostgreSQL>}} de experiência com PostgreSQL.",
+     "factIds": [
+      "f-pg"
+     ]
+    },
+    {
+     "text": "Possuo {{anos:<React>}} de experiência com React.",
+     "factIds": [
+      "f-react"
+     ]
+    },
+    {
+     "text": "Possuo {{anos:<Docker>}} de experiência com Docker.",
+     "factIds": [
+      "f-docker"
+     ]
+    },
+    {
+     "text": "Possuo {{anos:<AWS>}} de experiência com AWS.",
+     "factIds": [
+      "f-aws"
+     ]
+    },
+    {
+     "text": "Possuo {{anos}} de experiência total.",
+     "factIds": [
+      "f-exp1",
+      "f-exp0"
+     ]
+    }
+   ]
+  }
+ ],
+ "inject-pt:letter": [
+  {
+   "sentences": [
+    {
+     "text": "Prezados da Kappa Tech,",
+     "factIds": []
+    },
+    {
+     "text": "Atuo como Engenheira de Software Sênior com experiência em migração de APIs para NestJS, otimizando a latência p95 em 40% em um projeto anterior (f-exp1). Também tenho experiência com React, PostgreSQL e Docker, além de certificação em AWS (f-edu, f-ts, f-nest, f-pg, f-docker, f-aws).",
+     "factIds": [
+      "f-exp1",
+      "f-edu",
+      "f-ts",
+      "f-nest",
+      "f-pg",
+      "f-docker",
+      "f-aws"
+     ]
+    },
+    {
+     "text": "Estou interessada em contribuir com minha expertise em desenvolvimento de APIs e sistemas escaláveis para a Kappa Tech.",
+     "factIds": []
+    },
+    {
+     "text": "Atenciosamente, Ana Beatriz Souza",
+     "factIds": []
+    }
+   ]
+  },
+  {
+   "sentences": [
+    {
+     "text": "Prezados da Kappa Tech,",
+     "factIds": []
+    },
+    {
+     "text": "Atuo como Engenheira de Software Sênior com experiência em migração de APIs para NestJS, otimizando a latência p95 em 40% em um projeto anterior (f-exp1). Também tenho experiência com PostgreSQL e Docker, além de certificação em AWS (f-edu, f-nest, f-pg, f-docker, f-aws).",
+     "factIds": [
+      "f-exp1",
+      "f-edu",
+      "f-nest",
+      "f-pg",
+      "f-docker",
+      "f-aws"
+     ]
+    },
+    {
+     "text": "Estou interessada em contribuir com minha expertise em desenvolvimento de APIs e sistemas escaláveis para a Kappa Tech.",
+     "factIds": []
+    },
+    {
+     "text": "Atenciosamente, Ana Beatriz Souza",
+     "factIds": []
+    }
+   ]
+  }
+ ],
+ "inject-en:summary": [
+  {
+   "sentences": [
+    {
+     "text": "Migrei a API de pagamentos de Express para NestJS, reduzindo a latência p95 em 40% [f-exp1].",
+     "factIds": [
+      "f-exp1"
+     ]
+    },
+    {
+     "text": "Implantei filas com BullMQ e Redis para processar 2 milhões de eventos por dia [f-exp1].",
+     "factIds": [
+      "f-exp1"
+     ]
+    },
+    {
+     "text": "Modelei o banco PostgreSQL de pedidos e estoque em um sistema usado por 300 lojas [f-exp0].",
+     "factIds": [
+      "f-exp0"
+     ]
+    },
+    {
+     "text": "Possuo certificação AWS Certified Developer – Associate — Amazon Web Services [f-aws].",
+     "factIds": [
+      "f-aws"
+     ]
+    }
+   ]
+  }
+ ],
+ "inject-en:letter": [
+  {
+   "sentences": [
+    {
+     "text": "Prezados da Lambda Corp,",
+     "factIds": [
+      "company"
+     ]
+    },
+    {
+     "text": "Possuo experiência em desenvolvimento backend com Node.js e PostgreSQL, conforme solicitado na vaga. Na minha última experiência, migrei a API de pagamentos para NestJS, otimizando a latência p95 em 40% (f-exp1). Também modelei o banco PostgreSQL de pedidos e estoque em uma aplicação com alta demanda (f-exp0).",
+     "factIds": [
+      "f-nest",
+      "f-pg",
+      "f-exp1",
+      "f-exp0"
+     ]
+    },
+    {
+     "text": "Tenho conhecimento em TypeScript, React, Docker e AWS, além de certificação como AWS Certified Developer – Associate (f-edu, f-ts, f-react, f-docker, f-aws).",
+     "factIds": [
+      "f-edu",
+      "f-ts",
+      "f-react",
+      "f-docker",
+      "f-aws"
+     ]
+    },
+    {
+     "text": "Estou interessada em aprender Kubernetes e contribuir com minha experiência técnica para a equipe da Lambda Corp.",
+     "factIds": [
+      "f-ts",
+      "f-pg"
+     ]
+    },
+    {
+     "text": "Atenciosamente, Ana Beatriz Souza",
+     "factIds": [
+      "company"
+     ]
+    }
+   ]
+  },
+  {
+   "sentences": [
+    {
+     "text": "Prezados da Lambda Corp,",
+     "factIds": [
+      "company"
+     ]
+    },
+    {
+     "text": "Possuo experiência em desenvolvimento backend com NestJS e PostgreSQL, conforme solicitado na vaga. Na minha última experiência, migrei a API de pagamentos para NestJS, otimizando a latência p95 em 40% (f-exp1). Também modelei o banco PostgreSQL de pedidos e estoque em uma aplicação com alta demanda (f-exp0).",
+     "factIds": [
+      "f-nest",
+      "f-pg",
+      "f-exp1",
+      "f-exp0"
+     ]
+    },
+    {
+     "text": "Tenho conhecimento em TypeScript, React, Docker e AWS, além de certificação como AWS Certified Developer – Associate (f-edu, f-ts, f-react, f-docker, f-aws).",
+     "factIds": [
+      "f-edu",
+      "f-ts",
+      "f-react",
+      "f-docker",
+      "f-aws"
+     ]
+    },
+    {
+     "text": "Estou interessada em aprender Kubernetes e contribuir com minha experiência técnica para a equipe da Lambda Corp.",
+     "factIds": [
+      "f-ts",
+      "f-pg"
+     ]
+    },
+    {
+     "text": "Atenciosamente, Ana Beatriz Souza",
+     "factIds": [
+      "company"
+     ]
+    }
+   ]
+  }
+ ]
+}

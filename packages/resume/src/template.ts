@@ -6,12 +6,12 @@ const require = createRequire(import.meta.url);
 const font = (weight: 400 | 700) =>
   readFileSync(require.resolve(`@fontsource/inter/files/inter-latin-${weight}-normal.woff2`)).toString('base64');
 let fontCss: string | undefined;
-const fonts = () =>
+export const fonts = () =>
   (fontCss ??= [400, 700]
     .map((w) => `@font-face{font-family:Inter;font-weight:${w};src:url(data:font/woff2;base64,${font(w as 400 | 700)}) format('woff2');}`)
     .join(''));
 
-const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
+export const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
 
 /**
  * ATS-friendly HTML (research R3): single column, real text bullets ("• " characters, no list

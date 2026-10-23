@@ -2,11 +2,17 @@ import type { Job as BullJob } from 'bullmq';
 import { DiscoverResult, type ProcessRunPayload } from '@autoapply/shared';
 import type { Prisma } from '@autoapply/db';
 import { runEvent, type KbDeps } from '../kb/deps.js';
+import { autoTailor, type EnqueueTailor } from '../tailor/auto.js';
 import { scoreJobs } from './score.js';
 import { upsertResults } from './upsert.js';
 
 /** Fan-in: all discover children settled → upsert, score, judge, record outcomes. */
-export async function processRun(deps: KbDeps, payload: ProcessRunPayload, children: Record<string, unknown>) {
+export async function processRun(
+  deps: KbDeps,
+  payload: ProcessRunPayload,
+  children: Record<string, unknown>,
+  hooks: { enqueueTailor?: EnqueueTailor } = {},
+) {
   const { db } = deps;
   try {
     const results = Object.values(children)
@@ -37,6 +43,10 @@ export async function processRun(deps: KbDeps, payload: ProcessRunPayload, child
       data: { status: 'done', finishedAt: new Date(), outcomes: outcomes as Prisma.InputJsonValue, judged: stats.judged },
     });
     await runEvent(db, 'info', `run ${payload.runId} done: ${stats.passed} passed, ${stats.judged} judged`);
+    if (hooks.enqueueTailor && !payload.rescore) {
+      const tailored = await autoTailor(db, hooks.enqueueTailor);
+      if (tailored.length) await runEvent(db, 'info', `auto-tailor queued for ${tailored.length} job(s)`);
+    }
     return { jobs: jobIds.length, ...stats };
   } catch (err) {
     await db.discoveryRun.update({ where: { id: payload.runId }, data: { status: 'failed', finishedAt: new Date() } });

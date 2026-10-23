@@ -51,6 +51,7 @@ changed, update this file if a new convention/command appeared, run `make graph`
 | `make migrate` / `make migration name=x` / `make studio` | Prisma |
 | `make test` / `make typecheck` / `make lint` | TS (turbo, serial) + Python (pytest/ruff); `make test` first runs `make test-db` |
 | `make test-db` | create + migrate the `autoapply_test` DB used by integration tests |
+| `make eval` | anti-fabrication trap eval (10 trap jobs × summary + letter) on the live LLM; stores `EvalRun` (~15 min) |
 | `make jobs-eval` | job ranking eval (30 labelled postings) against live bge-m3 + qwen3 (~6 min) |
 | `make kb-eval` | resume-extraction quality eval (5 personas) against the live local LLM (~12 min) |
 | `make health` | `GET :3001/health` → db / redis / ollama |
@@ -76,6 +77,7 @@ packages/llm        LlmProvider + OllamaProvider (+ FakeLlmProvider for tests)
 packages/kb         pure knowledge-base logic: fact keys, merge/conflicts, provenance check, GitHub evidence
 packages/resume     PDF text (unpdf), ATS resume renderer (Playwright), atsLint
 packages/jobs       pure job logic: normalize/dedupe, hard filters, profile text, judge grounding, run planning
+packages/tailor     pure F3 logic: resume ranking, Zero-Fabrication validator, years placeholders, prompts, diff
 docker/             postgres init (pgvector)
 docs/               architecture, roadmap
 .specify/           Spec Kit (constitution, templates, scripts)
@@ -121,6 +123,9 @@ specs/              one folder per feature (created by /speckit-specify)
   (renderer in `packages/resume` is used by the api).
 - **qwen3:8b resume parse** takes ~2–2.5 min (num_ctx 16384). LLM test fixtures are real recorded
   outputs; re-record with `apps/worker/scripts/record-llm-fixture.ts` after prompt changes.
+- **Tailoring**: never rewrite resume bullets; LLM text must cite fact ids and pass `validateSentences`.
+  Job descriptions are untrusted input (prompt injection) — keep them inside `<job_posting>` in prompts.
+  Any change to the validator/prompts → re-run `make eval` (re-records `apps/worker/test/fixtures/eval-tailor/recording.json`).
 - Knowledge base: only user actions verify facts; anything that reads facts for claims must use
   `usableFactsWhere` from `@autoapply/db`.
 - Kill stray processes from manual runs (`pgrep -fl dist/main.js`) before restarting; an orphaned
@@ -136,8 +141,8 @@ specs/              one folder per feature (created by /speckit-specify)
 
 ## Status
 
-F0 done 2026-10-14. F1 Knowledge base (PR #1, branch `001-knowledge-base`). F2 Job discovery + scoring
-implemented on branch `002-job-discovery-scoring` (stacked on F1). Next: **F3 Tailoring**.
+F0 done 2026-10-14. F1 Knowledge base (PR #1) and F2 Job discovery + scoring (PR #2) merged.
+F3 Tailoring implemented on branch `003-tailoring`. Next: **F4 Apply engine (dry-run)**.
 
 ## graphify
 

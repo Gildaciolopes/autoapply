@@ -19,6 +19,9 @@ import type {
   ResumeDraft,
   ResumeSummary,
   SyncRunView,
+  EvalRunView,
+  SentenceRole,
+  TailoredDocumentView,
 } from "@autoapply/shared";
 
 export const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
@@ -240,6 +243,60 @@ export const jobs = {
   get: (id: string) => api<JobDetail>(`/jobs/${id}`),
   patch: (id: string, body: { hidden?: boolean; interesting?: boolean }) => api<JobCard>(`/jobs/${id}`, json("PATCH", body)),
   blockCompany: (id: string) => api<{ company: string; hiddenJobs: number }>(`/jobs/${id}/block-company`, json("POST")),
+};
+
+// ---------- F3: tailoring (specs/003-tailoring) ----------
+
+export interface TailorRenderModel {
+  name: string;
+  headline?: string;
+  contact: string[];
+  sections: {
+    id: string;
+    title: string;
+    entries: { id: string; heading: string; sub?: string; dates?: string; text?: string; bullets: { id: string; text: string }[] }[];
+  }[];
+}
+
+export interface TailorDiff {
+  base: TailorRenderModel;
+  tailored: TailorRenderModel;
+  changes: {
+    moved: { id: string; from: number; to: number }[];
+    hidden: string[];
+    summary: { before: string | null; after: string | null };
+    skillsReordered: boolean;
+  };
+}
+
+export interface TailoredForJob {
+  resume: TailoredDocumentView | null;
+  coverLetter: TailoredDocumentView | null;
+}
+
+export interface SentenceEdit {
+  text: string;
+  factIds: string[];
+  role?: SentenceRole;
+}
+
+export const tailor = {
+  start: (jobId: string, coverLetter?: boolean) =>
+    api<{ documents: TailoredDocumentView[] }>(`/jobs/${jobId}/tailor`, json("POST", coverLetter === undefined ? {} : { coverLetter })),
+  forJob: (jobId: string) => api<TailoredForJob>(`/jobs/${jobId}/tailored`),
+  diff: (docId: string) => api<TailorDiff>(`/tailored/${docId}/diff`),
+  /** 422 `validation_failed` → ApiRequestError with `details: ValidationFinding[]` (nothing saved). */
+  patch: (docId: string, body: { hiddenItemIds?: string[]; sentences?: SentenceEdit[] }) =>
+    api<TailoredDocumentView>(`/tailored/${docId}`, json("PATCH", body)),
+  approve: (docId: string) => api<TailoredDocumentView>(`/tailored/${docId}/approve`, json("POST")),
+  regenerate: (docId: string) => api<unknown>(`/tailored/${docId}/regenerate`, json("POST")),
+  pdfUrl: (docId: string) => `${API_URL}/tailored/${docId}/pdf`,
+  /** Fetches the PDF; throws ApiRequestError (409 outdated/not_ready, 422 overflow). */
+  pdf: async (docId: string) => (await request(`/tailored/${docId}/pdf`)).blob(),
+};
+
+export const evals = {
+  runs: (suite = "tailor") => api<EvalRunView[]>(`/eval/runs${qs({ suite })}`),
 };
 
 export function errorMessage(err: unknown): string {

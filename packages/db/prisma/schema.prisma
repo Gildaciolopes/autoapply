@@ -242,6 +242,8 @@ model SearchPreference {
   judgeTopN        Int      @default(20)
   autoDiscover     Boolean  @default(false)
   discoveryCron    String   @default("0 7 * * *")
+  autoTailor       Boolean  @default(false)
+  autoTailorN      Int      @default(5)
   updatedAt        DateTime @updatedAt
 }
 
@@ -319,6 +321,7 @@ model Job {
   score       JobScore?
   application Application?
   origins     JobOrigin[]
+  tailored    TailoredDocument[]
 
   @@index([createdAt])
 }
@@ -458,4 +461,60 @@ model RunEvent {
   createdAt     DateTime     @default(now())
 
   @@index([createdAt])
+}
+
+// ---------- Tailoring (F3) ----------
+
+enum TailoredKind {
+  resume
+  cover_letter
+}
+
+enum TailoredStatus {
+  queued
+  generating
+  draft
+  needs_review
+  approved
+  outdated
+  failed
+}
+
+/// Tailored resume / cover letter per job. Bullets are verbatim facts; generated sentences cite fact ids
+/// and pass the deterministic validator (constitution §I). Usable outside dry-run only when approved and
+/// its factsHash still matches the current facts.
+model TailoredDocument {
+  id         String         @id @default(cuid())
+  jobId      String
+  job        Job            @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  kind       TailoredKind
+  status     TailoredStatus @default(queued)
+  lang       String         @default("pt")
+  plan       Json           @default("{}")
+  sentences  Json           @default("[]")
+  validation Json           @default("{}")
+  factIds    String[]
+  factsHash  String         @default("")
+  model      String         @default("")
+  userEdited Boolean        @default(false)
+  approvedAt DateTime?
+  error      String?
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+
+  @@unique([jobId, kind])
+}
+
+/// Results of evaluation suites (tailor traps now; answer traps in F4). Autopilot requires passed=true.
+model EvalRun {
+  id           String   @id @default(cuid())
+  suite        String
+  model        String
+  cases        Int
+  fabrications Int
+  passed       Boolean
+  report       Json
+  createdAt    DateTime @default(now())
+
+  @@index([suite, createdAt])
 }

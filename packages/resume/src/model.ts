@@ -19,6 +19,20 @@ export interface RenderProfile {
   summary?: string | null;
 }
 
+/** Tailoring plan (F3): order/selection only, plus a validated summary. */
+export interface RenderPlan {
+  summary?: string;
+  bulletOrder?: Record<string, number[]>;
+  entryOrder?: Record<string, string[]>;
+  skillOrder?: string[];
+  hiddenItemIds?: string[];
+}
+
+const rank = (order: string[], id: string) => {
+  const i = order.indexOf(id);
+  return i < 0 ? Number.MAX_SAFE_INTEGER : i;
+};
+
 export interface RenderBullet {
   id: string;
   text: string;
@@ -63,19 +77,29 @@ const range = (start: unknown, end: unknown, lang: 'pt' | 'en') => {
 export function factsToRenderModel(
   profile: RenderProfile,
   facts: RenderFact[],
-  opts: { hiddenItemIds?: string[]; lang?: 'pt' | 'en'; watermark?: string } = {},
+  opts: { hiddenItemIds?: string[]; lang?: 'pt' | 'en'; watermark?: string; plan?: RenderPlan } = {},
 ): RenderModel {
   const lang = opts.lang ?? 'pt';
-  const hidden = new Set(opts.hiddenItemIds ?? []);
+  const plan = opts.plan;
+  const hidden = new Set([...(opts.hiddenItemIds ?? []), ...(plan?.hiddenItemIds ?? [])]);
+  const summary = plan?.summary ?? profile.summary;
+  /** Order by a list of ids; ids not in the list keep their relative order at the end. */
+  const byOrder = <T extends { id: string }>(list: T[], order?: string[]) =>
+    order?.length ? [...list].sort((a, b) => rank(order, a.id) - rank(order, b.id)) : list;
   const t = TITLES[lang];
   const of = <K extends FactKind>(kind: K) =>
     facts.filter((f) => f.kind === kind && !hidden.has(f.id)).map((f) => ({ id: f.id, v: f.value as FactValueOf<K> }));
-  const bullets = (id: string, list: string[] = []) =>
-    list.map((text, n) => ({ id: `${id}#h${n}`, text })).filter((b) => !hidden.has(b.id) && b.text.trim());
+  // Tailoring reorders bullets (FR-002) but never changes their text; ids stay `<factId>#h<original index>`.
+  const bullets = (id: string, list: string[] = []) => {
+    const all = list.map((text, n) => ({ id: `${id}#h${n}`, text, n }));
+    const order = plan?.bulletOrder?.[id];
+    const ordered = order?.length ? [...all].sort((a, b) => rank(order.map(String), String(a.n)) - rank(order.map(String), String(b.n))) : all;
+    return ordered.filter((b) => !hidden.has(b.id) && b.text.trim()).map(({ id: bid, text }) => ({ id: bid, text }));
+  };
 
   const sections: RenderSection[] = [];
-  if (profile.summary && !hidden.has('summary')) {
-    sections.push({ id: 'summary', title: t.summary, entries: [{ id: 'summary', heading: '', text: profile.summary, bullets: [] }] });
+  if (summary && !hidden.has('summary')) {
+    sections.push({ id: 'summary', title: t.summary, entries: [{ id: 'summary', heading: '', text: summary, bullets: [] }] });
   }
 
   const exp = of('experience').sort((a, b) => compareLooseDate(b.v.end, a.v.end) || compareLooseDate(b.v.start, a.v.start));
@@ -93,7 +117,7 @@ export function factsToRenderModel(
     });
   }
 
-  const projects = of('project');
+  const projects = byOrder(of('project'), plan?.entryOrder?.project);
   if (projects.length) {
     sections.push({
       id: 'projects',
@@ -123,7 +147,7 @@ export function factsToRenderModel(
     });
   }
 
-  const skills = of('skill');
+  const skills = byOrder(of('skill'), plan?.skillOrder);
   if (skills.length) {
     const groups = new Map<string, { id: string; name: string }[]>();
     for (const { id, v } of skills) {
@@ -151,7 +175,7 @@ export function factsToRenderModel(
     });
   }
 
-  const certs = of('certification');
+  const certs = byOrder(of('certification'), plan?.entryOrder?.certification);
   if (certs.length) {
     sections.push({
       id: 'certifications',

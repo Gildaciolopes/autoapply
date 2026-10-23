@@ -12,3 +12,4 @@ export * from './facts.js';
 export * from './fact-writer.js';
 export * from './testing.js';
 export * from './discovery.js';
+export * from './tailor.js';

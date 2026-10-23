@@ -24,6 +24,9 @@ export async function loadPreferences(db: PrismaClient): Promise<Preferences> {
     judgeTopN: row.judgeTopN,
     autoDiscover: row.autoDiscover,
     discoveryCron: row.discoveryCron,
+    autoTailor: row.autoTailor,
+    autoTailorN: row.autoTailorN,
+    scoreThreshold: row.scoreThreshold,
     saved: true,
   });
 }
