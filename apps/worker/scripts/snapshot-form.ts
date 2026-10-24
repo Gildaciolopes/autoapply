@@ -4,6 +4,8 @@
  * Runs inside the dry-run context (GET only, nothing submitted). The rendered DOM of every frame is
  * saved with scripts removed (static, offline); `--api` URLs (public JSON used by adapters) are saved
  * too. Forms are empty: no personal data is stored.
+ *   --session gupy|linkedin  open with your encrypted platform session (logged-in pages); the snapshot
+ *   goes to data/fixtures/<name>/ (gitignored): review it for personal data before moving it to tests.
  */
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -16,7 +18,8 @@ if (!url || !name) {
   process.exit(1);
 }
 const apis = rest.filter((_, i) => rest[i - 1] === '--api');
-const dir = join(import.meta.dirname, '../test/fixtures/apply', name);
+const session = rest.find((_, i) => rest[i - 1] === '--session') as 'gupy' | 'linkedin' | undefined;
+const dir = session ? join(import.meta.dirname, '../../../data/fixtures', name) : join(import.meta.dirname, '../test/fixtures/apply', name);
 mkdirSync(dir, { recursive: true });
 
 const strip = (html: string) =>
@@ -25,8 +28,18 @@ const strip = (html: string) =>
     .replace(/<link\b[^>]*rel=["']?(?:preload|modulepreload|prefetch|preconnect|dns-prefetch)["']?[^>]*>/gi, '')
     .replace(/<noscript\b[^>]*>[\s\S]*?<\/noscript>/gi, '');
 
+let storageState;
+if (session) {
+  const { createPrismaClient } = await import('@autoapply/db');
+  const { decryptSession } = await import('../src/apply/session-crypto.js');
+  const db = createPrismaClient();
+  const p = await db.platform.findUnique({ where: { kind: session } });
+  await db.$disconnect();
+  if (!p?.sessionEnc) throw new Error(`no ${session} session: connect it in /plataformas first`);
+  storageState = decryptSession(p.sessionEnc);
+}
 const browser = await chromium.launch({ headless: true });
-const ctx = await openDryRunContext(browser);
+const ctx = await openDryRunContext(browser, { storageState: storageState as never });
 try {
   await ctx.page.goto(url, { waitUntil: 'domcontentloaded', timeout: 45_000 });
   await ctx.page.waitForLoadState('networkidle', { timeout: 15_000 }).catch(() => undefined);

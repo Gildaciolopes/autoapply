@@ -25,6 +25,14 @@ export const REASON_LABELS: Record<NeedsReasonCode, string> = {
   daily_cap: 'limite diário atingido',
   cancelled: 'cancelado',
   job_closed: 'vaga encerrada',
+  session_expired: 'sessão expirada: reconecte a plataforma',
+  already_applied: 'você já se candidatou a esta vaga',
+  platform_action: 'a plataforma pede uma ação sua (termos ou verificação)',
+  unusual_activity: 'a plataforma avisou atividade incomum: pausada',
+  form_changed: 'o formulário mudou desde a aprovação',
+  new_step: 'nova etapa com perguntas não aprovadas',
+  human_check: 'verificação humana não concluída',
+  platform_paused: 'plataforma pausada',
 };
 
 export interface PlanOptions {

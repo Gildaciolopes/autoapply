@@ -4,11 +4,13 @@ import { ashbyAdapter } from './ashby.js';
 import { genericAdapter } from './generic.js';
 import { greenhouseAdapter } from './greenhouse.js';
 import { leverAdapter } from './lever.js';
+import { gupyAdapter } from './gupy.js';
+import { linkedinAdapter } from './linkedin.js';
 import type { Adapter, FieldHint } from './types.js';
 
 export * from './types.js';
 
-const ADAPTERS: Record<AtsKind, Adapter> = { greenhouse: greenhouseAdapter, lever: leverAdapter, ashby: ashbyAdapter, generic: genericAdapter };
+const ADAPTERS: Record<AtsKind, Adapter> = { greenhouse: greenhouseAdapter, lever: leverAdapter, ashby: ashbyAdapter, generic: genericAdapter, gupy: gupyAdapter, linkedin: linkedinAdapter };
 
 export const adapterFor = (ats: AtsKind): Adapter => ADAPTERS[ats];
 

@@ -133,6 +133,13 @@ specs/              one folder per feature (created by /speckit-specify)
   Never answer "yes" from the LLM; never solve/evade captchas. Form fixtures are rendered-DOM snapshots
   without scripts (`apps/worker/scripts/snapshot-form.ts <url> <name> --api <json url>`); re-record when an
   ATS changes its markup. Any change to answer rules/prompts → re-run `make answers-eval`.
+- **Platforms & submission (F5)**: real submissions happen ONLY in `apps/worker/src/apply/submit.ts`
+  (approved + matching `approvalHash` + compare-and-set to `submitting`; never retried after the click).
+  Never type/store platform passwords or solve captchas: login and human checks happen in a headed
+  window driven by the user. Sessions are AES-256-GCM with `SESSION_ENCRYPTION_KEY`. Gupy/LinkedIn test
+  fixtures are synthetic (`apps/worker/test/fixtures/platforms/`); real snapshots with
+  `snapshot-form.ts --session <kind>` go to `data/fixtures/` (gitignored). Tests submit only to a local
+  recording form, never to a real platform.
 - Knowledge base: only user actions verify facts; anything that reads facts for claims must use
   `usableFactsWhere` from `@autoapply/db`.
 - Kill stray processes from manual runs (`pgrep -fl dist/main.js`) before restarting; an orphaned
@@ -149,8 +156,8 @@ specs/              one folder per feature (created by /speckit-specify)
 ## Status
 
 F0 done 2026-10-14. F1 Knowledge base (PR #1) and F2 Job discovery + scoring (PR #2) merged.
-F3 Tailoring (PR #3) merged. F4 Apply engine (dry-run) implemented on branch `004-apply-engine-dry-run`.
-Next: **F5 Logged-in platforms**.
+F3 Tailoring (PR #3) and F4 Apply engine dry-run (PR #5) merged. F5 Logged-in platforms + assisted real
+submission implemented on branch `005-logged-in-platforms`. Next: **F6 Overnight runs**.
 
 ## graphify
 

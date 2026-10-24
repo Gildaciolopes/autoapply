@@ -21,7 +21,8 @@ const SCREENS: readonly (readonly [string, string, string?])[] = [
   ["Base de conhecimento", "F1 · CV, LinkedIn, GitHub, fatos e conflitos", "/conhecimento"],
   ["Preferências", "F2 · cargos, stack, senioridade, fontes, limites", "/vagas/preferencias"],
   ["Vagas", "F2 · feed com score e skills que batem/faltam", "/vagas"],
-  ["Candidaturas", "F4 · simulações (dry-run) com screenshots de prova e pendências", "/candidaturas"],
+  ["Candidaturas", "F4/F5 · simulações, aprovação e envio real com screenshots de prova", "/candidaturas"],
+  ["Plataformas", "F5 · login na Gupy/LinkedIn, limites diários e pausas", "/plataformas"],
   ["Ao vivo", "F6 · logs em tempo real e kill switch"],
 ];
 

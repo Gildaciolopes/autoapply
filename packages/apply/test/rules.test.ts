@@ -11,6 +11,9 @@ describe('computed years (constitution §I)', () => {
     expect(answerComputed(field('Quantos anos de experiência com React?', { type: 'number' }), ctx)).toMatchObject({ value: '2', source: 'calculado', evidence: ['f-exp0'] });
     expect(answerComputed(field('Years of experience with React', { type: 'select', options: ['0-1', '2-3', '4-5', '5+'] }), ctx)!.value).toBe('2-3');
   });
+  it('"anos de experiência você tem com X" phrasing', () => {
+    expect(answerComputed(field('Quantos anos de experiência você tem com React?', { type: 'number' }), ctx)).toMatchObject({ value: '2', source: 'calculado' });
+  });
   it('total years', () => {
     expect(answerComputed(field('Anos de experiência profissional', { type: 'number' }), ctx)!.value).toBe('8');
   });

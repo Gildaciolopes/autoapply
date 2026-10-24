@@ -20,7 +20,7 @@ SearchPreference (UI) ─► POST /discovery/runs (or scheduler `discovery-daily
 ```
 
 Mode (`SearchPreference.mode`): `dry_run` never submits; `review` (default) stops at `ready` until
-the user approves in the UI; `autopilot` submits when thresholds pass (constitution §II).
+the user approves in the UI (F5); `autopilot` submits when thresholds pass (F6, constitution §II).
 
 ## Services
 
@@ -99,6 +99,27 @@ with an independent checker and stores `EvalRun` (autopilot requires the latest 
    not" (never the LLM). Only the tail goes to one batched LLM call: answers must cite facts, free text
    passes `validateSentences`, a model "yes" is never accepted, confidence capped at 0.85 and compared
    with `applyConfidence` (0.7). Required + unanswered → `needs_input`. `make answers-eval` checks it.
+
+## Platforms, sessions and real submission (F5)
+
+`Platform` (one row per `gupy | linkedin | greenhouse | lever | ashby | generic`): encrypted session
+(Gupy/LinkedIn), daily caps (submissions / simulations, safe maximum), minimum interval, pause/backoff,
+LinkedIn opt-in. **Sessions**: `connect-session` job opens a *headed* Chromium on the platform login
+page; the user logs in there (2FA/captcha by themselves); the worker only watches for the logged-in
+signal or the UI "Concluí", then stores `storageState` with AES-256-GCM (`SESSION_ENCRYPTION_KEY`,
+`v1:iv:tag:data`); wrong/missing key → "reconectar", never plaintext. `test-session` checks a
+logged-in page through the dry-run guard. **Preparation** on Gupy / LinkedIn Easy Apply = F4 engine +
+session + adapters (`gupy`, `linkedin` modal scope, external apply link → F4 adapter; already applied,
+expired session, platform action and unusual activity detected). **Gate** (`apps/worker/src/apply/gate.ts`):
+before every simulation/submission — pause, daily cap, minimum interval; errors back off 1 h → 4 h →
+manual; unusual activity → manual pause. **Approval** (review mode, not outdated, platform connected)
+stores `approvalHash` (answers + tailored docs + form URL) and queues `submit`. **Submit path**
+(`apps/worker/src/apply/submit.ts`, the only code that submits): context without the dry-run guard,
+re-open, verify each step against the approved answers (`form_changed` / `new_step`), fill exactly the
+approved values, compare-and-set `approved → submitting` (kill switch / concurrent run → nothing sent),
+click once, confirmation → `submitted`; otherwise `submit_uncertain` (never retried; the user marks it).
+Captcha / human check → `submit-assisted`: headed window filled with a banner, the user completes the
+check and submits; the system only watches for the confirmation (≤ 15 min).
 
 ## Apply engine (F4, dry-run)
 

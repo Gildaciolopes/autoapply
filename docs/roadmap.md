@@ -10,8 +10,8 @@ Mark status here when a feature merges.
 | F2 | Job discovery + scoring | ✅ implemented 2026-10-15 (branch `002-job-discovery-scoring`) | ranked feed from Gupy API, JobSpy, LinkedIn MCP; dedupe; scores with reasons |
 | F3 | Tailoring + Zero-Fabrication validator + `make eval` | ✅ implemented 2026-10-23 (branch `003-tailoring`) | tailored resume/cover letter with 0 invented claims on the eval set |
 | F4 | Apply engine (dry-run): Greenhouse/Lever/Ashby adapters + generic filler | ✅ implemented 2026-10-23 (branch `004-apply-engine-dry-run`) | correct screenshots on 20 real jobs without submitting (proof script `apps/worker/scripts/apply-proof.ts`; needs the user's real facts) |
-| F5 | Logged-in platforms: Gupy, LinkedIn Easy Apply, session connect, daily caps | ⏳ next | assisted real submissions in review mode |
-| F6 | Overnight runs: scheduler, answer memory learning, review queue UX, Telegram morning report, kill switch | — | full night unattended in review mode |
+| F5 | Logged-in platforms: Gupy, LinkedIn Easy Apply, session connect, daily caps | ✅ implemented 2026-10-24 (branch `005-logged-in-platforms`) | assisted real submissions in review mode |
+| F6 | Overnight runs: scheduler, answer memory learning, review queue UX, Telegram morning report, kill switch | ⏳ next | full night unattended in review mode |
 | F7 | Extras: AutoApply MCP server, Gmail reply tracking, analytics | — | — |
 
 ## Suggested `/speckit-specify` prompts

@@ -28,6 +28,9 @@ import type {
   EvalRunView,
   SentenceRole,
   TailoredDocumentView,
+  PlatformKind,
+  PlatformLimitsBody,
+  PlatformView,
 } from "@autoapply/shared";
 
 export const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
@@ -307,13 +310,18 @@ export const evals = {
 
 // ---------- F4: apply engine, dry-run (specs/004-apply-engine-dry-run) ----------
 
-export type ApplicationsStatusFilter = Exclude<ApplicationStatus, "tailoring" | "submitted">;
+export type ApplicationsStatusFilter = Exclude<ApplicationStatus, "tailoring">;
+
+export interface ApproveBatchResult {
+  approved: ApplicationView[];
+  refused: { id: string; code: string }[];
+}
 
 export const applications = {
   /** 409 `no_apply_url` / `already_running` → ApiRequestError. */
   start: (jobId: string) => api<ApplicationView>(`/jobs/${jobId}/apply`, json("POST")),
   batch: (body: ApplyBatchBody) => api<{ queued: ApplicationView[] }>("/apply/batch", json("POST", body)),
-  /** Kill switch: cancels every queued/running application. */
+  /** Kill switch: cancels every queued/running simulation and every approved (not yet sent) submission. */
   stop: () => api<{ cancelled: number }>("/apply/stop", json("POST")),
   list: (status?: ApplicationsStatusFilter) => api<ApplicationListItem[]>(`/applications${qs({ status })}`),
   summary: () => api<ApplicationSummary>("/applications/summary"),
@@ -321,7 +329,29 @@ export const applications = {
   /** 422 `unknown_field` / `invalid_option` / `unusable_fact` → ApiRequestError (nothing saved). */
   answers: (id: string, body: UserAnswersBody) => api<ApplicationView>(`/applications/${id}/answers`, json("POST", body)),
   rerun: (id: string) => api<ApplicationView>(`/applications/${id}/rerun`, json("POST")),
+  /** REAL submission. 409 `dry_run_mode` / `not_ready` / `outdated` / `platform_not_connected` → ApiRequestError. */
+  approve: (id: string) => api<ApplicationView>(`/applications/${id}/approve`, json("POST")),
+  approveBatch: (ids: string[]) => api<ApproveBatchResult>("/applications/approve", json("POST", { ids })),
+  /** Only from `submit_uncertain`: the user checked the platform and says whether it was sent. */
+  mark: (id: string, sent: boolean) => api<unknown>(`/applications/${id}/mark`, json("POST", { sent })),
   artifactUrl: (appId: string, artifactId: string) => `${API_URL}/applications/${appId}/artifacts/${artifactId}`,
+};
+
+// ---------- F5: logged-in platforms + assisted submission (specs/005-logged-in-platforms) ----------
+
+export const platforms = {
+  list: () => api<PlatformView[]>("/platforms"),
+  /** `confirm` must be exactly LINKEDIN_OPT_IN_TEXT (422 otherwise). */
+  optIn: (confirm: string) => api<PlatformView>("/platforms/linkedin/opt-in", json("POST", { confirm })),
+  /** 409 `opt_in_required` / `no_session_key` / `already_connecting`, 400 `no_session` → ApiRequestError. */
+  connect: (kind: PlatformKind) => api<PlatformView>(`/platforms/${kind}/connect`, json("POST")),
+  connectDone: (kind: PlatformKind, cancel?: boolean) =>
+    api<unknown>(`/platforms/${kind}/connect/done`, json("POST", cancel === undefined ? {} : { cancel })),
+  test: (kind: PlatformKind) => api<unknown>(`/platforms/${kind}/test`, json("POST")),
+  disconnect: (kind: PlatformKind) => api<unknown>(`/platforms/${kind}/session`, { method: "DELETE" }),
+  /** 422 `above_max` → ApiRequestError. */
+  limits: (kind: PlatformKind, body: PlatformLimitsBody) => api<PlatformView>(`/platforms/${kind}/limits`, json("PUT", body)),
+  resume: (kind: PlatformKind) => api<unknown>(`/platforms/${kind}/resume`, json("POST")),
 };
 
 export function errorMessage(err: unknown): string {

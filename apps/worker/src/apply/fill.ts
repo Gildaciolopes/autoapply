@@ -115,15 +115,15 @@ export async function attachFile(frame: Frame, field: ExtractedField, file: Atta
   }
 }
 
-const NEXT = /^(pr[oó]ximo|next|continuar|continue|avan[cç]ar|seguinte|pr[oó]xima etapa|next step)\b/i;
+const NEXT = /^(pr[oó]ximo|next|continuar|continue|avan[cç]ar|seguinte|pr[oó]xima etapa|next step|revisar|review)\b/i;
 const SUBMIT = /(enviar|submit|apply|candidatar|finalizar|concluir|send|confirmar)/i;
 
 /**
  * Multi-step forms (research R1.3): clicks a visible "Próximo/Next" control that is not a submit
  * label and waits for the DOM to change. Returns false when only the final submit remains.
  */
-export async function nextStep(frame: Frame): Promise<boolean> {
-  const buttons = frame.locator('button, [role="button"], input[type="button"], a[href="#"]');
+export async function nextStep(frame: Frame, scope?: string): Promise<boolean> {
+  const buttons = frame.locator(scope ?? 'body').first().locator('button, [role="button"], input[type="button"], a[href="#"]');
   const n = await buttons.count();
   for (let i = 0; i < n; i++) {
     const b = buttons.nth(i);
@@ -157,4 +157,22 @@ export async function readComboOptions(frame: Frame, field: ExtractedField): Pro
   } catch {
     return [];
   }
+}
+
+const FINAL = /^(enviar candidatura|enviar|submit application|submit|send application|apply|candidatar-se|finalizar candidatura|concluir candidatura|confirmar candidatura)\b/i;
+
+/**
+ * The final submit control of the form (used ONLY by the submit path, never by the dry-run engine).
+ * Visible button/input whose text is a submit label; the last one wins (forms put it at the end).
+ */
+export async function findSubmitControl(frame: Frame, scope?: string) {
+  const all = frame.locator(scope ?? 'body').first().locator('button, input[type="submit"], [role="button"]');
+  const n = await all.count();
+  let found: ReturnType<typeof all.nth> | null = null;
+  for (let i = 0; i < n; i++) {
+    const b = all.nth(i);
+    const label = ((await b.innerText().catch(() => '')) || (await b.getAttribute('value')) || (await b.getAttribute('aria-label')) || '').trim();
+    if (FINAL.test(label) && (await b.isVisible().catch(() => false))) found = b;
+  }
+  return found;
 }

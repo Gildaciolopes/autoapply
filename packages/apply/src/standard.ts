@@ -226,6 +226,8 @@ export function answerStandard(kind: StandardKind, field: FormField, ctx: Answer
       }
       return missing(field);
     }
+    case 'follow_company':
+      return { ...fact(field.key, 'false', []), source: 'regra' };
     case 'resume':
     case 'cover_letter':
       return null; // attachments are handled by the engine (source `anexo`)

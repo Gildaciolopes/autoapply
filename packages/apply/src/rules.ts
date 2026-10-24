@@ -17,7 +17,7 @@ export function skillsIn(phrase: string): SkillDef[] {
 }
 
 const YEARS_PATTERNS = [
-  /(?:quantos\s+)?anos\s+de\s+experi[eê]ncia(?:\s+profissional)?\s+(?:com|em|no|na|usando|utilizando)\s+(.+)/i,
+  /(?:quantos\s+)?anos\s+de\s+experi[eê]ncia(?:\s+profissional)?(?:\s+(?:voc[eê]\s+)?(?:tem|possui))?\s+(?:com|em|no|na|usando|utilizando)\s+(.+)/i,
   /years\s+of\s+(?:professional\s+|hands-on\s+|relevant\s+)?experience\s+(?:with|in|using|working with)\s+(.+)/i,
   /h[aá]\s+quanto\s+tempo\s+(?:voc[eê]\s+)?(?:trabalha|atua|programa)\s+(?:com|em)\s+(.+)/i,
   /how\s+(?:many\s+years|long)\s+(?:have\s+you\s+)?(?:worked|been working|used|experience)\s+(?:with|in)\s+(.+)/i,

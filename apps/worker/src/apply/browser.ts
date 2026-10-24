@@ -1,5 +1,8 @@
 import type { Browser, BrowserContext, Page } from 'playwright';
 
+/** Playwright storageState (cookies + localStorage) of a logged-in platform session. */
+export type StorageState = Exclude<NonNullable<Parameters<Browser['newContext']>[0]>['storageState'], string | undefined>;
+
 /** Offline fixture server used by tests: returns a response for a URL, or null (→ aborted). */
 export type FixtureServer = (url: string, method: string, body: string | null) => { body: string | Buffer; contentType: string; status?: number } | null;
 
@@ -60,13 +63,14 @@ const SUBMIT_TRAP = `(() => {
  * GET/HEAD/OPTIONS is aborted for every host, websockets are closed, service workers blocked,
  * and form submission is trapped in every frame. Plain Chromium: no stealth, default user agent.
  */
-export async function openDryRunContext(browser: Browser, opts: { serve?: FixtureServer } = {}): Promise<DryRunContext> {
+export async function openDryRunContext(browser: Browser, opts: { serve?: FixtureServer; storageState?: StorageState } = {}): Promise<DryRunContext> {
   const blockedRequests: { method: string; url: string }[] = [];
   const context = await browser.newContext({
     viewport: { width: 1280, height: 900 },
     serviceWorkers: 'block',
     locale: 'pt-BR',
     timezoneId: 'America/Sao_Paulo',
+    storageState: opts.storageState,
   });
   await context.addInitScript(SUBMIT_TRAP);
   await context.route('**/*', async (route) => {

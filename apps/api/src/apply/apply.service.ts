@@ -1,8 +1,8 @@
 import { InjectQueue } from '@nestjs/bullmq';
 import { Injectable } from '@nestjs/common';
 import type { Queue } from 'bullmq';
-import { applicationFactsHash, normalizeQuestion } from '@autoapply/apply';
-import { loadUsableFacts, type Application, type Artifact, type FormAnswer, type Prisma } from '@autoapply/db';
+import { applicationFactsHash, approvalHash, normalizeQuestion, platformOf } from '@autoapply/apply';
+import { loadPreferences, loadUsableFacts, type Application, type Artifact, type FormAnswer, type Prisma } from '@autoapply/db';
 import {
   ApplyReport,
   AtsKind,
@@ -21,7 +21,8 @@ import { ApiError } from '../kb/api-error.js';
 import { StorageService } from '../kb/storage.service.js';
 
 const json = (v: unknown) => v as Prisma.InputJsonValue;
-const RUNNING = new Set(['queued', 'tailoring', 'applying']);
+const RUNNING = new Set(['queued', 'tailoring', 'applying', 'submitting']);
+const SESSION_KINDS = new Set(['gupy', 'linkedin']);
 export const APPLY_JOB_OPTS = { attempts: 2, backoff: { type: 'exponential' as const, delay: 30_000 }, removeOnComplete: 200, removeOnFail: 200 };
 
 type AppRow = Application & { job: { title: string; company: { name: string } | null }; answers?: FormAnswer[]; artifacts?: Artifact[] };
@@ -86,6 +87,12 @@ export class ApplyService {
       report: ApplyReport.parse(a.report ?? {}),
       error: a.error,
       lastRunAt: a.lastRunAt?.toISOString() ?? null,
+      platform: a.platform,
+      approvedAt: a.approvedAt?.toISOString() ?? null,
+      submittedAt: a.submittedAt?.toISOString() ?? null,
+      submittedVia: a.submittedVia,
+      sentValues: (a.sentValues as { fieldKey: string; question: string; value: string }[] | null) ?? null,
+      submitError: a.submitError,
       answers: (a.answers ?? []).map((x) => ({
         id: x.id,
         fieldKey: x.fieldKey,
@@ -118,10 +125,12 @@ export class ApplyService {
     if (!job) throw new ApiError(404, 'not_found', 'vaga não encontrada');
     if (!job.applyUrl && !job.url) throw new ApiError(409, 'no_apply_url', 'vaga sem endereço de candidatura');
     if (job.application && RUNNING.has(job.application.status)) throw new ApiError(409, 'already_running', 'simulação já em andamento');
+    if (job.application && ['submitted', 'submit_uncertain'].includes(job.application.status)) throw new ApiError(409, 'already_submitted', 'candidatura já enviada (ou envio incerto)');
     const app = await this.db.application.upsert({
       where: { jobId },
       create: { jobId, mode: 'dry_run', status: 'queued', attempts: 1 },
-      update: { mode: 'dry_run', status: 'queued', attempts: { increment: 1 }, error: null, needsReasons: json([]), needsReason: null },
+      // Re-simulating always drops a previous approval (what was approved may change).
+      update: { mode: 'dry_run', status: 'queued', attempts: { increment: 1 }, error: null, needsReasons: json([]), needsReason: null, approvedAt: null, approvalHash: null },
     });
     await this.enqueue(app);
     return this.view(app.id);
@@ -169,7 +178,12 @@ export class ApplyService {
       where: { status: { in: ['queued', 'tailoring', 'applying'] } },
       data: { status: 'skipped', needsReasons: json(reason), needsReason: 'cancelado' },
     });
-    return { cancelled: r.count };
+    // FR-013: approvals are cancelled too; a submit in flight aborts at its compare-and-set.
+    const a = await this.db.application.updateMany({
+      where: { status: 'approved' },
+      data: { status: 'ready', approvedAt: null, approvalHash: null, needsReasons: json(reason), needsReason: 'envio cancelado' },
+    });
+    return { cancelled: r.count + a.count };
   }
 
   async list(status?: string): Promise<ApplicationListItem[]> {
@@ -197,6 +211,9 @@ export class ApplyService {
       queued: count('queued'),
       applying: count('applying') + count('tailoring'),
       skipped: count('skipped'),
+      approved: count('approved') + count('submitting'),
+      submitted: count('submitted'),
+      submit_uncertain: count('submit_uncertain'),
     };
   }
 
@@ -234,6 +251,59 @@ export class ApplyService {
       } else await this.db.answerMemory.create({ data });
     }
     if (body.rerun) return this.rerun(id);
+    return this.view(id);
+  }
+
+  /** Fingerprint of what the user sees now (answers + tailored docs + form URL, research R4). */
+  private async approvalFingerprint(a: Application): Promise<string> {
+    const answers = await this.db.formAnswer.findMany({ where: { applicationId: a.id }, select: { fieldKey: true, answer: true } });
+    const docs = await this.db.tailoredDocument.findMany({ where: { id: { in: a.tailoredDocIds } }, select: { id: true, updatedAt: true } });
+    return approvalHash({ formUrl: a.formUrl, answers, docs });
+  }
+
+  /** POST /applications/:id/approve — review mode only (constitution §II, FR-007). */
+  async approve(id: string): Promise<ApplicationView> {
+    const prefs = await loadPreferences(this.db);
+    if (prefs.mode !== 'review') throw new ApiError(409, 'dry_run_mode', prefs.mode === 'dry_run' ? 'modo simulação: nada é enviado' : 'envio automático é da F6; use o modo revisão');
+    const a = await this.load(id);
+    if (a.status !== 'ready') throw new ApiError(409, 'not_ready', 'só candidaturas "pronto para enviar" podem ser aprovadas');
+    if (await this.outdated(a)) throw new ApiError(409, 'outdated', 'seus dados mudaram: simule de novo antes de aprovar');
+    const platform = platformOf(a.platform ?? a.ats);
+    if (SESSION_KINDS.has(platform)) {
+      const p = await this.db.platform.findUnique({ where: { kind: platform } });
+      if (!p?.sessionEnc || p.sessionStatus !== 'connected') throw new ApiError(409, 'platform_not_connected', `conecte ${platform} em Plataformas antes de enviar`);
+    }
+    const hash = await this.approvalFingerprint(a);
+    const r = await this.db.application.updateMany({ where: { id, status: 'ready' }, data: { status: 'approved', approvedAt: new Date(), approvalHash: hash, platform, needsReasons: json([]), needsReason: null } });
+    if (r.count !== 1) throw new ApiError(409, 'not_ready', 'a candidatura mudou de estado');
+    await this.queue.add('submit', { applicationId: id, approvalHash: hash }, { attempts: 1, removeOnComplete: 200, removeOnFail: 200, jobId: `submit-${id}-${Date.now()}` });
+    return this.view(id);
+  }
+
+  async approveBatch(ids: string[]): Promise<{ approved: ApplicationView[]; refused: { id: string; code: string }[] }> {
+    const approved: ApplicationView[] = [];
+    const refused: { id: string; code: string }[] = [];
+    for (const id of ids) {
+      try {
+        approved.push(await this.approve(id));
+      } catch (e) {
+        if (!(e instanceof ApiError)) throw e;
+        refused.push({ id, code: e.code });
+      }
+    }
+    return { approved, refused };
+  }
+
+  /** POST /applications/:id/mark — the user resolves an uncertain submission (never retried by the system). */
+  async mark(id: string, sent: boolean): Promise<ApplicationView> {
+    const a = await this.load(id);
+    if (a.status !== 'submit_uncertain') throw new ApiError(409, 'not_uncertain', 'só envios incertos podem ser marcados');
+    await this.db.application.update({
+      where: { id },
+      data: sent
+        ? { status: 'submitted', submittedAt: new Date(), submittedVia: 'manual' }
+        : { status: 'ready', approvedAt: null, approvalHash: null, submittedVia: null, submitError: null },
+    });
     return this.view(id);
   }
 }

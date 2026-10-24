@@ -27,7 +27,8 @@ export const Preferences = z.object({
   autoTailor: z.boolean().default(false),
   autoTailorN: z.number().int().min(1).max(20).default(5),
   applyConfidence: z.number().min(0).max(1).default(0.7),
-  applyDailyCap: z.number().int().min(1).max(200).default(30),
+  /** dry_run: never submits; review: submits only approved applications (F5); autopilot: F6. */
+  mode: z.enum(['dry_run', 'review', 'autopilot']).default('review'),
   scoreThreshold: z.number().int().min(0).max(100).default(70),
   saved: z.boolean().default(false),
 });

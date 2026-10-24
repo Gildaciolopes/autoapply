@@ -9,3 +9,5 @@ export * from './answer.js';
 export * from './hash.js';
 export * from './detect.js';
 export * from './blockers.js';
+export * from './platform.js';
+export * from './confirm.js';

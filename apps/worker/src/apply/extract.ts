@@ -7,7 +7,8 @@ import type { PageSnapshot } from '@autoapply/apply';
  * Returns one entry per field; radio/checkbox groups sharing a name become one field with options
  * in DOM order (the filler clicks the n-th input). Keys are attribute selectors, unique per frame.
  */
-const EXTRACT = `(() => {
+const EXTRACT = `((scope) => {
+  const ROOT = (scope && document.querySelector(scope)) || document;
   const text = (el) => (el ? (el.innerText || el.textContent || '').replace(/\\s+/g, ' ').trim() : '');
   const visible = (el) => {
     if (el.closest('[hidden],[aria-hidden="true"]')) return false;
@@ -76,7 +77,7 @@ const EXTRACT = `(() => {
 
   const out = [];
   const groups = new Map();
-  const els = document.querySelectorAll('input, textarea, select, [role="combobox"]:not(input)');
+  const els = ROOT.querySelectorAll('input, textarea, select, [role="combobox"]:not(input)');
   for (const el of els) {
     const tag = el.tagName.toLowerCase();
     const t = (el.getAttribute('type') || '').toLowerCase();
@@ -89,7 +90,8 @@ const EXTRACT = `(() => {
       groups.get(k).inputs.push(el);
       continue;
     }
-    if (t !== 'file' && !visible(el)) continue;
+    // Custom upload widgets hide the <input type=file>: keep it only when its label/container is visible.
+    if (t === 'file' ? !(visible(el) || (el.labels && [...el.labels].some(visible)) || (el.parentElement && visible(el.parentElement))) : !visible(el)) continue;
     const label = labelOf(el);
     let type = tag === 'textarea' ? 'textarea' : tag === 'select' ? 'select' : ['email', 'tel', 'number', 'url', 'date', 'file'].includes(t) ? t : 'text';
     let options = [];
@@ -132,7 +134,7 @@ const EXTRACT = `(() => {
   }
   // Yes/No (or small choice) widgets made of toggle buttons (Ashby "yesno"): one radio-like field.
   const seen = new Set();
-  for (const b of document.querySelectorAll('button[aria-pressed]')) {
+  for (const b of ROOT.querySelectorAll('button[aria-pressed]')) {
     const box = b.parentElement;
     if (!box || seen.has(box)) continue;
     const buttons = [...box.querySelectorAll(':scope > button[aria-pressed]')];
@@ -151,12 +153,13 @@ const EXTRACT = `(() => {
     out.push({ key: attrSel(box), type: 'radio', label, required: reqd, options: buttons.map(text), multiple: false, buttons: true });
   }
   return out;
-})()`;
+})(__SCOPE__)`;
 
 export type ExtractedField = FormField & { combobox?: boolean; buttons?: boolean };
 
-export async function extractFields(frame: Frame, step: number): Promise<ExtractedField[]> {
-  const raw = (await frame.evaluate(EXTRACT)) as Record<string, unknown>[];
+/** `scope`: CSS selector of the form root (e.g. LinkedIn's Easy Apply modal); whole document otherwise. */
+export async function extractFields(frame: Frame, step: number, scope?: string): Promise<ExtractedField[]> {
+  const raw = (await frame.evaluate(EXTRACT.replace('__SCOPE__', JSON.stringify(scope ?? null)))) as Record<string, unknown>[];
   return raw.map((r) => ({ ...FormField.parse({ ...r, step, frameUrl: frame.url() }), combobox: Boolean(r.combobox) || undefined, buttons: Boolean(r.buttons) || undefined }));
 }
 

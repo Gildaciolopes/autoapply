@@ -2,7 +2,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { chromium, type Browser } from 'playwright';
 import { normalizeQuestion } from '@autoapply/apply';
 import { closeRenderer } from '@autoapply/resume';
-import { dailyCapDelay, runApply } from '../src/apply/run.js';
+import { runApply } from '../src/apply/run.js';
 import { db } from './helpers.js';
 import { resetAll } from './jobs-helpers.js';
 import { applyDeps, applyLlm, seedApplyPersona } from './apply-helpers.js';
@@ -108,7 +108,7 @@ describe('generic filler (US4) and needs-input loop (US3)', { timeout: 120_000 }
   });
 });
 
-describe('kill switch and daily cap (US5)', { timeout: 120_000 }, () => {
+describe('kill switch (US5)', { timeout: 120_000 }, () => {
   it('application cancelled mid-run → aborts, stays skipped, nothing submitted', async () => {
     const { app } = await seedApplyPersona(CAREERS);
     const deps = applyDeps(browser, [], { extra: { [CAREERS]: SIMPLE } });
@@ -126,18 +126,4 @@ describe('kill switch and daily cap (US5)', { timeout: 120_000 }, () => {
     expect(row.answers).toEqual([]); // aborted before filling
   });
 
-  it('daily cap per tracking system delays the next simulation to tomorrow', async () => {
-    const { app } = await seedApplyPersona('https://jobs.lever.co/acme/11111111-1111-4111-8111-111111111111');
-    await db.searchPreference.create({ data: { id: 'default', applyDailyCap: 1 } });
-    const now = new Date();
-    expect(await dailyCapDelay({ db } as never, app.id, now)).toBe(0);
-    const other = await db.job.create({ data: { sourceId: (await db.source.findFirstOrThrow()).id, url: 'https://jobs.lever.co/acme/2', title: 'x', dedupeHash: 'h-other' } });
-    await db.application.create({ data: { jobId: other.id, mode: 'dry_run', status: 'ready', ats: 'lever', lastRunAt: now } });
-    const delay = await dailyCapDelay({ db } as never, app.id, now);
-    expect(delay).toBeGreaterThan(60_000);
-    expect(delay).toBeLessThanOrEqual(24 * 3600_000 + 5 * 60_000);
-    const row = await db.application.findUniqueOrThrow({ where: { id: app.id } });
-    expect(row).toMatchObject({ status: 'queued', ats: 'lever' });
-    expect(row.needsReasons).toEqual([expect.objectContaining({ code: 'daily_cap' })]);
-  });
 });

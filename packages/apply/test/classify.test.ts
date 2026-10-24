@@ -71,6 +71,7 @@ const CASES: Case[] = [
   ['Orientação sexual', 'demographic:orientation'],
   ['Pronouns', 'demographic:pronouns'],
   ['I agree to the privacy policy', 'consent', { type: 'checkbox' }],
+  ['Seguir Acme Pagamentos para ficar por dentro', 'follow_company', { type: 'checkbox' }],
   ['Concordo com o tratamento dos meus dados conforme a LGPD', 'consent', { type: 'checkbox' }],
   ['How did you hear about us?', 'other'],
   ['Por que você quer trabalhar aqui?', 'other'],
