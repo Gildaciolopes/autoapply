@@ -1,6 +1,12 @@
 // Typed client for the knowledge-base REST API (specs/001-knowledge-base/contracts/rest-api.md).
 // DTO types are imported type-only so zod never lands in the client bundle.
 import type {
+  ApplicationListItem,
+  ApplicationStatus,
+  ApplicationSummary,
+  ApplicationView,
+  ApplyBatchBody,
+  UserAnswersBody,
   ConflictView,
   DiscoveryRunView,
   JobCard,
@@ -297,6 +303,25 @@ export const tailor = {
 
 export const evals = {
   runs: (suite = "tailor") => api<EvalRunView[]>(`/eval/runs${qs({ suite })}`),
+};
+
+// ---------- F4: apply engine, dry-run (specs/004-apply-engine-dry-run) ----------
+
+export type ApplicationsStatusFilter = Exclude<ApplicationStatus, "tailoring" | "submitted">;
+
+export const applications = {
+  /** 409 `no_apply_url` / `already_running` → ApiRequestError. */
+  start: (jobId: string) => api<ApplicationView>(`/jobs/${jobId}/apply`, json("POST")),
+  batch: (body: ApplyBatchBody) => api<{ queued: ApplicationView[] }>("/apply/batch", json("POST", body)),
+  /** Kill switch: cancels every queued/running application. */
+  stop: () => api<{ cancelled: number }>("/apply/stop", json("POST")),
+  list: (status?: ApplicationsStatusFilter) => api<ApplicationListItem[]>(`/applications${qs({ status })}`),
+  summary: () => api<ApplicationSummary>("/applications/summary"),
+  get: (id: string) => api<ApplicationView>(`/applications/${id}`),
+  /** 422 `unknown_field` / `invalid_option` / `unusable_fact` → ApiRequestError (nothing saved). */
+  answers: (id: string, body: UserAnswersBody) => api<ApplicationView>(`/applications/${id}/answers`, json("POST", body)),
+  rerun: (id: string) => api<ApplicationView>(`/applications/${id}/rerun`, json("POST")),
+  artifactUrl: (appId: string, artifactId: string) => `${API_URL}/applications/${appId}/artifacts/${artifactId}`,
 };
 
 export function errorMessage(err: unknown): string {

@@ -9,6 +9,7 @@ import { LinkedinMcpClient } from './mcp/linkedin-mcp.client.js';
 import { DiscoverProcessor } from './processors/discover.processor.js';
 import { ScoreProcessor } from './processors/score.processor.js';
 import { TailorProcessor } from './processors/tailor.processor.js';
+import { ApplyProcessor } from './processors/apply.processor.js';
 import { KB_DEPS, SyncProfileProcessor } from './processors/sync-profile.processor.js';
 
 @Module({
@@ -23,6 +24,7 @@ import { KB_DEPS, SyncProfileProcessor } from './processors/sync-profile.process
     SyncProfileProcessor,
     ScoreProcessor,
     TailorProcessor,
+    ApplyProcessor,
     {
       provide: KB_DEPS,
       useFactory: (): KbDeps => ({

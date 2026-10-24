@@ -232,6 +232,32 @@ function PreferencesForm({ initial }: { initial: Preferences }) {
             </Field>
           </div>
         </fieldset>
+
+        <fieldset className="space-y-3">
+          <legend className="text-sm font-medium">Candidatura (simulação)</legend>
+          <div className="grid gap-5 md:grid-cols-3">
+            <Field label="Confiança mínima (%)" htmlFor="applyConfidence" hint="Abaixo disso a pergunta vai para 'Precisa de você'">
+              <Input
+                id="applyConfidence"
+                type="number"
+                min={0}
+                max={100}
+                value={Math.round(form.applyConfidence * 100)}
+                onChange={(e) => set("applyConfidence", Math.min(100, Math.max(0, Math.trunc(Number(e.target.value) || 0))) / 100)}
+              />
+            </Field>
+            <Field label="Limite diário de simulações" htmlFor="applyDailyCap" hint="Por sistema (Greenhouse, Lever, Ashby…) por dia">
+              <Input
+                id="applyDailyCap"
+                type="number"
+                min={1}
+                max={200}
+                value={form.applyDailyCap}
+                onChange={(e) => set("applyDailyCap", Math.min(200, Math.max(1, Math.trunc(Number(e.target.value) || 1))))}
+              />
+            </Field>
+          </div>
+        </fieldset>
       </CardContent>
     </Card>
   );
