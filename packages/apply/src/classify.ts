@@ -25,7 +25,8 @@ export type StandardKind =
   | 'work_mode'
   | 'pcd'
   | 'resume'
-  | 'cover_letter';
+  | 'cover_letter'
+  | 'follow_company';
 
 export type DemographicKind = 'gender' | 'race' | 'veteran' | 'orientation' | 'pronouns';
 
@@ -86,7 +87,7 @@ const DEMOGRAPHIC: [DemographicKind, RegExp][] = [
 const CONSENT = /\b(i agree|concordo|aceito|accept|consent\w*|consinto|privacy policy|politica de privacidade|data privacy|privacidade de dados|confidentiality|confidencialidade|terms|termos|lgpd|gdpr|autorizo o (uso|tratamento))\b/;
 
 /** Classifies a field by label, name and autocomplete (research R4 stage 1, pt/en). */
-export function classifyField(field: Pick<FormField, 'label' | 'name' | 'autocomplete' | 'type' | 'placeholder'> & { key?: string }): FieldClass {
+export function classifyField(field: Pick<FormField, 'label' | 'name' | 'autocomplete' | 'type' | 'placeholder'> & { key?: string; options?: string[] }): FieldClass {
   const label = normalizeText(field.label ?? '').replace(/\s*\*+$/, '').replace(/\b(obrigatorio|required|opcional|optional)\b/g, '').trim();
   const id = field.key?.match(/^\[id="([^"]+)"\]$/)?.[1];
   const name = normalizeText(field.name ?? id ?? '');
@@ -97,6 +98,9 @@ export function classifyField(field: Pick<FormField, 'label' | 'name' | 'autocom
 
   // "Autofill from resume" uploaders parse the file on the ATS side: never feed them.
   if (field.type === 'file' && /\b(autofill|auto fill|preencher automaticamente|importar do curriculo|parse)\b/.test(label)) return { kind: 'other' };
+
+  // LinkedIn "Seguir <empresa>" / "Follow <company>" checkbox: never opted in on the user's behalf.
+  if (field.type === 'checkbox' && !field.options?.length && /^(seguir|follow)\b/.test(label)) return { kind: 'standard', std: 'follow_company' };
 
   if ((field.type === 'checkbox' || field.type === 'select' || field.type === 'radio') && CONSENT.test(label) && !/\?$/.test(field.label.trim().replace(/\*$/, ''))) return { kind: 'consent' };
 

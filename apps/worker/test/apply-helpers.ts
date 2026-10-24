@@ -93,3 +93,15 @@ export function applyDeps(browser: Browser, names: string[], opts: { extra?: Rec
     fetch: fixtureFetch(names),
   };
 }
+
+/** Test key + an encrypted fake session for a platform (never a real cookie). */
+export async function seedPlatformSession(kind: 'gupy' | 'linkedin', status = 'connected') {
+  const { randomBytes } = await import('node:crypto');
+  process.env.SESSION_ENCRYPTION_KEY ??= randomBytes(32).toString('hex');
+  const { encryptSession } = await import('../src/apply/session-crypto.js');
+  const { PLATFORM_DEFAULTS } = await import('@autoapply/apply');
+  const sessionEnc = encryptSession({ cookies: [{ name: 'test', value: 'fake', domain: '.example', path: '/', expires: -1, httpOnly: false, secure: false, sameSite: 'Lax' }], origins: [] });
+  await db.platform.upsert({ where: { kind }, create: { kind, ...PLATFORM_DEFAULTS[kind], sessionEnc, sessionStatus: status }, update: { sessionEnc, sessionStatus: status } });
+}
+
+export const platformPage = (name: string) => readFileSync(new URL(`./fixtures/platforms/${name}`, import.meta.url), 'utf8');

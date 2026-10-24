@@ -1,0 +1,26 @@
+<!doctype html><html lang="pt-BR"><head><title>Engenheira de Software | Acme | LinkedIn</title>
+<style>.jobs-easy-apply-modal{display:none;position:fixed;inset:40px;background:#fff;border:1px solid #ccc;padding:20px;overflow:auto}.jobs-easy-apply-modal.open{display:block}.st{display:none}.st.on{display:block}</style></head><body>
+<nav><input aria-label="Pesquisar" placeholder="Pesquisar"></nav>
+<h1>Engenheira de Software Back-end</h1><p>Acme Pagamentos · São Paulo (remoto)</p>
+<button class="jobs-apply-button" onclick="document.getElementById('m').classList.add('open')">Candidatura simplificada</button>
+<div id="m" class="jobs-easy-apply-modal" role="dialog" data-test-modal-id="easy-apply-modal">
+ <form id="ea" action="https://www.linkedin.com/voyager/api/jobs/easyApply" method="post">
+  <div class="st on" id="e1"><h3>Informações de contato</h3>
+   <label for="em">Endereço de e-mail *</label><select id="em" name="em" required><option value="">Selecione</option><option>ana.souza@example.com</option></select>
+   <label for="ph">Número de celular *</label><input id="ph" name="ph" type="tel" required>
+   <button type="button" onclick="go(2)">Avançar</button></div>
+  <div class="st" id="e2"><h3>Currículo</h3>
+   <label for="up">Carregar currículo</label><input id="up" type="file" name="up" accept=".pdf,.doc,.docx">
+   <button type="button" onclick="go(3)">Avançar</button></div>
+  <div class="st" id="e3"><h3>Perguntas adicionais</h3>
+   <label for="yrs">Quantos anos de experiência você tem com TypeScript? *</label><input id="yrs" name="yrs" type="number" required>
+   <fieldset><legend>Você possui autorização para trabalhar no Brasil? *</legend>
+    <label><input type="radio" name="auth" value="1" required> Sim</label><label><input type="radio" name="auth" value="0"> Não</label></fieldset>
+   <button type="button" onclick="go(4)">Revisar</button></div>
+  <div class="st" id="e4"><h3>Revise sua candidatura</h3>
+   <label><input type="checkbox" id="follow" name="follow" checked> Seguir Acme Pagamentos para ficar por dentro</label>
+   <button type="submit">Enviar candidatura</button></div>
+ </form></div>
+<script>function go(n){document.querySelectorAll('.st').forEach(function(s){s.classList.remove('on')});document.getElementById('e'+n).classList.add('on');}
+document.getElementById('ea').addEventListener('submit', function(e){ e.preventDefault(); fetch(this.action, { method: 'POST', body: new FormData(this) }).then(function(){ document.getElementById('m').innerHTML = '<h2>Sua candidatura foi enviada</h2>'; }); });</script>
+</body></html>

@@ -269,6 +269,9 @@ importers:
 
   packages/db:
     dependencies:
+      '@autoapply/apply':
+        specifier: workspace:*
+        version: link:../apply
       '@autoapply/jobs':
         specifier: workspace:*
         version: link:../jobs

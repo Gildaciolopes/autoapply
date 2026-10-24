@@ -18,8 +18,24 @@ export interface AdapterContext {
   getJson: (url: string) => Promise<unknown | null>;
 }
 
+/** The adapter found a reason to stop (session expired, already applied…). */
+export class AdapterStop extends Error {
+  constructor(readonly code: 'session_expired' | 'already_applied' | 'job_closed' | 'platform_action' | 'unusual_activity') {
+    super(code);
+  }
+}
+
+/** The application continues on another site (LinkedIn external apply → an ATS). */
+export class AdapterRedirect extends Error {
+  constructor(readonly url: string) {
+    super(`redirect ${url}`);
+  }
+}
+
 export interface Adapter {
   ats: AtsKind;
+  /** CSS selector of the form root inside the frame (modal); whole document when absent. */
+  scope?: string;
   /** Opens the form and returns the frame that holds it. */
   locate(ctx: AdapterContext): Promise<Frame>;
   /** Public question metadata (labels, required flags, options). */

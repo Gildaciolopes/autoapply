@@ -251,7 +251,6 @@ model SearchPreference {
   autoTailor        Boolean  @default(false)
   autoTailorN       Int      @default(5)
   applyConfidence   Float    @default(0.7)
-  applyDailyCap     Int      @default(30) // per ATS
   updatedAt         DateTime @updatedAt
 }
 
@@ -277,16 +276,16 @@ enum SourceType {
 }
 
 model Source {
-  id         String     @id @default(cuid())
-  type       SourceType @unique
-  enabled    Boolean    @default(false)
-  dailyCap   Int        @default(20)
-  config     Json       @default("{}")
-  sessionEnc String? // encrypted Playwright storageState
-  lastRunAt  DateTime?
-  lastStatus String? // success | partial | failed | skipped
-  lastError  String?
-  jobs       Job[]
+  id           String     @id @default(cuid())
+  type         SourceType @unique
+  enabled      Boolean    @default(false)
+  dailyCap     Int        @default(20)
+  config       Json       @default("{}")
+  sessionEnc   String? // unused (F5 sessions live in Platform)
+  lastRunAt    DateTime?
+  lastStatus   String? // success | partial | failed | skipped
+  lastError    String?
+  jobs         Job[]
 }
 
 model Company {
@@ -411,7 +410,11 @@ enum ApplicationStatus {
   ready
   applying
   needs_input
+  approved
+  submitting
   submitted
+  submit_uncertain
+  already_applied
   failed
   skipped
 }
@@ -434,6 +437,12 @@ model Application {
   factsHash      String            @default("")
   tailoredDocIds String[]
   lastRunAt      DateTime?
+  platform       String? // gupy | linkedin | greenhouse | lever | ashby | generic
+  approvedAt     DateTime?
+  approvalHash   String?
+  submittedVia   String? // auto | assisted | manual
+  sentValues     Json?
+  submitError    String?
   submittedAt    DateTime?
   createdAt      DateTime          @default(now())
   updatedAt      DateTime          @updatedAt
@@ -489,6 +498,31 @@ model RunEvent {
   createdAt     DateTime     @default(now())
 
   @@index([createdAt])
+}
+
+// ---------- Apply platforms (F5) ----------
+
+/// Per apply platform: encrypted session (gupy/linkedin), caps, interval, pause (specs/005 R1).
+model Platform {
+  kind              String    @id // gupy | linkedin | greenhouse | lever | ashby | generic
+  sessionEnc        String? // AES-256-GCM "v1:iv:tag:data" of Playwright storageState
+  sessionStatus     String    @default("disconnected") // disconnected | connecting | connected | expired
+  accountLabel      String?
+  connectedAt       DateTime?
+  lastTestAt        DateTime?
+  lastTestOk        Boolean?
+  connectRequest    String? // done | cancel (set by the UI during a connect flow)
+  optInAt           DateTime? // LinkedIn ToS acknowledgement
+  submitCap         Int
+  simulateCap       Int
+  submitMax         Int
+  minIntervalSec    Int
+  lastActionAt      DateTime?
+  pausedUntil       DateTime?
+  pauseReason       String? // errors | unusual_activity | manual
+  backoffLevel      Int       @default(0)
+  consecutiveErrors Int       @default(0)
+  updatedAt         DateTime  @updatedAt
 }
 
 // ---------- Tailoring (F3) ----------

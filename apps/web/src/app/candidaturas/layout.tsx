@@ -10,6 +10,9 @@ export default function ApplicationsLayout({ children }: LayoutProps<"/candidatu
           <Link href="/vagas" className="text-muted-foreground hover:underline">
             Vagas
           </Link>
+          <Link href="/plataformas" className="text-muted-foreground hover:underline">
+            Plataformas
+          </Link>
           <Link href="/conhecimento" className="text-muted-foreground hover:underline">
             Base de conhecimento
           </Link>

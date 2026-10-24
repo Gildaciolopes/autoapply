@@ -234,8 +234,26 @@ function PreferencesForm({ initial }: { initial: Preferences }) {
         </fieldset>
 
         <fieldset className="space-y-3">
-          <legend className="text-sm font-medium">Candidatura (simulação)</legend>
+          <legend className="text-sm font-medium">Candidatura</legend>
           <div className="grid gap-5 md:grid-cols-3">
+            <Field
+              label="Modo"
+              htmlFor="applyMode"
+              hint={form.mode === "review" ? "Envia de verdade só as candidaturas que você aprovar." : "Nada é enviado; só simula e fotografa."}
+            >
+              <select
+                id="applyMode"
+                className={nativeSelectClass}
+                value={form.mode}
+                onChange={(e) => set("mode", e.target.value as Preferences["mode"])}
+              >
+                <option value="dry_run">Simulação (nunca envia)</option>
+                <option value="review">Revisão (envia só o que você aprovar)</option>
+                <option value="autopilot" disabled>
+                  Automático (F6 — indisponível)
+                </option>
+              </select>
+            </Field>
             <Field label="Confiança mínima (%)" htmlFor="applyConfidence" hint="Abaixo disso a pergunta vai para 'Precisa de você'">
               <Input
                 id="applyConfidence"
@@ -244,16 +262,6 @@ function PreferencesForm({ initial }: { initial: Preferences }) {
                 max={100}
                 value={Math.round(form.applyConfidence * 100)}
                 onChange={(e) => set("applyConfidence", Math.min(100, Math.max(0, Math.trunc(Number(e.target.value) || 0))) / 100)}
-              />
-            </Field>
-            <Field label="Limite diário de simulações" htmlFor="applyDailyCap" hint="Por sistema (Greenhouse, Lever, Ashby…) por dia">
-              <Input
-                id="applyDailyCap"
-                type="number"
-                min={1}
-                max={200}
-                value={form.applyDailyCap}
-                onChange={(e) => set("applyDailyCap", Math.min(200, Math.max(1, Math.trunc(Number(e.target.value) || 1))))}
               />
             </Field>
           </div>

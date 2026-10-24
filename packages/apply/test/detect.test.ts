@@ -18,6 +18,13 @@ describe('detectAts', () => {
     expect(detectAts('https://jobs.lever.co/acme/0b1c2d3e-0000-4000-8000-000000000000/apply').formUrl).toMatch(/\/apply$/);
     expect(detectAts('https://jobs.ashbyhq.com/acme/0b1c2d3e-0000-4000-8000-000000000000')).toMatchObject({ ats: 'ashby', board: 'acme', formUrl: 'https://jobs.ashbyhq.com/acme/0b1c2d3e-0000-4000-8000-000000000000/application' });
   });
+  it('gupy and linkedin', () => {
+    expect(detectAts('https://acme.gupy.io/jobs/9876543?jobBoardSource=gupy_public_page')).toMatchObject({ ats: 'gupy', board: 'acme', jobId: '9876543' });
+    expect(detectAts('https://portal.gupy.io/job-search/term=dev').ats).toBe('generic');
+    expect(detectAts('https://www.linkedin.com/jobs/view/4012345678/?refId=x')).toMatchObject({ ats: 'linkedin', jobId: '4012345678', formUrl: 'https://www.linkedin.com/jobs/view/4012345678/' });
+    expect(detectAts('https://www.linkedin.com/jobs/search/?currentJobId=4012345678&keywords=dev')).toMatchObject({ ats: 'linkedin', jobId: '4012345678' });
+    expect(detectAts('https://www.linkedin.com/in/someone').ats).toBe('generic');
+  });
   it('anything else is generic', () => {
     expect(detectAts('https://carreiras.empresa.com.br/vaga/123')).toEqual({ ats: 'generic', formUrl: 'https://carreiras.empresa.com.br/vaga/123' });
   });

@@ -116,4 +116,55 @@ describe('apply API (US1/US3/US5)', () => {
     expect(queue.removed).toBe(2);
     expect((await svc.list('skipped')).map((x) => x.reasonCodes)).toEqual([['cancelled'], ['cancelled']]);
   });
+
+  it('approve: review mode only, ready only, not outdated, platform connected; then submit is queued', async () => {
+    const job = await seed();
+    const v = await svc.apply(job.id);
+    await finished(v.id);
+    await db.formAnswer.deleteMany({ where: { applicationId: v.id, blocking: true } });
+    await db.application.update({ where: { id: v.id }, data: { status: 'ready', needsReasons: [], platform: 'lever', formUrl: 'https://jobs.lever.co/acme/1/apply' } });
+
+    await db.searchPreference.create({ data: { id: 'default', mode: 'dry_run' } });
+    expect((await apiError(svc.approve(v.id))).code).toBe('dry_run_mode');
+    await db.searchPreference.update({ where: { id: 'default' }, data: { mode: 'review' } });
+
+    const ok = await svc.approve(v.id);
+    expect(ok).toMatchObject({ status: 'approved', platform: 'lever' });
+    expect(ok.approvedAt).not.toBeNull();
+    const sub = queue.added.find((a) => a.name === 'submit')!;
+    expect(sub.data).toMatchObject({ applicationId: v.id });
+    expect((sub.data as { approvalHash: string }).approvalHash).toHaveLength(64);
+    expect((await apiError(svc.approve(v.id))).code).toBe('not_ready');
+
+    // kill switch clears the approval
+    await svc.stop();
+    expect(await db.application.findUniqueOrThrow({ where: { id: v.id } })).toMatchObject({ status: 'ready', approvalHash: null });
+
+    // session platforms must be connected
+    await db.application.update({ where: { id: v.id }, data: { platform: 'gupy' } });
+    expect((await apiError(svc.approve(v.id))).code).toBe('platform_not_connected');
+
+    // outdated → refused
+    await db.application.update({ where: { id: v.id }, data: { platform: 'lever' } });
+    await db.fact.update({ where: { id: 'f-nest' }, data: { value: { name: 'NestJS', category: 'x' } } });
+    expect((await apiError(svc.approve(v.id))).code).toBe('outdated');
+  });
+
+  it('batch approve reports refusals; mark only from submit_uncertain; re-simulation drops approval', async () => {
+    await db.searchPreference.create({ data: { id: 'default', mode: 'review' } });
+    const job = await seed();
+    const v = await svc.apply(job.id);
+    const r = await svc.approveBatch([v.id, 'ghost']);
+    expect(r.approved).toEqual([]);
+    expect(r.refused.map((x) => x.code)).toEqual(['not_ready', 'not_found']);
+
+    expect((await apiError(svc.mark(v.id, true))).code).toBe('not_uncertain');
+    await db.application.update({ where: { id: v.id }, data: { status: 'submit_uncertain' } });
+    expect(await svc.mark(v.id, true)).toMatchObject({ status: 'submitted', submittedVia: 'manual' });
+    expect((await apiError(svc.apply(job.id))).code).toBe('already_submitted');
+
+    await db.application.update({ where: { id: v.id }, data: { status: 'ready', approvalHash: 'x', approvedAt: new Date() } });
+    const again = await svc.apply(job.id);
+    expect(again.approvedAt).toBeNull();
+  });
 });

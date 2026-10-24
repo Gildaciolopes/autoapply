@@ -9,15 +9,18 @@ import {
   detectAts,
   formLanguage,
   detectBlockers,
+  platformOf,
   isClosedPosting,
   planAnswers,
   type AnswerContext,
   type DetectedAts,
 } from '@autoapply/apply';
 import { loadPreferences, localMidnight, type Prisma } from '@autoapply/db';
-import { LlmFieldAnswers, PersonalFacts, type ApplyPayload, type ApplyReport, type NeedsReason, type PersonalField, type PlannedAnswer } from '@autoapply/shared';
+import { LlmFieldAnswers, PersonalFacts, type PlatformKind, type ApplyPayload, type ApplyReport, type NeedsReason, type PersonalField, type PlannedAnswer } from '@autoapply/shared';
 import type { KbDeps } from '../kb/deps.js';
-import { adapterFor, mergeHints, type Adapter } from './adapters/index.js';
+import { AdapterRedirect, AdapterStop, adapterFor, mergeHints, type Adapter } from './adapters/index.js';
+import { recordPlatformError, recordPlatformOk } from './gate.js';
+import { loadStorageState, markSessionExpired } from './sessions.js';
 import { acceptsPdf, ensureTailored, letterFile, loadTailorBasics, resumeFile } from './attachments.js';
 import { openDryRunContext, screenshot, submitLog, type DryRunContext, type FixtureServer } from './browser.js';
 import { extractFields, snapshotForBlockers, type ExtractedField } from './extract.js';
@@ -33,7 +36,7 @@ export interface ApplyDeps extends KbDeps {
 }
 
 export interface RunApplyResult {
-  status: 'ready' | 'needs_input' | 'failed' | 'skipped';
+  status: 'ready' | 'needs_input' | 'failed' | 'skipped' | 'already_applied';
   reasons: NeedsReason[];
 }
 
@@ -112,6 +115,7 @@ export async function runApply(deps: ApplyDeps, payload: ApplyPayload, opts: { f
   const prefs = await loadPreferences(db);
   const tailoredDocs: { id: string; updatedAt: Date }[] = [];
   let ctx: DryRunContext | null = null;
+  let platform: PlatformKind = platformOf(app.platform ?? app.ats);
   let report: ApplyReport = { steps: 0, blockedRequests: [], submitAttempts: 0, scriptSubmits: 0, captchaOnSubmit: false, unverifiedFactIds: [], durations };
 
   const finish = async (status: RunApplyResult['status'], reasons: NeedsReason[], answers: { field: ExtractedField; a: PlannedAnswer; filled: boolean }[], extra: { ats?: string; formUrl?: string; error?: string } = {}) => {
@@ -190,12 +194,19 @@ export async function runApply(deps: ApplyDeps, payload: ApplyPayload, opts: { f
     const basics = await loadTailorBasics(db, app.jobId);
     const actx = answerContext(basics, now);
 
-    // 2. Open + detect.
+    // 2. Session (Gupy / LinkedIn) + open + detect.
     since = Date.now();
-    ctx = await openDryRunContext(await deps.browser(), { serve: deps.serve });
-    const { page } = ctx;
     const startUrl = app.job.applyUrl ?? app.job.url;
     let detected: DetectedAts = detectAts(startUrl);
+    platform = platformOf(detected.ats);
+    await db.application.update({ where: { id: appId }, data: { platform } });
+    let storageState: Awaited<ReturnType<typeof loadStorageState>> = null;
+    if (platform === 'gupy' || platform === 'linkedin') {
+      storageState = await loadStorageState(deps, platform);
+      if (!storageState) return finish('needs_input', [{ code: 'session_expired', message: `${REASON_LABELS.session_expired} (${platform})` }], [], { ats: detected.ats });
+    }
+    ctx = await openDryRunContext(await deps.browser(), { serve: deps.serve, storageState: storageState ?? undefined });
+    const { page } = ctx;
     const getJson = makeGetJson(deps);
     let status: number | null = null;
     if (detected.ats === 'generic') {
@@ -208,13 +219,31 @@ export async function runApply(deps: ApplyDeps, payload: ApplyPayload, opts: { f
       if (byHtml.ats !== 'generic') detected = byHtml;
       else if (frameAts) detected = { ...detectAts(page.frames().find((f) => atsOfFrame(f.url()))!.url()), formUrl: page.url() };
     }
-    const adapter: Adapter = adapterFor(detected.ats);
+    let adapter: Adapter = adapterFor(detected.ats);
     await event('info', `detect ${detected.ats}`, detected);
-    const actx2 = { page, detected, getJson };
+    let actx2 = { page, detected, getJson };
     if ((await adapter.postingOpen(actx2)) === false) {
       return finish('failed', [{ code: 'job_closed', message: REASON_LABELS.job_closed }], [], { ats: detected.ats, formUrl: detected.formUrl, error: 'job_closed' });
     }
-    let frame: Frame = await adapter.locate(actx2);
+    let frame: Frame | null = null;
+    for (let hop = 0; hop < 3 && !frame; hop++) {
+      try {
+        frame = await adapter.locate(actx2);
+      } catch (e) {
+        if (!(e instanceof AdapterRedirect) || hop === 2) throw e;
+        // LinkedIn without Easy Apply → the employer's own form (F4 engine).
+        detected = detectAts(e.url);
+        if (detected.ats === 'generic') {
+          await page.goto(e.url, { waitUntil: 'domcontentloaded', timeout: 45_000 });
+          const byHtml = detectAts(page.url(), await page.content());
+          if (byHtml.ats !== 'generic') detected = byHtml;
+        }
+        adapter = adapterFor(detected.ats);
+        actx2 = { page, detected, getJson };
+        await event('info', `redirect to ${detected.ats}`, { url: e.url });
+      }
+    }
+    if (!frame) throw new Error('form not found');
     mark('open', since);
     const pageText = await frame.evaluate('document.body ? document.body.innerText : ""').catch(() => '');
     const hints = await adapter.hints(actx2);
@@ -228,7 +257,7 @@ export async function runApply(deps: ApplyDeps, payload: ApplyPayload, opts: { f
     let llmMs = 0;
     for (let step = 0; step < MAX_STEPS; step++) {
       since = Date.now();
-      const fields = mergeHints(await extractFields(frame, step), hints);
+      const fields = mergeHints(await extractFields(frame, step, adapter.scope), hints);
       for (const f of fields) if (f.combobox && !f.options.length) f.options = await readComboOptions(frame, f);
       const stepCtx: AnswerContext = { ...actx, lang: formLanguage(fields.map((f) => f.label), actx.lang) };
       mark(`extract_${step}`, since);
@@ -240,6 +269,7 @@ export async function runApply(deps: ApplyDeps, payload: ApplyPayload, opts: { f
       report.captchaOnSubmit ||= blockers.captchaOnSubmit;
       if (blockers.blocker) {
         await shot(page, 'screenshot_last', 'last');
+        if (blockers.blocker === 'unusual_activity') await recordPlatformError(db, platform, 'unusual_activity');
         return finish('needs_input', [{ code: blockers.blocker, message: REASON_LABELS[blockers.blocker] }], all, { ats: detected.ats, formUrl: page.url() });
       }
       if (step === 0) await shot(page, 'screenshot_before', 'before');
@@ -302,21 +332,32 @@ export async function runApply(deps: ApplyDeps, payload: ApplyPayload, opts: { f
       await event('info', `fill step ${step}`);
       report.steps = step + 1;
 
-      if (!(await nextStep(frame))) break;
+      if (!(await nextStep(frame, adapter.scope))) break;
       await shot(page, 'screenshot_step', `step-${step + 1}`);
       frame = await adapter.locate(actx2);
       await checkCancelled();
     }
     durations.llm = llmMs;
     await shot(page, 'screenshot_after', 'after');
+    await recordPlatformOk(db, platform);
     return finish(reasons.length ? 'needs_input' : 'ready', reasons, all, { ats: detected.ats, formUrl: page.url() });
   } catch (err) {
     if (err instanceof Cancelled) {
       await event('warn', 'cancelled by kill switch');
       return { status: 'skipped', reasons: [] };
     }
+    if (err instanceof AdapterStop) {
+      if (ctx) await shot(ctx.page, 'screenshot_last', 'last').catch(() => undefined);
+      if (err.code === 'session_expired' && (platform === 'gupy' || platform === 'linkedin')) await markSessionExpired(deps, platform);
+      if (err.code === 'unusual_activity') await recordPlatformError(db, platform, 'unusual_activity');
+      const reason = [{ code: err.code, message: REASON_LABELS[err.code] }];
+      if (err.code === 'already_applied') return finish('already_applied', reason, []);
+      if (err.code === 'job_closed') return finish('failed', reason, [], { error: 'job_closed' });
+      return finish('needs_input', reason, []);
+    }
     const message = err instanceof Error ? err.message : String(err);
     if (ctx) await shot(ctx.page, 'screenshot_last', 'last').catch(() => undefined);
+    await recordPlatformError(db, platform, 'errors').catch(() => undefined);
     if (!opts.final) {
       await db.application.update({ where: { id: appId }, data: { status: 'queued', error: message } });
       await event('warn', `attempt failed, will retry: ${message}`);
@@ -326,24 +367,4 @@ export async function runApply(deps: ApplyDeps, payload: ApplyPayload, opts: { f
   } finally {
     await ctx?.close().catch(() => undefined);
   }
-}
-
-/**
- * Daily cap per tracking system (FR-015, research R9). Returns the delay (ms) until 00:05 local time
- * tomorrow when the cap is reached (application set back to `queued` with reason `daily_cap`), else 0.
- */
-export async function dailyCapDelay(deps: KbDeps, applicationId: string, now = new Date()): Promise<number> {
-  const app = await deps.db.application.findUniqueOrThrow({ where: { id: applicationId }, include: { job: true } });
-  const ats = app.ats ?? detectAts(app.job.applyUrl ?? app.job.url).ats;
-  const prefs = await loadPreferences(deps.db);
-  const since = localMidnight(now);
-  const used = await deps.db.application.count({ where: { id: { not: applicationId }, ats, lastRunAt: { gte: since } } });
-  if (used < prefs.applyDailyCap) {
-    if (!app.ats) await deps.db.application.update({ where: { id: applicationId }, data: { ats } });
-    return 0;
-  }
-  const next = new Date(since.getTime() + 24 * 3600_000 + 5 * 60_000);
-  const reason: NeedsReason = { code: 'daily_cap', message: `${REASON_LABELS.daily_cap} (${ats}: ${prefs.applyDailyCap}/dia)` };
-  await deps.db.application.update({ where: { id: applicationId }, data: { status: 'queued', ats, needsReasons: json([reason]), needsReason: reason.message } });
-  return Math.max(60_000, next.getTime() - now.getTime());
 }

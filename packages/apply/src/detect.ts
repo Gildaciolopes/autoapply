@@ -23,6 +23,14 @@ export function detectAts(url: string, html?: string): DetectedAts {
   if (u) {
     const host = u.hostname.toLowerCase();
     const parts = u.pathname.split('/').filter(Boolean);
+    if (/(^|\.)gupy\.io$/.test(host) && !['login.gupy.io', 'portal.gupy.io', 'www.gupy.io', 'gupy.io'].includes(host)) {
+      const i = parts.indexOf('jobs');
+      return { ats: 'gupy', board: host.split('.')[0], jobId: i >= 0 ? parts[i + 1] : undefined, formUrl: url };
+    }
+    if (/(^|\.)linkedin\.com$/.test(host) && (parts[0] === 'jobs' || u.searchParams.get('currentJobId'))) {
+      const jobId = u.searchParams.get('currentJobId') ?? (parts[1] === 'view' ? parts[2]?.match(/\d+/)?.[0] : undefined);
+      if (jobId) return { ats: 'linkedin', jobId, formUrl: `https://www.linkedin.com/jobs/view/${jobId}/` };
+    }
     if (/(^|\.)greenhouse\.io$/.test(host)) {
       if (parts[0] === 'embed' && u.searchParams.get('for')) {
         const board = u.searchParams.get('for')!;

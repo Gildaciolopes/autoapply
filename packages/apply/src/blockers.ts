@@ -1,4 +1,6 @@
-export type Blocker = 'captcha' | 'bot_protection' | 'login_required';
+import { isPlatformActionPage, isUnusualActivity } from './confirm.js';
+
+export type Blocker = 'captcha' | 'bot_protection' | 'login_required' | 'unusual_activity' | 'platform_action';
 
 export interface PageSnapshot {
   title: string;
@@ -25,6 +27,8 @@ const LOGIN_TEXT = /\b(sign in|log in|login|entrar|fa[cç]a login|create (an )?a
  * are reported as `captchaOnSubmit` (relevant for real submission in F5), not as a blocker.
  */
 export function detectBlockers(s: PageSnapshot): { blocker: Blocker | null; captchaOnSubmit: boolean } {
+  if (isUnusualActivity(`${s.title}\n${s.text}`)) return { blocker: 'unusual_activity', captchaOnSubmit: false };
+  if (s.fieldCount <= 2 && isPlatformActionPage(s.text)) return { blocker: 'platform_action', captchaOnSubmit: false };
   if (BOT_TITLE.test(s.title) || (s.fieldCount === 0 && BOT_TITLE.test(s.text.slice(0, 2000)))) return { blocker: 'bot_protection', captchaOnSubmit: false };
   const visibleCaptcha = s.captchaWidgets > 0 || s.visibleIframes.some((src) => CAPTCHA.test(src) && !/invisible|size=invisible/.test(src));
   if (visibleCaptcha) return { blocker: 'captcha', captchaOnSubmit: false };

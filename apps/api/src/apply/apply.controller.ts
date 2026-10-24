@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Param, Post, Query, Res } from '@nestjs/common';
 import type { Response } from 'express';
-import { ApplyBatchBody, UserAnswersBody } from '@autoapply/shared';
+import { ApplyBatchBody, ApproveBatchBody, MarkBody, UserAnswersBody } from '@autoapply/shared';
 import { ZodPipe } from '../kb/zod.pipe.js';
 import { ApplyService } from './apply.service.js';
 
@@ -58,5 +58,22 @@ export class ApplyController {
   async rerun(@Param('id') id: string, @Res({ passthrough: true }) res: Response) {
     res.status(202);
     return this.apply.rerun(id);
+  }
+
+  @Post('applications/approve')
+  async approveBatch(@Body(new ZodPipe(ApproveBatchBody)) body: ApproveBatchBody, @Res({ passthrough: true }) res: Response) {
+    res.status(202);
+    return this.apply.approveBatch(body.ids);
+  }
+
+  @Post('applications/:id/approve')
+  async approve(@Param('id') id: string, @Res({ passthrough: true }) res: Response) {
+    res.status(202);
+    return this.apply.approve(id);
+  }
+
+  @Post('applications/:id/mark')
+  mark(@Param('id') id: string, @Body(new ZodPipe(MarkBody)) body: { sent: boolean }) {
+    return this.apply.mark(id, body.sent);
   }
 }

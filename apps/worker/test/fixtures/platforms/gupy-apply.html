@@ -1,0 +1,25 @@
+<!doctype html><html lang="pt-BR"><head><title>Candidatura | Acme</title>
+<style>.step{display:none}.step.on{display:block}</style></head><body>
+<h1>Candidatura — Desenvolvedora Back-end Sênior</h1>
+<form id="apply" action="https://acme.gupy.io/api/candidates/applications" method="post">
+  <section class="step on" id="s1"><h2>Dados pessoais</h2>
+    <label for="name">Nome completo *</label><input id="name" name="name" required value="Ana B. Souza">
+    <label for="email">E-mail *</label><input id="email" type="email" name="email" required value="ana.souza@example.com">
+    <label for="phone">Celular *</label><input id="phone" type="tel" name="phone" required>
+    <label for="linkedin">LinkedIn</label><input id="linkedin" name="linkedin">
+    <button type="button" onclick="go(2)">Continuar</button></section>
+  <section class="step" id="s2"><h2>Currículo</h2>
+    <label for="cv">Anexe seu currículo (PDF) *</label><input id="cv" type="file" name="cv" accept=".pdf" required>
+    <button type="button" onclick="go(3)">Continuar</button></section>
+  <section class="step" id="s3"><h2>Perguntas</h2>
+    <fieldset><legend>Você possui experiência com NestJS? *</legend>
+      <label><input type="radio" name="q_nest" value="sim" required> Sim</label>
+      <label><input type="radio" name="q_nest" value="nao"> Não</label></fieldset>
+    <label for="q_sal">Pretensão salarial *</label><input id="q_sal" name="q_sal" required>
+    <label for="q_level">Nível de inglês *</label>
+    <select id="q_level" name="q_level" required><option value="">Selecione</option><option>Básico</option><option>Intermediário</option><option>Avançado</option><option>Fluente</option></select>
+    <button type="submit">Enviar candidatura</button></section>
+</form>
+<script>function go(n){document.querySelectorAll('.step').forEach(function(s){s.classList.remove('on')});document.getElementById('s'+n).classList.add('on');}
+document.getElementById('apply').addEventListener('submit', function(e){ e.preventDefault(); fetch(this.action, { method: 'POST', body: new FormData(this) }).then(function(){ document.body.innerHTML = '<h1>Candidatura enviada!</h1><p>Recebemos sua candidatura. Boa sorte!</p>'; }); });</script>
+</body></html>

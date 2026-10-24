@@ -19,6 +19,9 @@ export default function JobsLayout({ children }: LayoutProps<"/vagas">) {
             <Link href="/conhecimento" className="text-muted-foreground hover:underline">
               Base de conhecimento
             </Link>
+            <Link href="/plataformas" className="text-muted-foreground hover:underline">
+              Plataformas
+            </Link>
             <Link href="/" className="text-muted-foreground hover:underline">
               ← AutoApply
             </Link>

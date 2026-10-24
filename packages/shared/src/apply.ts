@@ -3,7 +3,7 @@ import { ValidationFinding } from './tailor.js';
 
 // ---------- F4 apply engine (dry-run) ----------
 
-export const AtsKind = z.enum(['greenhouse', 'lever', 'ashby', 'generic']);
+export const AtsKind = z.enum(['greenhouse', 'lever', 'ashby', 'generic', 'gupy', 'linkedin']);
 export type AtsKind = z.infer<typeof AtsKind>;
 
 export const FieldType = z.enum(['text', 'email', 'tel', 'number', 'url', 'date', 'textarea', 'select', 'radio', 'checkbox', 'file']);
@@ -46,6 +46,14 @@ export const NeedsReasonCode = z.enum([
   'daily_cap',
   'cancelled',
   'job_closed',
+  'session_expired',
+  'already_applied',
+  'platform_action',
+  'unusual_activity',
+  'form_changed',
+  'new_step',
+  'human_check',
+  'platform_paused',
 ]);
 export type NeedsReasonCode = z.infer<typeof NeedsReasonCode>;
 
@@ -84,7 +92,7 @@ export type LlmFieldAnswers = z.infer<typeof LlmFieldAnswers>;
 export const ApplyPayload = z.object({ applicationId: z.string(), attempt: z.number().int().min(1) });
 export type ApplyPayload = z.infer<typeof ApplyPayload>;
 
-export const ApplicationStatus = z.enum(['queued', 'tailoring', 'ready', 'applying', 'needs_input', 'submitted', 'failed', 'skipped']);
+export const ApplicationStatus = z.enum(['queued', 'tailoring', 'ready', 'applying', 'needs_input', 'approved', 'submitting', 'submitted', 'submit_uncertain', 'already_applied', 'failed', 'skipped']);
 export type ApplicationStatus = z.infer<typeof ApplicationStatus>;
 
 export const ApplyReport = z.object({
@@ -146,6 +154,12 @@ export const ApplicationView = ApplicationListItem.extend({
   answers: z.array(FormAnswerView),
   artifacts: z.array(ArtifactView),
   lastRunAt: z.string().nullable(),
+  platform: z.string().nullable(),
+  approvedAt: z.string().nullable(),
+  submittedAt: z.string().nullable(),
+  submittedVia: z.string().nullable(),
+  sentValues: z.array(z.object({ fieldKey: z.string(), question: z.string(), value: z.string() })).nullable(),
+  submitError: z.string().nullable(),
 });
 export type ApplicationView = z.infer<typeof ApplicationView>;
 
@@ -156,6 +170,9 @@ export const ApplicationSummary = z.object({
   queued: z.number(),
   applying: z.number(),
   skipped: z.number(),
+  approved: z.number(),
+  submitted: z.number(),
+  submit_uncertain: z.number(),
 });
 export type ApplicationSummary = z.infer<typeof ApplicationSummary>;
 
