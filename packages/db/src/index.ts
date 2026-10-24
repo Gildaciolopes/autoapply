@@ -15,3 +15,6 @@ export * from './discovery.js';
 export * from './tailor.js';
 export * from './platforms.js';
 export * from './night.js';
+export * from './secret.js';
+export * from './analytics.js';
+export * from './replies.js';

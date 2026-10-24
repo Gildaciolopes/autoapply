@@ -261,6 +261,7 @@ model SearchPreference {
   pausedAt          DateTime? // global kill switch (F6)
   nightLastTickAt   DateTime?
   telegramOffset    Int       @default(0)
+  mcpApproveEnabled Boolean   @default(false) // F7: assistant may approve named applications
   updatedAt         DateTime  @updatedAt
 }
 
@@ -341,6 +342,7 @@ model Job {
   tailored    TailoredDocument[]
 
   @@index([createdAt])
+  @@index([firstSeenAt])
 }
 
 /// Every place a job was found (dedupe merges cross-board copies into one Job).
@@ -459,6 +461,12 @@ model Application {
   nightRun       NightRun?         @relation(fields: [nightRunId], references: [id], onDelete: SetNull)
   rejectedAt     DateTime?
   rejectReason   String?
+  preparedAt     DateTime? // F7: first time the engine ended in ready/needs_input (funnel stage)
+  outcome        ReplyOutcome      @default(none)
+  firstReplyAt   DateTime?
+  interviewAt    DateTime?
+  lastReplyAt    DateTime?
+  replies        Reply[]
   createdAt      DateTime          @default(now())
   updatedAt      DateTime          @updatedAt
   answers        FormAnswer[]
@@ -468,6 +476,7 @@ model Application {
   @@index([status])
   @@index([ats, lastRunAt])
   @@index([nightRunId])
+  @@index([outcome])
 }
 
 model FormAnswer {
@@ -657,4 +666,86 @@ model EvalRun {
   createdAt    DateTime @default(now())
 
   @@index([suite, createdAt])
+}
+
+// ---- F7: reply tracking + assistant approval ----
+
+enum MailStatus {
+  disconnected
+  connected
+  expired
+}
+
+enum ReplyOrigin {
+  email
+  manual
+}
+
+enum ReplyType {
+  interview
+  rejection
+  info_request
+  confirmation
+  other
+}
+
+enum ReplyOutcome {
+  none
+  replied
+  interview
+  declined
+}
+
+/// Single row (id "default"): the connected Gmail account. Tokens AES-256-GCM, never plaintext.
+model MailAccount {
+  id           String     @id @default("default")
+  email        String?
+  status       MailStatus @default(disconnected)
+  tokensEnc    String?
+  pendingState Json? // { state, verifier, expiresAt } during the OAuth round trip
+  connectedAt  DateTime?
+  lastCheckAt  DateTime?
+  lastError    String?
+  updatedAt    DateTime   @updatedAt
+}
+
+/// Every Gmail message looked at, by id only (no content): idempotent checks.
+model ProcessedMail {
+  messageId String   @id
+  outcome   String // matched | unmatched | filtered
+  at        DateTime @default(now())
+
+  @@index([at])
+}
+
+model Reply {
+  id            String      @id @default(cuid())
+  applicationId String
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  origin        ReplyOrigin
+  messageId     String?     @unique
+  type          ReplyType
+  confidence    Float?
+  needsReview   Boolean     @default(false)
+  userEdited    Boolean     @default(false)
+  receivedAt    DateTime
+  sender        String?
+  subject       String? // <= 200 chars
+  excerpt       String? // <= 300 chars, never the full body
+  note          String? // manual note <= 500 chars
+  link          String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@index([applicationId, receivedAt])
+}
+
+/// Two-step approval from the MCP assistant: preview bound to one MCP session, confirmed once.
+model ApprovalPreview {
+  id           String    @id @default(cuid())
+  mcpSessionId String
+  items        Json // { applicationId, fingerprint }[]
+  expiresAt    DateTime
+  confirmedAt  DateTime?
+  createdAt    DateTime  @default(now())
 }

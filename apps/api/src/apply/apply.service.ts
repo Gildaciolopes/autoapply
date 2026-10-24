@@ -77,6 +77,7 @@ export class ApplyService {
       outdated: await this.outdated(a, usable),
       attempts: a.attempts,
       updatedAt: a.updatedAt.toISOString(),
+      outcome: a.outcome,
     };
   }
 
@@ -104,6 +105,9 @@ export class ApplyService {
       submittedVia: a.submittedVia,
       sentValues: (a.sentValues as { fieldKey: string; question: string; value: string }[] | null) ?? null,
       submitError: a.submitError,
+      preparedAt: a.preparedAt?.toISOString() ?? null,
+      firstReplyAt: a.firstReplyAt?.toISOString() ?? null,
+      interviewAt: a.interviewAt?.toISOString() ?? null,
       answers: (a.answers ?? []).map((x) => ({
         id: x.id,
         fieldKey: x.fieldKey,
@@ -260,6 +264,11 @@ export class ApplyService {
     const answers = await this.db.formAnswer.findMany({ where: { applicationId: a.id }, select: { fieldKey: true, answer: true } });
     const docs = await this.db.tailoredDocument.findMany({ where: { id: { in: a.tailoredDocIds } }, select: { id: true, updatedAt: true } });
     return approvalHash({ formUrl: a.formUrl, answers, docs });
+  }
+
+  /** F7: fingerprint an assistant approval preview is bound to (same hash the F5 approval stores). */
+  async fingerprint(id: string): Promise<string> {
+    return this.approvalFingerprint(await this.load(id));
   }
 
   /** POST /applications/:id/approve — review mode only (constitution §II, FR-007). */

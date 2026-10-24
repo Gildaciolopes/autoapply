@@ -12,6 +12,7 @@ import { TailorProcessor } from './processors/tailor.processor.js';
 import { ApplyProcessor } from './processors/apply.processor.js';
 import { NightProcessor } from './processors/night.processor.js';
 import { NotifyProcessor } from './processors/notify.processor.js';
+import { MailProcessor } from './processors/mail.processor.js';
 import { KB_DEPS, SyncProfileProcessor } from './processors/sync-profile.processor.js';
 
 @Module({
@@ -29,6 +30,7 @@ import { KB_DEPS, SyncProfileProcessor } from './processors/sync-profile.process
     ApplyProcessor,
     NightProcessor,
     NotifyProcessor,
+    MailProcessor,
     {
       provide: KB_DEPS,
       useFactory: (): KbDeps => ({

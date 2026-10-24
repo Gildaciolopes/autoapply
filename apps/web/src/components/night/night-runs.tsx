@@ -8,7 +8,7 @@ import { fmtPercent } from "../apply/format";
 import { LiveLog } from "./live-log";
 import { PHASE_LABEL, REPORT_LABEL, STATUS_CLASS, STATUS_LABEL, TRIGGER_LABEL, fmtNightDate, fmtWhen } from "./format";
 
-const COUNTER_LABEL: [keyof NightCounters, string][] = [
+const COUNTER_LABEL: [Exclude<keyof NightCounters, "replies">, string][] = [
   ["found", "Encontradas"],
   ["aboveThreshold", "Acima do corte"],
   ["prepared", "Preparadas"],

@@ -74,6 +74,7 @@ export class FeedService {
       ...(q.source ? { origins: { some: { source: q.source } } } : {}),
       ...(q.workMode ? (q.workMode === 'remote' ? { OR: [{ remote: true }, { workMode: 'remote' }] } : { workMode: q.workMode }) : {}),
       ...(q.newSince ? { firstSeenAt: { gte: new Date(q.newSince) } } : {}),
+      ...(q.q ? { AND: [{ OR: [{ title: { contains: q.q, mode: 'insensitive' } }, { company: { is: { name: { contains: q.q, mode: 'insensitive' } } } }] }] } : {}),
     };
     const skip = q.cursor ?? 0;
     const rows = await this.db.job.findMany({

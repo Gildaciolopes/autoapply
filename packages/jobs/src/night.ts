@@ -57,7 +57,7 @@ export function localParts(date: Date, timeZone = NIGHT_TZ): LocalParts {
 }
 
 /** UTC instant of a local wall-clock time (handles any fixed or DST offset via Intl). */
-function zoned(y: number, m: number, d: number, minutes: number, timeZone: string): Date {
+export function zoned(y: number, m: number, d: number, minutes: number, timeZone: string): Date {
   const guess = Date.UTC(y, m - 1, d, Math.floor(minutes / 60), minutes % 60);
   const p = localParts(new Date(guess), timeZone);
   const asLocal = Date.UTC(p.y, p.m - 1, p.d, Math.floor(p.minutes / 60), p.minutes % 60);
@@ -160,6 +160,8 @@ export function formatReport(r: NightReport, nightDate: string): string {
   if (c.uncertain) lines.push(`Envio incerto: ${c.uncertain}`);
   if (c.waitingLimit) lines.push(`Aguardando limite: ${c.waitingLimit}`);
   if (c.windowEnd) lines.push(`Ficaram para a próxima noite: ${c.windowEnd}`);
+  const replies = Object.values(c.replies ?? {}).reduce((a, b) => a + b, 0);
+  if (replies) lines.push(`Respostas de empresas: ${replies} (entrevistas ${c.replies?.interview ?? 0}, recusas ${c.replies?.rejection ?? 0})`);
   if (r.top.length) {
     lines.push('', 'Melhores prontas:');
     for (const t of r.top) lines.push(`• ${t.title} — ${t.company} (${Math.round(t.score)})`);

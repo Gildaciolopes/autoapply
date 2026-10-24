@@ -177,6 +177,10 @@ export async function runApply(deps: ApplyDeps, payload: ApplyPayload, opts: { f
         },
       }),
     ]);
+    // F7 funnel stage "prepared": first time only, never cleared by re-prepare.
+    if (status === 'ready' || status === 'needs_input') {
+      await db.application.updateMany({ where: { id: appId, preparedAt: null }, data: { preparedAt: new Date() } });
+    }
     await event(status === 'failed' ? 'error' : 'info', `finish ${status}`, { reasons: reasons.map((r) => r.code), durations });
     return { status, reasons };
   };

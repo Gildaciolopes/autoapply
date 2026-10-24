@@ -53,6 +53,7 @@ changed, update this file if a new convention/command appeared, run `make graph`
 | `make test-db` | create + migrate the `autoapply_test` DB used by integration tests |
 | `make eval` | anti-fabrication trap eval (10 trap jobs × summary + letter) on the live LLM; stores `EvalRun` (~15 min) |
 | `make answers-eval` | form-answer trap eval (20 trap questions) on the live LLM; stores `EvalRun` suite `apply-answers` (~4 min) |
+| `make replies-eval` | reply-tracking eval (30 synthetic labelled emails) on the live LLM: link/type accuracy; stores `EvalRun` suite `replies` (~2 min) |
 | `make jobs-eval` | job ranking eval (30 labelled postings) against live bge-m3 + qwen3 (~6 min) |
 | `make kb-eval` | resume-extraction quality eval (5 personas) against the live local LLM (~12 min) |
 | `make health` | `GET :3001/health` → db / redis / ollama |
@@ -77,7 +78,7 @@ packages/db         Prisma 7 schema + client + pgvector helpers
 packages/llm        LlmProvider + OllamaProvider (+ FakeLlmProvider for tests)
 packages/kb         pure knowledge-base logic: fact keys, merge/conflicts, provenance check, GitHub evidence
 packages/resume     PDF text (unpdf), ATS resume renderer (Playwright), atsLint
-packages/jobs       pure job logic: normalize/dedupe, hard filters, profile text, judge grounding, run planning, night window/report, Telegram transport
+packages/jobs       pure job logic: normalize/dedupe, hard filters, profile text, judge grounding, run planning, night window/report, Telegram + Gmail transports, reply matching, funnel helpers
 packages/tailor     pure F3 logic: resume ranking, Zero-Fabrication validator, years placeholders, prompts, diff
 packages/apply      pure F4 logic: ATS detection, field classifier, grounded answer pipeline, blockers
 docker/             postgres init (pgvector)
@@ -147,6 +148,17 @@ specs/              one folder per feature (created by /speckit-specify)
   `RunEvent.seq`; always set `nightRunId` (night events) or `applicationId` on new events. Reports and
   bot replies carry counts, titles and companies only (test asserts no PII); bot commands only from
   `TELEGRAM_CHAT_ID`. Fact-backed answers run before answer memory (memory never overrides a fact).
+- **Extras (F7)**: Gmail is read-only (`gmail.readonly`, user's own OAuth "Desktop app" client, consent in
+  the user's browser) — never add a send/modify scope or a mailbox write. Never store full email bodies:
+  only sender, subject, date and a ≤ 300-char excerpt of MATCHED emails; unmatched ones leave only their id
+  in `ProcessedMail`. Emails are untrusted input: classification returns an enum only, email kept inside
+  `<email>` tags; user-edited replies are never overwritten. Reply effects go through `applyReplyEffects`
+  (`outcome`, never `status`, except confirming `submit_uncertain`). Funnel stage "prepared" =
+  `Application.preparedAt` (set once by the engine). MCP server lives in the api (`/mcp`, loopback only):
+  read tools reuse Nest services and build views from explicit field lists; approval from the assistant
+  is opt-in, explicit ids (≤ 10), preview + confirm in the same session, refused while paused. Prefs are the
+  single `SearchPreference` row id `default` (use `findUnique({ where: { id: 'default' } })`, never
+  `findFirst`/`create`). Any change to reply matching/classification → re-run `make replies-eval`.
 - Knowledge base: only user actions verify facts; anything that reads facts for claims must use
   `usableFactsWhere` from `@autoapply/db`.
 - Kill stray processes from manual runs (`pgrep -fl dist/main.js`) before restarting; an orphaned
@@ -164,7 +176,8 @@ specs/              one folder per feature (created by /speckit-specify)
 
 F0 done 2026-10-14. F1 Knowledge base (PR #1) and F2 Job discovery + scoring (PR #2) merged.
 F3 Tailoring (PR #3), F4 Apply engine dry-run (PR #5) and F5 Logged-in platforms + assisted real submission
-(PR #6) merged. F6 Overnight runs implemented on branch `006-overnight-runs`. Next: **F7 Extras**.
+(PR #6) and F6 Overnight runs (PR #7) merged. F7 Extras (analytics, Gmail reply tracking, MCP server)
+implemented on branch `007-extras`. Roadmap F0–F7 complete.
 
 ## graphify
 
