@@ -19,6 +19,6 @@ export async function resetKnowledgeBase(db: PrismaClient): Promise<void> {
 
 export async function resetJobs(db: PrismaClient): Promise<void> {
   await db.$executeRawUnsafe(
-    'TRUNCATE "Platform", "FormAnswer", "Artifact", "Application", "AnswerMemory", "TailoredDocument", "EvalRun", "JobScore", "JobOrigin", "Job", "Company", "DiscoveryRun", "ProfileVector", "Source", "SearchPreference", "RunEvent" CASCADE',
+    'TRUNCATE "Platform", "FormAnswer", "Artifact", "Application", "AnswerMemory", "TailoredDocument", "EvalRun", "JobScore", "JobOrigin", "Job", "Company", "DiscoveryRun", "ProfileVector", "Source", "SearchPreference", "NightRun", "RunEvent" CASCADE',
   );
 }

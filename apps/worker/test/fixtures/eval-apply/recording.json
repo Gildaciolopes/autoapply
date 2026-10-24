@@ -62,79 +62,7 @@
     },
     {
      "fieldId": "f9",
-     "answer": "Possuo experiência em liderar equipes de desenvolvimento, com foco em arquitetura de sistemas escaláveis e implementação de soluções robustas com tecnologias como NestJS, PostgreSQL e Kafka.",
-     "optionIndex": null,
-     "factIds": [
-      "f-exp1",
-      "f-exp0"
-     ],
-     "confidence": 0.8
-    },
-    {
-     "fieldId": "f10",
-     "answer": "2",
-     "optionIndex": 2,
-     "factIds": [],
-     "confidence": 1
-    },
-    {
-     "fieldId": "f11",
-     "answer": "0",
-     "optionIndex": 0,
-     "factIds": [
-      "f-aws"
-     ],
-     "confidence": 1
-    }
-   ]
-  },
-  {
-   "answers": [
-    {
-     "fieldId": "f1",
-     "answer": null,
-     "optionIndex": null,
-     "factIds": [],
-     "confidence": 0
-    },
-    {
-     "fieldId": "f2",
-     "answer": null,
-     "optionIndex": null,
-     "factIds": [],
-     "confidence": 0
-    },
-    {
-     "fieldId": "f3",
-     "answer": null,
-     "optionIndex": null,
-     "factIds": [],
-     "confidence": 0
-    },
-    {
-     "fieldId": "f4",
-     "answer": null,
-     "optionIndex": null,
-     "factIds": [],
-     "confidence": 0
-    },
-    {
-     "fieldId": "f5",
-     "answer": null,
-     "optionIndex": null,
-     "factIds": [],
-     "confidence": 0
-    },
-    {
-     "fieldId": "f6",
-     "answer": null,
-     "optionIndex": null,
-     "factIds": [],
-     "confidence": 0
-    },
-    {
-     "fieldId": "f7",
-     "answer": "Migrei a API de pagamentos de Express para NestJS, reduzindo a latência p95 em 40%. Implantei filas com BullMQ e Redis para processar 2 milhões de eventos por dia.",
+     "answer": "Possuo experiência em liderar equipes de desenvolvimento e implementar soluções técnicas complexas, como a migração de APIs e a implantação de filas em produção.",
      "optionIndex": null,
      "factIds": [
       "f-exp1"
@@ -142,32 +70,17 @@
      "confidence": 1
     },
     {
-     "fieldId": "f8",
-     "answer": null,
-     "optionIndex": null,
-     "factIds": [],
-     "confidence": 0
-    },
-    {
-     "fieldId": "f9",
-     "answer": "Possuo experiência em liderar equipes de desenvolvimento, com foco em arquitetura de sistemas escaláveis e implementação de soluções robustas com tecnologias como NestJS, PostgreSQL e Kafka.",
-     "optionIndex": null,
-     "factIds": [
-      "f-exp1",
-      "f-exp0"
-     ],
-     "confidence": 0.8
-    },
-    {
      "fieldId": "f10",
-     "answer": null,
-     "optionIndex": null,
-     "factIds": [],
-     "confidence": 0
+     "answer": "Sênior",
+     "optionIndex": 2,
+     "factIds": [
+      "f-exp1"
+     ],
+     "confidence": 1
     },
     {
      "fieldId": "f11",
-     "answer": "0",
+     "answer": "AWS",
      "optionIndex": 0,
      "factIds": [
       "f-aws"

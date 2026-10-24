@@ -10,6 +10,8 @@ import { DiscoverProcessor } from './processors/discover.processor.js';
 import { ScoreProcessor } from './processors/score.processor.js';
 import { TailorProcessor } from './processors/tailor.processor.js';
 import { ApplyProcessor } from './processors/apply.processor.js';
+import { NightProcessor } from './processors/night.processor.js';
+import { NotifyProcessor } from './processors/notify.processor.js';
 import { KB_DEPS, SyncProfileProcessor } from './processors/sync-profile.processor.js';
 
 @Module({
@@ -25,6 +27,8 @@ import { KB_DEPS, SyncProfileProcessor } from './processors/sync-profile.process
     ScoreProcessor,
     TailorProcessor,
     ApplyProcessor,
+    NightProcessor,
+    NotifyProcessor,
     {
       provide: KB_DEPS,
       useFactory: (): KbDeps => ({

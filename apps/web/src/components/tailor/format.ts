@@ -10,6 +10,7 @@ export const FINDING_LABEL: Record<FindingType, string> = {
   number_without_evidence: "número sem evidência",
   placeholder_unresolved: "duração não calculável",
   too_long: "texto longo demais",
+  memory_conflict: "memória diverge do fato (o fato vale)",
 };
 
 export const STATUS_LABEL: Record<TailoredStatus, string> = {

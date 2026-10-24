@@ -54,6 +54,7 @@ export const NeedsReasonCode = z.enum([
   'new_step',
   'human_check',
   'platform_paused',
+  'window_end',
 ]);
 export type NeedsReasonCode = z.infer<typeof NeedsReasonCode>;
 
@@ -70,6 +71,8 @@ export const PlannedAnswer = z.object({
   blocking: z.boolean().default(false),
   reason: NeedsReasonCode.optional(),
   findings: z.array(ValidationFinding).default([]),
+  /** F6: AnswerMemory reused for this answer (usage counting). */
+  memoryId: z.string().optional(),
 });
 export type PlannedAnswer = z.infer<typeof PlannedAnswer>;
 
@@ -92,7 +95,7 @@ export type LlmFieldAnswers = z.infer<typeof LlmFieldAnswers>;
 export const ApplyPayload = z.object({ applicationId: z.string(), attempt: z.number().int().min(1) });
 export type ApplyPayload = z.infer<typeof ApplyPayload>;
 
-export const ApplicationStatus = z.enum(['queued', 'tailoring', 'ready', 'applying', 'needs_input', 'approved', 'submitting', 'submitted', 'submit_uncertain', 'already_applied', 'failed', 'skipped']);
+export const ApplicationStatus = z.enum(['queued', 'tailoring', 'ready', 'applying', 'needs_input', 'approved', 'submitting', 'submitted', 'submit_uncertain', 'already_applied', 'failed', 'skipped', 'rejected']);
 export type ApplicationStatus = z.infer<typeof ApplicationStatus>;
 
 export const ApplyReport = z.object({
@@ -184,5 +187,7 @@ export type ApplyBatchBody = z.infer<typeof ApplyBatchBody>;
 export const UserAnswersBody = z.object({
   answers: z.array(z.object({ fieldKey: z.string(), answer: z.string().min(1), factIds: z.array(z.string()).optional() })).min(1),
   rerun: z.boolean().optional(),
+  /** F6: answered inline in the review queue (memory origin `inline`). */
+  from: z.enum(['review']).optional(),
 });
 export type UserAnswersBody = z.infer<typeof UserAnswersBody>;

@@ -250,7 +250,7 @@ function PreferencesForm({ initial }: { initial: Preferences }) {
                 <option value="dry_run">Simulação (nunca envia)</option>
                 <option value="review">Revisão (envia só o que você aprovar)</option>
                 <option value="autopilot" disabled>
-                  Automático (F6 — indisponível)
+                  Autopilot (indisponível)
                 </option>
               </select>
             </Field>

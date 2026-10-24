@@ -77,7 +77,7 @@ packages/db         Prisma 7 schema + client + pgvector helpers
 packages/llm        LlmProvider + OllamaProvider (+ FakeLlmProvider for tests)
 packages/kb         pure knowledge-base logic: fact keys, merge/conflicts, provenance check, GitHub evidence
 packages/resume     PDF text (unpdf), ATS resume renderer (Playwright), atsLint
-packages/jobs       pure job logic: normalize/dedupe, hard filters, profile text, judge grounding, run planning
+packages/jobs       pure job logic: normalize/dedupe, hard filters, profile text, judge grounding, run planning, night window/report, Telegram transport
 packages/tailor     pure F3 logic: resume ranking, Zero-Fabrication validator, years placeholders, prompts, diff
 packages/apply      pure F4 logic: ATS detection, field classifier, grounded answer pipeline, blockers
 docker/             postgres init (pgvector)
@@ -140,6 +140,13 @@ specs/              one folder per feature (created by /speckit-specify)
   fixtures are synthetic (`apps/worker/test/fixtures/platforms/`); real snapshots with
   `snapshot-form.ts --session <kind>` go to `data/fixtures/` (gitignored). Tests submit only to a local
   recording form, never to a real platform.
+- **Overnight runs (F6)**: the night is the `night-tick` state machine (`apps/worker/src/night/tick.ts`,
+  test it with a fake clock via `tick({ now, ... })`); one scheduled run per night through
+  `NightRun.scheduleKey @unique`; it never approves nor queues submissions. Kill switch =
+  `stopEverything` (`packages/db/src/night.ts`) everywhere (UI, `/apply/stop`, Telegram). Live log reads
+  `RunEvent.seq`; always set `nightRunId` (night events) or `applicationId` on new events. Reports and
+  bot replies carry counts, titles and companies only (test asserts no PII); bot commands only from
+  `TELEGRAM_CHAT_ID`. Fact-backed answers run before answer memory (memory never overrides a fact).
 - Knowledge base: only user actions verify facts; anything that reads facts for claims must use
   `usableFactsWhere` from `@autoapply/db`.
 - Kill stray processes from manual runs (`pgrep -fl dist/main.js`) before restarting; an orphaned
@@ -156,8 +163,8 @@ specs/              one folder per feature (created by /speckit-specify)
 ## Status
 
 F0 done 2026-10-14. F1 Knowledge base (PR #1) and F2 Job discovery + scoring (PR #2) merged.
-F3 Tailoring (PR #3) and F4 Apply engine dry-run (PR #5) merged. F5 Logged-in platforms + assisted real
-submission implemented on branch `005-logged-in-platforms`. Next: **F6 Overnight runs**.
+F3 Tailoring (PR #3), F4 Apply engine dry-run (PR #5) and F5 Logged-in platforms + assisted real submission
+(PR #6) merged. F6 Overnight runs implemented on branch `006-overnight-runs`. Next: **F7 Extras**.
 
 ## graphify
 

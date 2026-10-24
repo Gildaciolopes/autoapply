@@ -2,7 +2,7 @@ import { InjectQueue } from '@nestjs/bullmq';
 import { Injectable } from '@nestjs/common';
 import type { Queue } from 'bullmq';
 import { applicationFactsHash, approvalHash, normalizeQuestion, platformOf } from '@autoapply/apply';
-import { loadPreferences, loadUsableFacts, type Application, type Artifact, type FormAnswer, type Prisma } from '@autoapply/db';
+import { loadPreferences, loadUsableFacts, prepareApplication, PrepareError, stopEverything, type Application, type Artifact, type FormAnswer, type Prisma } from '@autoapply/db';
 import {
   ApplyReport,
   AtsKind,
@@ -21,9 +21,20 @@ import { ApiError } from '../kb/api-error.js';
 import { StorageService } from '../kb/storage.service.js';
 
 const json = (v: unknown) => v as Prisma.InputJsonValue;
-const RUNNING = new Set(['queued', 'tailoring', 'applying', 'submitting']);
 const SESSION_KINDS = new Set(['gupy', 'linkedin']);
 export const APPLY_JOB_OPTS = { attempts: 2, backoff: { type: 'exponential' as const, delay: 30_000 }, removeOnComplete: 200, removeOnFail: 200 };
+
+const PREPARE_STATUS: Record<string, number> = { not_found: 404 };
+
+/** `prepareApplication` with its typed errors mapped to API errors (409 unless not found). */
+export async function prepareOrThrow(db: Parameters<typeof prepareApplication>[0], jobId: string, opts: Parameters<typeof prepareApplication>[2] = {}) {
+  try {
+    return await prepareApplication(db, jobId, opts);
+  } catch (e) {
+    if (e instanceof PrepareError) throw new ApiError(PREPARE_STATUS[e.code] ?? 409, e.code, e.message);
+    throw e;
+  }
+}
 
 type AppRow = Application & { job: { title: string; company: { name: string } | null }; answers?: FormAnswer[]; artifacts?: Artifact[] };
 
@@ -121,17 +132,7 @@ export class ApplyService {
 
   /** POST /jobs/:id/apply — (re)starts the dry-run simulation of a job. */
   async apply(jobId: string): Promise<ApplicationView> {
-    const job = await this.db.job.findUnique({ where: { id: jobId }, include: { application: true } });
-    if (!job) throw new ApiError(404, 'not_found', 'vaga não encontrada');
-    if (!job.applyUrl && !job.url) throw new ApiError(409, 'no_apply_url', 'vaga sem endereço de candidatura');
-    if (job.application && RUNNING.has(job.application.status)) throw new ApiError(409, 'already_running', 'simulação já em andamento');
-    if (job.application && ['submitted', 'submit_uncertain'].includes(job.application.status)) throw new ApiError(409, 'already_submitted', 'candidatura já enviada (ou envio incerto)');
-    const app = await this.db.application.upsert({
-      where: { jobId },
-      create: { jobId, mode: 'dry_run', status: 'queued', attempts: 1 },
-      // Re-simulating always drops a previous approval (what was approved may change).
-      update: { mode: 'dry_run', status: 'queued', attempts: { increment: 1 }, error: null, needsReasons: json([]), needsReason: null, approvedAt: null, approvalHash: null },
-    });
+    const app = await prepareOrThrow(this.db, jobId);
     await this.enqueue(app);
     return this.view(app.id);
   }
@@ -169,21 +170,16 @@ export class ApplyService {
     return { queued };
   }
 
-  /** POST /apply/stop — kill switch (FR-016): nothing queued runs; the running one aborts between steps. */
+  /** Kill switch on the apply queue only (the API route goes through ControlService.stop, F6). */
   async stop(): Promise<{ cancelled: number }> {
-    const jobs = await this.queue.getJobs(['waiting', 'delayed', 'prioritized']);
-    await Promise.all(jobs.map((j) => j?.remove().catch(() => undefined)));
-    const reason = [{ code: 'cancelled', message: 'cancelado' }];
-    const r = await this.db.application.updateMany({
-      where: { status: { in: ['queued', 'tailoring', 'applying'] } },
-      data: { status: 'skipped', needsReasons: json(reason), needsReason: 'cancelado' },
+    const res = await stopEverything(this.db, {
+      removeJobs: async () => {
+        const jobs = await this.queue.getJobs(['waiting', 'delayed', 'prioritized']);
+        await Promise.all(jobs.map((j) => j?.remove().catch(() => undefined)));
+        return jobs.length;
+      },
     });
-    // FR-013: approvals are cancelled too; a submit in flight aborts at its compare-and-set.
-    const a = await this.db.application.updateMany({
-      where: { status: 'approved' },
-      data: { status: 'ready', approvedAt: null, approvalHash: null, needsReasons: json(reason), needsReason: 'envio cancelado' },
-    });
-    return { cancelled: r.count + a.count };
+    return { cancelled: res.cancelled };
   }
 
   async list(status?: string): Promise<ApplicationListItem[]> {
@@ -240,17 +236,22 @@ export class ApplyService {
       const bad = (ans.factIds ?? []).filter((f) => !usable.has(f));
       if (bad.length) throw new ApiError(422, 'unusable_fact', 'fatos citados não verificados', bad);
     }
+    // F6 learning loop (FR-020): only what the user typed becomes a memory, tagged with where it came from.
+    const edited = a.status === 'ready' || a.status === 'approved';
     for (const ans of body.answers) {
       const field = byKey.get(ans.fieldKey)!;
+      if (field.fieldType === 'file') throw new ApiError(422, 'unknown_field', `anexos não são editáveis: ${ans.fieldKey}`);
       const normalized = normalizeQuestion(field.question);
       const existing = await this.db.answerMemory.findFirst({ where: { normalized, fieldType: field.fieldType } });
-      const data = { question: field.question, normalized, answer: ans.answer, fieldType: field.fieldType, evidence: ans.factIds ?? [], approved: true, source: 'user' };
+      const origin = body.from === 'review' ? 'inline' : edited && !field.blocking ? 'edit' : 'needs_input';
+      const data = { question: field.question, normalized, answer: ans.answer, fieldType: field.fieldType, evidence: ans.factIds ?? [], approved: true, enabled: true, source: 'user', origin };
       if (existing) {
         await this.db.answerMemory.update({ where: { id: existing.id }, data });
         await this.db.$executeRaw`UPDATE "AnswerMemory" SET embedding = NULL WHERE id = ${existing.id}`; // re-embedded by the worker
       } else await this.db.answerMemory.create({ data });
     }
-    if (body.rerun) return this.rerun(id);
+    // An edited prepared application must be prepared again before it can be approved (FR-012).
+    if (body.rerun || edited) return this.rerun(id);
     return this.view(id);
   }
 
@@ -264,7 +265,7 @@ export class ApplyService {
   /** POST /applications/:id/approve — review mode only (constitution §II, FR-007). */
   async approve(id: string): Promise<ApplicationView> {
     const prefs = await loadPreferences(this.db);
-    if (prefs.mode !== 'review') throw new ApiError(409, 'dry_run_mode', prefs.mode === 'dry_run' ? 'modo simulação: nada é enviado' : 'envio automático é da F6; use o modo revisão');
+    if (prefs.mode !== 'review') throw new ApiError(409, 'dry_run_mode', prefs.mode === 'dry_run' ? 'modo simulação: nada é enviado' : 'autopilot não disponível; use o modo revisão');
     const a = await this.load(id);
     if (a.status !== 'ready') throw new ApiError(409, 'not_ready', 'só candidaturas "pronto para enviar" podem ser aprovadas');
     if (await this.outdated(a)) throw new ApiError(409, 'outdated', 'seus dados mudaram: simule de novo antes de aprovar');

@@ -23,7 +23,9 @@ const SCREENS: readonly (readonly [string, string, string?])[] = [
   ["Vagas", "F2 · feed com score e skills que batem/faltam", "/vagas"],
   ["Candidaturas", "F4/F5 · simulações, aprovação e envio real com screenshots de prova", "/candidaturas"],
   ["Plataformas", "F5 · login na Gupy/LinkedIn, limites diários e pausas", "/plataformas"],
-  ["Ao vivo", "F6 · logs em tempo real e kill switch"],
+  ["Revisão", "F6 · fila da manhã: aprovar, responder ou rejeitar o que a noite preparou", "/revisao"],
+  ["Noite", "F6 · janela noturna, rodar agora, relatório e log ao vivo", "/noite"],
+  ["Memória", "F6 · respostas salvas reaproveitadas em perguntas iguais", "/memoria"],
 ];
 
 // Dynamic (uncached) data must render inside <Suspense> with cacheComponents (Next 16).

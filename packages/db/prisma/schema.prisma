@@ -223,6 +223,9 @@ model AnswerMemory {
   fieldType  String?
   normalized String                       @default("") // normalizeQuestion(question)
   source     String                       @default("user")
+  enabled    Boolean                      @default(true)
+  origin     String                       @default("needs_input") // needs_input | inline | edit
+  lastUsedAt DateTime?
   createdAt  DateTime                     @default(now())
   updatedAt  DateTime                     @updatedAt
 
@@ -232,7 +235,7 @@ model AnswerMemory {
 // ---------- Search ----------
 
 model SearchPreference {
-  id                String   @id @default(cuid())
+  id                String    @id @default(cuid())
   roles             String[]
   seniority         String[]
   stack             String[]
@@ -241,17 +244,24 @@ model SearchPreference {
   minSalary         Int?
   blockedCompanies  String[]
   excludeKeywords   String[]
-  scoreThreshold    Int      @default(70)
-  mode              RunMode  @default(review)
-  scheduleCron      String   @default("0 23-6 * * *")
+  scoreThreshold    Int       @default(70)
+  mode              RunMode   @default(review)
   minSalaryContract String? // clt | pj | any
-  judgeTopN         Int      @default(20)
-  autoDiscover      Boolean  @default(false)
-  discoveryCron     String   @default("0 7 * * *")
-  autoTailor        Boolean  @default(false)
-  autoTailorN       Int      @default(5)
-  applyConfidence   Float    @default(0.7)
-  updatedAt         DateTime @updatedAt
+  judgeTopN         Int       @default(20)
+  autoDiscover      Boolean   @default(false)
+  discoveryCron     String    @default("0 7 * * *")
+  autoTailor        Boolean   @default(false)
+  autoTailorN       Int       @default(5)
+  applyConfidence   Float     @default(0.7)
+  nightEnabled      Boolean   @default(false)
+  nightStart        String    @default("23:00")
+  nightEnd          String    @default("06:59")
+  nightDays         Int[]     @default([0, 1, 2, 3, 4, 5, 6])
+  nightBudget       Int       @default(20)
+  pausedAt          DateTime? // global kill switch (F6)
+  nightLastTickAt   DateTime?
+  telegramOffset    Int       @default(0)
+  updatedAt         DateTime  @updatedAt
 }
 
 enum RunMode {
@@ -276,16 +286,16 @@ enum SourceType {
 }
 
 model Source {
-  id           String     @id @default(cuid())
-  type         SourceType @unique
-  enabled      Boolean    @default(false)
-  dailyCap     Int        @default(20)
-  config       Json       @default("{}")
-  sessionEnc   String? // unused (F5 sessions live in Platform)
-  lastRunAt    DateTime?
-  lastStatus   String? // success | partial | failed | skipped
-  lastError    String?
-  jobs         Job[]
+  id         String     @id @default(cuid())
+  type       SourceType @unique
+  enabled    Boolean    @default(false)
+  dailyCap   Int        @default(20)
+  config     Json       @default("{}")
+  sessionEnc String? // unused (F5 sessions live in Platform)
+  lastRunAt  DateTime?
+  lastStatus String? // success | partial | failed | skipped
+  lastError  String?
+  jobs       Job[]
 }
 
 model Company {
@@ -417,6 +427,7 @@ enum ApplicationStatus {
   already_applied
   failed
   skipped
+  rejected
 }
 
 model Application {
@@ -444,6 +455,10 @@ model Application {
   sentValues     Json?
   submitError    String?
   submittedAt    DateTime?
+  nightRunId     String?
+  nightRun       NightRun?         @relation(fields: [nightRunId], references: [id], onDelete: SetNull)
+  rejectedAt     DateTime?
+  rejectReason   String?
   createdAt      DateTime          @default(now())
   updatedAt      DateTime          @updatedAt
   answers        FormAnswer[]
@@ -452,6 +467,7 @@ model Application {
 
   @@index([status])
   @@index([ats, lastRunAt])
+  @@index([nightRunId])
 }
 
 model FormAnswer {
@@ -495,9 +511,71 @@ model RunEvent {
   level         String // info | warn | error
   message       String
   data          Json?
+  seq           Int          @unique @default(autoincrement())
+  nightRunId    String?
+  nightRun      NightRun?    @relation(fields: [nightRunId], references: [id], onDelete: Cascade)
   createdAt     DateTime     @default(now())
 
   @@index([createdAt])
+  @@index([nightRunId, seq])
+}
+
+// ---------- Overnight runs (F6) ----------
+
+enum NightTrigger {
+  schedule
+  manual
+}
+
+enum NightStatus {
+  running
+  ok
+  partial
+  failed
+  stopped
+  skipped
+  missed
+}
+
+enum NightPhase {
+  discovering
+  preparing
+  waiting
+  finishing
+  done
+}
+
+enum ReportStatus {
+  pending
+  sent
+  not_sent
+  not_configured
+}
+
+model NightRun {
+  id             String        @id @default(cuid())
+  trigger        NightTrigger
+  scheduleKey    String?       @unique // night date for scheduled runs: one per night (FR-002)
+  nightDate      String // YYYY-MM-DD America/Sao_Paulo, date of the window start
+  status         NightStatus   @default(running)
+  phase          NightPhase    @default(discovering)
+  windowEnd      DateTime?
+  budget         Int
+  discoveryRunId String?
+  stepErrors     Json          @default("[]")
+  counters       Json          @default("{}")
+  pending        Json          @default("[]")
+  report         Json?
+  reportStatus   ReportStatus  @default(pending)
+  reportError    String?
+  reportSentAt   DateTime?
+  startedAt      DateTime      @default(now())
+  finishedAt     DateTime?
+  applications   Application[]
+  events         RunEvent[]
+
+  @@index([status])
+  @@index([startedAt])
 }
 
 // ---------- Apply platforms (F5) ----------

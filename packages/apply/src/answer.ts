@@ -3,7 +3,7 @@ import type { FormField, LlmFieldAnswers, NeedsReason, NeedsReasonCode, PlannedA
 import { classifyField } from './classify.js';
 import type { AnswerContext } from './context.js';
 import { buildFieldMessages, buildFieldRetryMessage, checkLlmAnswers, llmFieldId } from './llm.js';
-import { normalizeQuestion, pickMemory, type MemoryCandidate } from './memory.js';
+import { normalizeQuestion, pickMemory, withMemoryConflict, type MemoryCandidate } from './memory.js';
 import { answerComputed, answerDemographic, answerEvidenceYesNo, answerLanguageLevel } from './rules.js';
 import { answerStandard, missing } from './standard.js';
 
@@ -33,6 +33,7 @@ export const REASON_LABELS: Record<NeedsReasonCode, string> = {
   new_step: 'nova etapa com perguntas não aprovadas',
   human_check: 'verificação humana não concluída',
   platform_paused: 'plataforma pausada',
+  window_end: 'ficou para a próxima noite (fim da janela)',
 };
 
 export interface PlanOptions {
@@ -76,17 +77,19 @@ function deterministic(field: FormField, ctx: AnswerContext, opts: PlanOptions):
     // Consent is the user's decision: only an approved memory may check it.
     return (opts.memory && pickMemory(field, opts.memory(field))) ?? missing(field, 'low_confidence');
   }
+  const candidates = opts.memory ? opts.memory(field) : [];
   if (cls.kind === 'standard') {
     const a = answerStandard(cls.std, field, ctx);
-    if (a) return a;
+    if (a) return withMemoryConflict(a, field, candidates);
   }
-  const mem = opts.memory ? pickMemory(field, opts.memory(field)) : null;
-  if (mem) return mem;
-  return answerComputed(field, ctx) ?? answerLanguageLevel(field, ctx) ?? answerEvidenceYesNo(field, ctx);
+  // Fact-backed answers (years, language level, evidence yes/no) win over memories (F6 FR-022).
+  const factual = answerComputed(field, ctx) ?? answerLanguageLevel(field, ctx) ?? answerEvidenceYesNo(field, ctx);
+  if (factual) return withMemoryConflict(factual, field, candidates);
+  return pickMemory(field, candidates);
 }
 
 /**
- * Answer pipeline (research R4): demographic → standard → memory → computed → evidence yes/no →
+ * Answer pipeline (research R4, F6 R8): demographic → standard → computed → language level → evidence yes/no → memory →
  * one batched LLM call (+ one retry for fixable failures). Unanswered required fields block the
  * application with a reason; optional ones are left empty.
  */

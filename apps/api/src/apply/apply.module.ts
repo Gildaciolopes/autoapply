@@ -5,5 +5,5 @@ import { ApplyController } from './apply.controller.js';
 import { ApplyService } from './apply.service.js';
 
 /** F4 apply engine API (dry-run): simulate, batch, kill switch, review, answer missing questions. */
-@Module({ imports: [QueuesModule], controllers: [ApplyController], providers: [ApplyService, StorageService] })
+@Module({ imports: [QueuesModule], controllers: [ApplyController], providers: [ApplyService, StorageService], exports: [ApplyService] })
 export class ApplyModule {}

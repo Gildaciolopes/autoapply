@@ -6,7 +6,7 @@ import type { KbDeps } from '../kb/deps.js';
 /** bge-m3 for approved memories that have no embedding yet (user answers saved by the API). */
 export async function embedMissingMemories(deps: KbDeps): Promise<number> {
   const rows = await deps.db.$queryRaw<{ id: string; question: string }[]>`
-    SELECT id, question FROM "AnswerMemory" WHERE approved AND embedding IS NULL LIMIT 200`;
+    SELECT id, question FROM "AnswerMemory" WHERE approved AND enabled AND embedding IS NULL LIMIT 200`;
   if (!rows.length) return 0;
   const vectors = await deps.llm.embed(rows.map((r) => r.question));
   await Promise.all(rows.map((r, i) => (vectors[i]?.length ? setAnswerEmbedding(deps.db, r.id, vectors[i]!) : null)));
@@ -21,12 +21,12 @@ export async function memoryCandidates(deps: KbDeps, fields: FormField[]): Promi
   const labelled = fields.filter((f) => f.type !== 'file' && f.label.trim());
   const norms = [...new Set(labelled.map((f) => normalizeQuestion(f.label)))];
   const exact = norms.length
-    ? await deps.db.answerMemory.findMany({ where: { approved: true, normalized: { in: norms } }, orderBy: { updatedAt: 'desc' } })
+    ? await deps.db.answerMemory.findMany({ where: { approved: true, enabled: true, normalized: { in: norms } }, orderBy: { updatedAt: 'desc' } })
     : [];
   const nearest = new Map<string, MemoryCandidate[]>();
   try {
     await embedMissingMemories(deps);
-    const total = await deps.db.answerMemory.count({ where: { approved: true } });
+    const total = await deps.db.answerMemory.count({ where: { approved: true, enabled: true } });
     if (total > 0 && labelled.length) {
       const vectors = await deps.llm.embed(labelled.map((f) => f.label));
       await Promise.all(
@@ -44,7 +44,13 @@ export async function memoryCandidates(deps: KbDeps, fields: FormField[]): Promi
     const n = normalizeQuestion(field.label);
     const ex: MemoryCandidate[] = exact
       .filter((m) => m.normalized === n)
-      .map((m) => ({ question: m.question, normalized: m.normalized, answer: m.answer, fieldType: m.fieldType, evidence: m.evidence }));
+      .map((m) => ({ id: m.id, question: m.question, normalized: m.normalized, answer: m.answer, fieldType: m.fieldType, evidence: m.evidence }));
     return [...ex, ...(nearest.get(field.key) ?? [])];
   };
+}
+
+/** F6 FR-021: count reuse of the memories that answered fields of this run. */
+export async function recordMemoryUse(deps: KbDeps, answers: { source: string; value: unknown; memoryId?: string }[]): Promise<void> {
+  const ids = [...new Set(answers.filter((a) => a.source === 'memória' && a.value !== null && a.memoryId).map((a) => a.memoryId!))];
+  if (ids.length) await deps.db.answerMemory.updateMany({ where: { id: { in: ids } }, data: { usedCount: { increment: 1 }, lastUsedAt: new Date() } });
 }

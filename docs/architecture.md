@@ -20,7 +20,37 @@ SearchPreference (UI) ─► POST /discovery/runs (or scheduler `discovery-daily
 ```
 
 Mode (`SearchPreference.mode`): `dry_run` never submits; `review` (default) stops at `ready` until
-the user approves in the UI (F5); `autopilot` submits when thresholds pass (F6, constitution §II).
+the user approves in the UI (F5). `autopilot` is not available (constitution §II gates not built).
+
+## Overnight runs (F6)
+
+`NightRun` = one night (or "Rodar agora"). Queue `night` (concurrency 1) runs the job scheduler
+`night-tick` every minute; `apps/worker/src/night/tick.ts` is an idempotent state machine (state in
+Postgres, restarts are free): inside the window (`SearchPreference.nightStart/nightEnd/nightDays`,
+São Paulo, default 23:00–06:59, off by default; a window crossing midnight belongs to its start date)
+it creates the run (`scheduleKey = night date @unique` → one per night), starts an F2 discovery flow,
+then `selectNightJobs` (best scored ≥ threshold, never prepared, or left at a previous window end)
+up to `nightBudget`, creating applications with `nightRunId` and queuing F4 `apply` (tailors inline; F5
+gate enforces caps/interval/backoff). At window end queued leftovers become `skipped` + `window_end`
+(picked up next night), then counters/status (`ok | partial | failed`) and a `notify:report` job
+(`jobId report-<runId>`, exactly once). No tick inside a window → `missed`; paused at window start →
+`skipped`. The night never approves and never queues a submission: approved items go through the F5
+`submit` jobs. **Kill switch** (`POST /control/stop`, `/apply/stop` alias, Telegram `parar`):
+`stopEverything` pauses scheduling (`pausedAt`), drains discover/jobspy/tailor/apply queues, cancels
+queued work and approvals, stops the running night; resume only re-enables scheduling. **Report**
+(`apps/worker/src/night/report.ts`): alerts (expired sessions, paused platforms, stopped/missed/…)
+then counts, top 5 ready "title — company (score)", link to `/revisao?run=`; plain text, no personal
+data; Telegram via `fetch` (`packages/jobs/src/telegram.ts`), `not_configured` without env. **Commands**:
+`notify:telegram-poll` (every 30 s, only when configured) long-polls `getUpdates`; only the configured
+chat is obeyed (`parar`, `retomar`, `status`). **Live log**: `RunEvent.seq` (autoincrement) +
+`nightRunId`; `GET /night/runs/:id/events` (SSE) replays `seq > Last-Event-ID` (night events + events of
+its applications), then polls every 1 s with a 500 ms read lag, `end` when final. **Review queue**
+`GET /review` groups ready / needs_input / failed / uncertain / waiting_limit / approved; reject
+(`rejected`, never selected again) / unreject; batch approve = F5. **Answer memory**: user answers
+(needs input, inline in review, edit of a prepared answer → re-prepare) become memories with `origin`;
+reuse needs `approved AND enabled`, counted in `usedCount/lastUsedAt`; fact-backed answers (standard,
+computed years, language level, evidence yes/no) run before memory and win, a disagreeing memory adds a
+`memory_conflict` finding shown in `/memoria`.
 
 ## Services
 
