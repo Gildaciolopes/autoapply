@@ -16,7 +16,7 @@ import { AppStatusBadge, ReasonChip } from "./badges";
 import { ConfirmDialog } from "./confirm-dialog";
 import { ATS_LABEL, isAppBusy, isSubmitPending, refusedLabel } from "./format";
 
-type Tab = "ready" | "needs_input" | "approved" | "submitted" | "submit_uncertain" | "failed" | "queued" | "skipped" | "all";
+type Tab = "ready" | "needs_input" | "approved" | "submitted" | "submit_uncertain" | "failed" | "queued" | "skipped" | "rejected" | "all";
 
 const TABS: [Tab, string][] = [
   ["ready", "Pronto"],
@@ -27,6 +27,7 @@ const TABS: [Tab, string][] = [
   ["failed", "Falhou"],
   ["queued", "Na fila"],
   ["skipped", "Cancelado"],
+  ["rejected", "Rejeitadas"],
   ["all", "Todas"],
 ];
 
@@ -81,8 +82,6 @@ export function ApplicationsList() {
         Simulações preenchem e fotografam o formulário sem enviar nada. O envio de verdade só acontece para as candidaturas que você
         aprovar (modo Revisão).
       </p>
-
-      {summary && anyActive(summary) && <StopBar summary={summary} onStopped={() => void reload(true)} />}
 
       {summary && (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -175,33 +174,6 @@ function SummaryCard({ title, value, onClick, children }: { title: string; value
         {children}
       </CardContent>
     </Card>
-  );
-}
-
-function StopBar({ summary, onStopped }: { summary: ApplicationSummary; onStopped: () => void }) {
-  const [busy, setBusy] = useState(false);
-  async function stop() {
-    setBusy(true);
-    try {
-      const { cancelled } = await applications.stop();
-      toast.success(`${cancelled} ${cancelled === 1 ? "candidatura cancelada" : "candidaturas canceladas"}`);
-      onStopped();
-    } catch (err) {
-      toast.error(errorMessage(err));
-    } finally {
-      setBusy(false);
-    }
-  }
-  return (
-    <div className="border-destructive/50 bg-destructive/10 flex flex-wrap items-center gap-3 rounded-lg border p-3 text-sm">
-      <span>
-        {summary.queued} na fila · {summary.applying} simulando · {summary.approved} aprovada(s) para envio
-      </span>
-      <span className="text-muted-foreground ml-auto text-xs">cancela simulações e envios aprovados</span>
-      <Button variant="destructive" className="bg-destructive hover:bg-destructive/90 text-white" disabled={busy} onClick={() => void stop()}>
-        {busy ? "Parando…" : "Parar tudo"}
-      </Button>
-    </div>
   );
 }
 

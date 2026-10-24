@@ -10,6 +10,8 @@ export function normalizeQuestion(label: string): string {
 }
 
 export interface MemoryCandidate {
+  /** AnswerMemory id (to count reuse); absent in pure tests. */
+  id?: string;
   question: string;
   normalized: string;
   answer: string;
@@ -47,7 +49,21 @@ export function pickMemory(field: FormField, candidates: MemoryCandidate[]): Pla
       evidence: c.evidence,
       blocking: false,
       findings: [],
+      ...(c.id ? { memoryId: c.id } : {}),
     };
   }
   return null;
+}
+
+const same = (a: string | string[] | null, b: string | string[] | null) =>
+  normalizeText([a ?? ''].flat().join(';')) === normalizeText([b ?? ''].flat().join(';'));
+
+/**
+ * F6 FR-022: a verified fact wins over a memory. When a matching memory would have answered the field
+ * differently, the fact-backed answer gets a `memory_conflict` finding so the user can fix one of them.
+ */
+export function withMemoryConflict(answer: PlannedAnswer, field: FormField, candidates: MemoryCandidate[]): PlannedAnswer {
+  const mem = pickMemory(field, candidates);
+  if (!mem || answer.value === null || same(answer.value, mem.value)) return answer;
+  return { ...answer, findings: [...answer.findings, { sentenceIndex: 0, type: 'memory_conflict', token: [mem.value].flat().join('; ') }] };
 }

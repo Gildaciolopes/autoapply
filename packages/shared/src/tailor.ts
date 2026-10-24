@@ -47,6 +47,8 @@ export const FindingType = z.enum([
   'number_without_evidence',
   'placeholder_unresolved',
   'too_long',
+  /** F6: an enabled memory disagrees with the fact-backed answer (the fact wins). token = memory answer. */
+  'memory_conflict',
 ]);
 export type FindingType = z.infer<typeof FindingType>;
 

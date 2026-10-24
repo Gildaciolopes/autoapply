@@ -191,4 +191,5 @@ export const FINDING_LABELS: Record<ValidationFinding['type'], string> = {
   number_without_evidence: 'número sem evidência',
   placeholder_unresolved: 'duração não calculável',
   too_long: 'texto longo demais',
+  memory_conflict: 'memória diverge do fato (o fato vale)',
 };

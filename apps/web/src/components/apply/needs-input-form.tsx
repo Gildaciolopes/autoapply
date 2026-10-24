@@ -18,11 +18,14 @@ export function NeedsInputForm({
   blocking,
   lastShotUrl,
   onSaved,
+  from,
 }: {
   app: ApplicationView;
   blocking: FormAnswerView[];
   lastShotUrl: string | null;
   onSaved: (v: ApplicationView) => void;
+  /** F6: answered inline from the review queue (memory origin `inline`). */
+  from?: "review";
 }) {
   const [values, setValues] = useState<Record<string, string>>({});
   const [error, setError] = useState<string | null>(null);
@@ -41,7 +44,7 @@ export function NeedsInputForm({
     setSaving(true);
     setError(null);
     try {
-      onSaved(await applications.answers(app.id, { answers, rerun: true }));
+      onSaved(await applications.answers(app.id, { answers, rerun: true, ...(from ? { from } : {}) }));
       setValues({});
       toast.success("Respostas salvas — nova simulação em fila");
     } catch (err) {

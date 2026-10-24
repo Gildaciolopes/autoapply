@@ -27,6 +27,9 @@ export class ScoreProcessor extends WorkerHost implements OnModuleDestroy {
 
   async process(job: Job): Promise<unknown> {
     if (job.name === 'start-run') {
+      // F6 kill switch: a paused system starts nothing on schedule (FR-013).
+      const prefs = await this.deps.db.searchPreference.findUnique({ where: { id: 'default' }, select: { pausedAt: true } });
+      if (prefs?.pausedAt) return { skipped: true, paused: true };
       const today = localDate();
       const already = await this.deps.db.discoveryRun.findFirst({ where: { trigger: 'schedule', localDate: today } });
       if (already) return { skipped: true, runId: already.id };

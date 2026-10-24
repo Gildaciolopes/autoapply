@@ -11,7 +11,8 @@ export const QUEUES = {
   score: 'score',
   tailor: 'tailor',
   apply: 'apply',
-  notify: 'notify',
+  notify: 'notify', // F6: morning report + Telegram commands
+  night: 'night', // F6: overnight run state machine (night-tick)
   syncProfile: 'sync-profile',
 } as const;
 export type QueueName = (typeof QUEUES)[keyof typeof QUEUES];

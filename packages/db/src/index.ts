@@ -14,3 +14,4 @@ export * from './testing.js';
 export * from './discovery.js';
 export * from './tailor.js';
 export * from './platforms.js';
+export * from './night.js';

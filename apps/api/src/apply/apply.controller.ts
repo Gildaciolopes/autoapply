@@ -21,11 +21,6 @@ export class ApplyController {
     return this.apply.batch(body);
   }
 
-  @Post('apply/stop')
-  stop() {
-    return this.apply.stop();
-  }
-
   @Get('applications')
   list(@Query('status') status?: string) {
     return this.apply.list(status || undefined);

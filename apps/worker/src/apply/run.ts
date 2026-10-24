@@ -25,7 +25,7 @@ import { acceptsPdf, ensureTailored, letterFile, loadTailorBasics, resumeFile } 
 import { openDryRunContext, screenshot, submitLog, type DryRunContext, type FixtureServer } from './browser.js';
 import { extractFields, snapshotForBlockers, type ExtractedField } from './extract.js';
 import { attachFile, fillField, nextStep, readComboOptions, type AttachmentFile } from './fill.js';
-import { memoryCandidates } from './memory.js';
+import { memoryCandidates, recordMemoryUse } from './memory.js';
 
 export const MAX_STEPS = 6;
 
@@ -301,6 +301,7 @@ export async function runApply(deps: ApplyDeps, payload: ApplyPayload, opts: { f
           ),
       });
       llmMs += Date.now() - since;
+      await recordMemoryUse(deps, plan.answers);
       await event('info', `answer step ${step}: ${plan.answers.filter((a) => a.value !== null).length}/${fields.length} answered, ${plan.reasons.length} blocking`, { llmCalls: plan.llmCalls });
       await checkCancelled();
 

@@ -15,7 +15,7 @@ export async function setAnswerEmbedding(db: PrismaClient, id: string, v: number
 export async function similarAnswers(db: PrismaClient, v: number[], limit = 5) {
   return db.$queryRaw<{ id: string; question: string; normalized: string; answer: string; fieldType: string | null; evidence: string[]; distance: number }[]>`
     SELECT id, question, normalized, answer, "fieldType", evidence, embedding <=> ${toVectorLiteral(v)}::vector AS distance
-    FROM "AnswerMemory" WHERE approved AND embedding IS NOT NULL
+    FROM "AnswerMemory" WHERE approved AND enabled AND embedding IS NOT NULL
     ORDER BY distance LIMIT ${limit}`;
 }
 

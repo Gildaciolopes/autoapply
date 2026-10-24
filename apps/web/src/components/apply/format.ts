@@ -13,6 +13,7 @@ export const APP_STATUS_LABEL: Record<ApplicationStatus, string> = {
   already_applied: "Já candidatado",
   failed: "Falhou",
   skipped: "Cancelado",
+  rejected: "Rejeitada por você",
 };
 
 export const APP_STATUS_CLASS: Record<ApplicationStatus, string> = {
@@ -28,6 +29,7 @@ export const APP_STATUS_CLASS: Record<ApplicationStatus, string> = {
   already_applied: "bg-secondary text-secondary-foreground",
   failed: "bg-destructive/10 text-destructive",
   skipped: "bg-secondary text-secondary-foreground",
+  rejected: "bg-secondary text-secondary-foreground",
 };
 
 export const REASON_LABEL: Record<NeedsReasonCode, string> = {
@@ -52,6 +54,7 @@ export const REASON_LABEL: Record<NeedsReasonCode, string> = {
   new_step: "Nova etapa",
   human_check: "Verificação humana",
   platform_paused: "Plataforma pausada",
+  window_end: "Fim da janela noturna",
 };
 
 /** pt-BR explanation shown next to reasons whose server message is not enough. */

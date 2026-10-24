@@ -31,6 +31,15 @@ import type {
   PlatformKind,
   PlatformLimitsBody,
   PlatformView,
+  ControlState,
+  MemoryPatchBody,
+  MemoryView,
+  NightRunListItem,
+  NightRunView,
+  NightSettings,
+  NightSettingsBody,
+  ReviewQueue,
+  SendEstimate,
 } from "@autoapply/shared";
 
 export const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
@@ -321,8 +330,6 @@ export const applications = {
   /** 409 `no_apply_url` / `already_running` → ApiRequestError. */
   start: (jobId: string) => api<ApplicationView>(`/jobs/${jobId}/apply`, json("POST")),
   batch: (body: ApplyBatchBody) => api<{ queued: ApplicationView[] }>("/apply/batch", json("POST", body)),
-  /** Kill switch: cancels every queued/running simulation and every approved (not yet sent) submission. */
-  stop: () => api<{ cancelled: number }>("/apply/stop", json("POST")),
   list: (status?: ApplicationsStatusFilter) => api<ApplicationListItem[]>(`/applications${qs({ status })}`),
   summary: () => api<ApplicationSummary>("/applications/summary"),
   get: (id: string) => api<ApplicationView>(`/applications/${id}`),
@@ -352,6 +359,54 @@ export const platforms = {
   /** 422 `above_max` → ApiRequestError. */
   limits: (kind: PlatformKind, body: PlatformLimitsBody) => api<PlatformView>(`/platforms/${kind}/limits`, json("PUT", body)),
   resume: (kind: PlatformKind) => api<unknown>(`/platforms/${kind}/resume`, json("POST")),
+};
+
+// ---------- F6: overnight runs, review queue, memories, kill switch (specs/006-overnight-runs) ----------
+
+export interface StopResult {
+  cancelled: number;
+  removedJobs: number;
+  runStopped: string | null;
+}
+
+export interface TelegramTestResult {
+  status: "sent" | "not_configured" | "failed";
+  error?: string;
+}
+
+export const night = {
+  settings: () => api<NightSettings>("/night/settings"),
+  /** 422 `invalid_window`, 400 on schema errors → ApiRequestError. */
+  saveSettings: (body: NightSettingsBody) => api<NightSettings>("/night/settings", json("PUT", body)),
+  /** "Rodar agora". 409 `already_running` / `paused` → ApiRequestError. */
+  start: () => api<NightRunView>("/night/runs", json("POST")),
+  runs: (limit = 30) => api<NightRunListItem[]>(`/night/runs${qs({ limit: String(limit) })}`),
+  run: (id: string) => api<NightRunView>(`/night/runs/${id}`),
+  /** SSE stream (`event: event` with `id: <seq>`, final `event: end`). */
+  eventsUrl: (id: string, after: number) => `${API_URL}/night/runs/${id}/events${qs({ after: String(after) })}`,
+  testTelegram: () => api<TelegramTestResult>("/notify/test", json("POST")),
+};
+
+export const control = {
+  state: () => api<ControlState>("/control"),
+  /** Global kill switch: stops the night, cancels queued work + approved-not-sent, pauses scheduling. */
+  stop: () => api<StopResult>("/control/stop", json("POST")),
+  resume: () => api<ControlState>("/control/resume", json("POST")),
+};
+
+export const review = {
+  queue: (run?: string) => api<ReviewQueue>(`/review${qs({ run })}`),
+  estimate: (ids: string[]) => api<SendEstimate>("/review/estimate", json("POST", { ids })),
+  /** 409 `not_rejectable` → ApiRequestError. */
+  reject: (id: string, reason: string) => api<ApplicationView>(`/applications/${id}/reject`, json("POST", { reason })),
+  unreject: (id: string) => api<unknown>(`/applications/${id}/unreject`, json("POST")),
+};
+
+export const memories = {
+  list: (f: { q?: string; enabled?: boolean } = {}) =>
+    api<MemoryView[]>(`/memories${qs({ q: f.q, enabled: f.enabled === undefined ? undefined : String(f.enabled) })}`),
+  patch: (id: string, body: MemoryPatchBody) => api<MemoryView>(`/memories/${id}`, json("PATCH", body)),
+  remove: (id: string) => api<unknown>(`/memories/${id}`, { method: "DELETE" }),
 };
 
 export function errorMessage(err: unknown): string {
