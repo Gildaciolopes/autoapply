@@ -20,6 +20,9 @@ export default function KnowledgeLayout({ children }: LayoutProps<"/conhecimento
             <Link href="/vagas" className="text-muted-foreground hover:underline">
               Vagas
             </Link>
+            <Link href="/candidaturas" className="text-muted-foreground hover:underline">
+              Candidaturas
+            </Link>
             <Link href="/" className="text-muted-foreground hover:underline">
               ← AutoApply
             </Link>

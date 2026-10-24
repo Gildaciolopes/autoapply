@@ -2,8 +2,8 @@
 // pgvector columns use Unsupported(); read/write them with $queryRaw (see src/vector.ts).
 
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
   moduleFormat = "esm"
 }
 
@@ -213,38 +213,46 @@ model SyncRun {
 }
 
 model AnswerMemory {
-  id        String                       @id @default(cuid())
-  question  String
-  answer    String
-  evidence  String[] // Fact ids
-  embedding Unsupported("vector(1024)")?
-  approved  Boolean                      @default(false)
-  usedCount Int                          @default(0)
-  createdAt DateTime                     @default(now())
+  id         String                       @id @default(cuid())
+  question   String
+  answer     String
+  evidence   String[] // Fact ids
+  embedding  Unsupported("vector(1024)")?
+  approved   Boolean                      @default(false)
+  usedCount  Int                          @default(0)
+  fieldType  String?
+  normalized String                       @default("") // normalizeQuestion(question)
+  source     String                       @default("user")
+  createdAt  DateTime                     @default(now())
+  updatedAt  DateTime                     @updatedAt
+
+  @@index([normalized])
 }
 
 // ---------- Search ----------
 
 model SearchPreference {
-  id               String   @id @default(cuid())
-  roles            String[]
-  seniority        String[]
-  stack            String[]
-  locations        String[]
-  workModes        String[] // remote | hybrid | onsite
-  minSalary        Int?
-  blockedCompanies String[]
-  excludeKeywords  String[]
-  scoreThreshold   Int      @default(70)
-  mode             RunMode  @default(review)
-  scheduleCron     String   @default("0 23-6 * * *")
+  id                String   @id @default(cuid())
+  roles             String[]
+  seniority         String[]
+  stack             String[]
+  locations         String[]
+  workModes         String[] // remote | hybrid | onsite
+  minSalary         Int?
+  blockedCompanies  String[]
+  excludeKeywords   String[]
+  scoreThreshold    Int      @default(70)
+  mode              RunMode  @default(review)
+  scheduleCron      String   @default("0 23-6 * * *")
   minSalaryContract String? // clt | pj | any
-  judgeTopN        Int      @default(20)
-  autoDiscover     Boolean  @default(false)
-  discoveryCron    String   @default("0 7 * * *")
-  autoTailor       Boolean  @default(false)
-  autoTailorN      Int      @default(5)
-  updatedAt        DateTime @updatedAt
+  judgeTopN         Int      @default(20)
+  autoDiscover      Boolean  @default(false)
+  discoveryCron     String   @default("0 7 * * *")
+  autoTailor        Boolean  @default(false)
+  autoTailorN       Int      @default(5)
+  applyConfidence   Float    @default(0.7)
+  applyDailyCap     Int      @default(30) // per ATS
+  updatedAt         DateTime @updatedAt
 }
 
 enum RunMode {
@@ -409,35 +417,53 @@ enum ApplicationStatus {
 }
 
 model Application {
-  id           String            @id @default(cuid())
-  jobId        String            @unique
-  job          Job               @relation(fields: [jobId], references: [id], onDelete: Cascade)
-  status       ApplicationStatus @default(queued)
-  mode         RunMode
-  tailoredJson Json? // what was sent (PDF itself is not stored)
-  coverLetter  String?
-  needsReason  String?
-  error        String?
-  attempts     Int               @default(0)
-  submittedAt  DateTime?
-  createdAt    DateTime          @default(now())
-  updatedAt    DateTime          @updatedAt
-  answers      FormAnswer[]
-  artifacts    Artifact[]
-  events       RunEvent[]
+  id             String            @id @default(cuid())
+  jobId          String            @unique
+  job            Job               @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  status         ApplicationStatus @default(queued)
+  mode           RunMode
+  tailoredJson   Json? // what was sent (PDF itself is not stored)
+  coverLetter    String?
+  needsReason    String?
+  error          String?
+  attempts       Int               @default(0)
+  ats            String? // greenhouse | lever | ashby | generic
+  formUrl        String?
+  needsReasons   Json              @default("[]") // NeedsReason[]
+  report         Json              @default("{}")
+  factsHash      String            @default("")
+  tailoredDocIds String[]
+  lastRunAt      DateTime?
+  submittedAt    DateTime?
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+  answers        FormAnswer[]
+  artifacts      Artifact[]
+  events         RunEvent[]
 
   @@index([status])
+  @@index([ats, lastRunAt])
 }
 
 model FormAnswer {
   id            String      @id @default(cuid())
   applicationId String
   application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  fieldKey      String
+  fieldType     String
+  required      Boolean     @default(false)
+  options       String[]
+  step          Int         @default(0)
+  frameUrl      String?
   question      String
   answer        String?
   confidence    Float
-  source        String // fact | memory | llm | user
+  source        String // fato | memória | calculado | regra | modelo | usuário | anexo
   evidence      String[]
+  blocking      Boolean     @default(false)
+  reason        String?
+  findings      Json        @default("[]")
+  filled        Boolean     @default(false)
   createdAt     DateTime    @default(now())
 }
 
@@ -445,7 +471,9 @@ model Artifact {
   id            String      @id @default(cuid())
   applicationId String
   application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
-  type          String // screenshot_before | screenshot_after | cover_letter
+  type          String // screenshot_before | screenshot_step | screenshot_after | screenshot_last
+  label         String      @default("")
+  attempt       Int         @default(0)
   minioKey      String
   createdAt     DateTime    @default(now())
 }

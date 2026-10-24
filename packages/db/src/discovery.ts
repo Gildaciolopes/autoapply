@@ -26,6 +26,8 @@ export async function loadPreferences(db: PrismaClient): Promise<Preferences> {
     discoveryCron: row.discoveryCron,
     autoTailor: row.autoTailor,
     autoTailorN: row.autoTailorN,
+    applyConfidence: row.applyConfidence,
+    applyDailyCap: row.applyDailyCap,
     scoreThreshold: row.scoreThreshold,
     saved: true,
   });

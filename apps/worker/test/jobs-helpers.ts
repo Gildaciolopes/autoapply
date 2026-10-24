@@ -20,7 +20,7 @@ export function jobsDeps(judge: unknown[] | ((m: { content: string }[]) => unkno
   return {
     db,
     llm: new FakeLlmProvider(judge as never, bowEmbed),
-    storage: { get: async () => Buffer.alloc(0) },
+    storage: { get: async () => Buffer.alloc(0), put: async () => {} },
     models: { chat: 'fake-chat', vision: 'fake-vision' },
   };
 }

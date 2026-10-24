@@ -52,6 +52,7 @@ changed, update this file if a new convention/command appeared, run `make graph`
 | `make test` / `make typecheck` / `make lint` | TS (turbo, serial) + Python (pytest/ruff); `make test` first runs `make test-db` |
 | `make test-db` | create + migrate the `autoapply_test` DB used by integration tests |
 | `make eval` | anti-fabrication trap eval (10 trap jobs × summary + letter) on the live LLM; stores `EvalRun` (~15 min) |
+| `make answers-eval` | form-answer trap eval (20 trap questions) on the live LLM; stores `EvalRun` suite `apply-answers` (~4 min) |
 | `make jobs-eval` | job ranking eval (30 labelled postings) against live bge-m3 + qwen3 (~6 min) |
 | `make kb-eval` | resume-extraction quality eval (5 personas) against the live local LLM (~12 min) |
 | `make health` | `GET :3001/health` → db / redis / ollama |
@@ -78,6 +79,7 @@ packages/kb         pure knowledge-base logic: fact keys, merge/conflicts, prove
 packages/resume     PDF text (unpdf), ATS resume renderer (Playwright), atsLint
 packages/jobs       pure job logic: normalize/dedupe, hard filters, profile text, judge grounding, run planning
 packages/tailor     pure F3 logic: resume ranking, Zero-Fabrication validator, years placeholders, prompts, diff
+packages/apply      pure F4 logic: ATS detection, field classifier, grounded answer pipeline, blockers
 docker/             postgres init (pgvector)
 docs/               architecture, roadmap
 .specify/           Spec Kit (constitution, templates, scripts)
@@ -126,6 +128,11 @@ specs/              one folder per feature (created by /speckit-specify)
 - **Tailoring**: never rewrite resume bullets; LLM text must cite fact ids and pass `validateSentences`.
   Job descriptions are untrusted input (prompt injection) — keep them inside `<job_posting>` in prompts.
   Any change to the validator/prompts → re-run `make eval` (re-records `apps/worker/test/fixtures/eval-tailor/recording.json`).
+- **Apply engine (F4)**: open apply pages ONLY through `openDryRunContext` (`apps/worker/src/apply/browser.ts`):
+  it aborts every non-GET request and traps form submits. Never add a submit path there (F5 adds its own).
+  Never answer "yes" from the LLM; never solve/evade captchas. Form fixtures are rendered-DOM snapshots
+  without scripts (`apps/worker/scripts/snapshot-form.ts <url> <name> --api <json url>`); re-record when an
+  ATS changes its markup. Any change to answer rules/prompts → re-run `make answers-eval`.
 - Knowledge base: only user actions verify facts; anything that reads facts for claims must use
   `usableFactsWhere` from `@autoapply/db`.
 - Kill stray processes from manual runs (`pgrep -fl dist/main.js`) before restarting; an orphaned
@@ -142,7 +149,8 @@ specs/              one folder per feature (created by /speckit-specify)
 ## Status
 
 F0 done 2026-10-14. F1 Knowledge base (PR #1) and F2 Job discovery + scoring (PR #2) merged.
-F3 Tailoring implemented on branch `003-tailoring`. Next: **F4 Apply engine (dry-run)**.
+F3 Tailoring (PR #3) merged. F4 Apply engine (dry-run) implemented on branch `004-apply-engine-dry-run`.
+Next: **F5 Logged-in platforms**.
 
 ## graphify
 

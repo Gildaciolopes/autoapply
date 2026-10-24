@@ -1,0 +1,528 @@
+{
+ "url": "https://boards.greenhouse.io/embed/job_app?for=vtex&token=6131839004",
+ "finalUrl": "https://job-boards.greenhouse.io/embed/job_app?for=vtex&token=6131839004",
+ "capturedAt": "2026-10-24",
+ "frames": [
+  {
+   "url": "https://job-boards.greenhouse.io/embed/job_app?for=vtex&token=6131839004",
+   "file": "page.html"
+  }
+ ],
+ "api": {
+  "https://boards-api.greenhouse.io/v1/boards/vtex/jobs/6131839004?questions=true": {
+   "absolute_url": "https://job-boards.greenhouse.io/vtex/jobs/6131839004",
+   "data_compliance": [
+    {
+     "type": "gdpr",
+     "requires_consent": false,
+     "requires_processing_consent": false,
+     "requires_retention_consent": false,
+     "retention_period": null,
+     "demographic_data_consent_applies": true
+    }
+   ],
+   "internal_job_id": 5194343004,
+   "location": {
+    "name": "Brazil"
+   },
+   "metadata": [
+    {
+     "id": 4382224004,
+     "name": "Management Level",
+     "value": "Senior",
+     "value_type": "single_select"
+    },
+    {
+     "id": 4568065004,
+     "name": "Job Emphasis",
+     "value": null,
+     "value_type": "single_select"
+    }
+   ],
+   "id": 6131839004,
+   "updated_at": "2026-09-30T08:26:20-04:00",
+   "requisition_id": "2172",
+   "title": "Associate Field Software Engineer",
+   "company_name": "VTEX",
+   "first_published": "2026-07-31T10:40:28-04:00",
+   "language": "pt",
+   "application_deadline": null,
+   "content": "&lt;h2&gt;About the Role&lt;/h2&gt;\n&lt;p&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;&amp;nbsp;&lt;/span&gt;&lt;/p&gt;\n&lt;p class=&quot;font-claude-response-body break-words whitespace-normal&quot;&gt;Most support engineers wait for the ticket. You won&#39;t.&lt;/p&gt;\n&lt;p class=&quot;font-claude-response-body break-words whitespace-normal&quot;&gt;As a Field Software Engineer at VTEX, you are the technical face of the platform for a portfolio of enterprise brands and retailers. You work inside a cell \u2014 a small, dedicated squad that pairs you with our commercial team \u2014 so you know your customers&#39; businesses, their architectures, and their roadmaps before problems ever reach a queue.&lt;/p&gt;\n&lt;p class=&quot;font-claude-response-body break-words whitespace-normal&quot;&gt;Your job is to unblock. When a customer hits a technical wall \u2014 a tricky integration, a performance bottleneck, a conflict between what they built and what the platform expects \u2014 you step in, diagnose it, and drive it to resolution. Sometimes that means writing code. Sometimes it means getting the right people in a room. Always, it means the customer moves forward.&lt;/p&gt;\n&lt;p class=&quot;font-claude-response-body break-words whitespace-normal&quot;&gt;This is a role for engineers who genuinely enjoy working with people. Deep VTEX technical knowledge is the entry ticket; a real vocation for service is what makes you great at it.&lt;/p&gt;\n&lt;p class=&quot;font-claude-response-body break-words whitespace-normal&quot;&gt;This is an in-office position based at your local VTEX office.&lt;/p&gt;\n&lt;p&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;*For this position you are required to attend the office 4 days a week (Monday - Thursday), and remote work on Friday.&lt;/span&gt;&lt;/p&gt;\n&lt;h2&gt;&amp;nbsp;&lt;/h2&gt;\n&lt;p&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;&amp;nbsp;&lt;/span&gt;&lt;/p&gt;\n&lt;h2&gt;What You Will Do&lt;/h2&gt;\n&lt;div&gt;\n&lt;ul&gt;\n&lt;li class=&quot;font-claude-response-body whitespace-normal break-words pl-2&quot;&gt;Unblock customers proactively: anticipate technical conflicts, identify risks in customer implementations, and resolve them before they become escalations \u2014 not just react to tickets.&lt;/li&gt;\n&lt;li class=&quot;font-claude-response-body whitespace-normal break-words pl-2&quot;&gt;Work embedded in a cell with our commercial team, partnering daily with Sales and Success on your shared portfolio and bringing the technical perspective to renewals, expansions, and strategic conversations.&lt;/li&gt;\n&lt;li class=&quot;font-claude-response-body whitespace-normal break-words pl-2&quot;&gt;Own complex technical cases end to end: debug, reproduce, and resolve implementation issues across the VTEX platform \u2014 storefront, APIs, integrations, checkout, and beyond \u2014 collaborating with customer and partner teams when needed.&lt;/li&gt;\n&lt;li class=&quot;font-claude-response-body whitespace-normal break-words pl-2&quot;&gt;Be the customer&#39;s trusted technical advisor: guide them toward better architecture decisions, best practices, and platform capabilities they didn&#39;t know they had.&lt;/li&gt;\n&lt;li class=&quot;font-claude-response-body whitespace-normal break-words pl-2&quot;&gt;Feed what you learn back into VTEX by turning recurring issues into documentation, product feedback, and playbooks.&lt;/li&gt;\n&lt;/ul&gt;\n&lt;h2&gt;Who you are&lt;br&gt;&lt;br&gt;&lt;/h2&gt;\n&lt;ul class=&quot;[li_&amp;amp;]:mb-0 [li_&amp;amp;]:mt-1 [li_&amp;amp;]:gap-1 [&amp;amp;:not(:last-child)_ul]:pb-1 [&amp;amp;:not(:last-child)_ol]:pb-1 list-disc flex flex-col gap-1 pl-8 mb-3 print:block print:space-y-1&quot;&gt;\n&lt;li class=&quot;font-claude-response-body whitespace-normal break-words pl-2&quot;&gt;Hands-on experience building or implementing on the VTEX platform is a must \u2014 you know VTEX IO / FastStore, Master Data, the core APIs, and how a VTEX store actually works in production.&lt;/li&gt;\n&lt;li class=&quot;font-claude-response-body whitespace-normal break-words pl-2&quot;&gt;Knowledge of REST APIs and GraphQL, and familiarity with debugging tools like Chrome DevTools and Postman.&lt;/li&gt;\n&lt;li class=&quot;font-claude-response-body whitespace-normal break-words pl-2&quot;&gt;A genuine vocation for service \u2014 you find satisfaction in solving someone else&#39;s problem, and customers feel it.&lt;/li&gt;\n&lt;li class=&quot;font-claude-response-body whitespace-normal break-words pl-2&quot;&gt;Strong communication skills: you can explain a technical root cause to a developer and to a business stakeholder in the same meeting.&lt;/li&gt;\n&lt;li class=&quot;font-claude-response-body whitespace-normal break-words pl-2&quot;&gt;A self-taught, proactive mindset \u2014 you ask probing questions, validate assumptions, and go find the answer.&lt;/li&gt;\n&lt;/ul&gt;\n&lt;p class=&quot;font-claude-response-body break-words whitespace-normal&quot;&gt;&lt;strong&gt;Nice to Have&lt;/strong&gt;&lt;/p&gt;\n&lt;ul class=&quot;[li_&amp;amp;]:mb-0 [li_&amp;amp;]:mt-1 [li_&amp;amp;]:gap-1 [&amp;amp;:not(:last-child)_ul]:pb-1 [&amp;amp;:not(:last-child)_ol]:pb-1 list-disc flex flex-col gap-1 pl-8 mb-3 print:block print:space-y-1&quot;&gt;\n&lt;li class=&quot;font-claude-response-body whitespace-normal break-words pl-2&quot;&gt;English (working proficiency)&lt;/li&gt;\n&lt;li class=&quot;font-claude-response-body whitespace-normal break-words pl-2&quot;&gt;Digital commerce experience beyond VTEX&lt;/li&gt;\n&lt;li class=&quot;font-claude-response-body whitespace-normal break-words pl-2&quot;&gt;SEO and front-end performance optimization knowledge&lt;/li&gt;\n&lt;li class=&quot;font-claude-response-body whitespace-normal break-words pl-2&quot;&gt;Degree in Engineering, Computer Science, or related field&lt;/li&gt;\n&lt;/ul&gt;\n&lt;/div&gt;\n&lt;div&gt;&lt;hr&gt;&lt;/div&gt;\n&lt;div&gt;&amp;nbsp;&lt;/div&gt;\n&lt;h2&gt;About VTEX&lt;/h2&gt;\n&lt;div&gt;VTEX (NYSE: VTEX) is the composable and complete commerce platform that delivers more efficiency and less maintenance to organizations seeking to make smarter IT investments and modernize their tech stack. Through our pragmatic composability approach, we empower brands, distributors, and retailers with unparalleled flexibility and comprehensive solutions, enabling them to invest solely in what provides a clear business advantage and boosts profitability. VTEX is trusted by 2.400 global B2C and B2B customers, including Carrefour, Colgate, Motorola, Sony, Stanley Black &amp;amp; Decker, and Whirlpool, having 3.400 active online stores across 43 countries (as of FY ended on December 31, 2024).&lt;/div&gt;\n&lt;div&gt;Founded in the year 2000, VTEX has a history of being unstoppable. Completely against the odds, VTEX is leading a high-tech industry and positioned above market giants. We are building an extraordinary future with more than 1,300 employees scattered across 25 locations in 16 countries in Latin America, North America, Europe, and Asia. For more information, visit &lt;a href=&quot;https://www.vtex.com&quot;&gt;www.vtex.com&lt;/a&gt;.&lt;/div&gt;\n&lt;div&gt;At VTEX, you will work in a challenge-driven environment and collaborate with amazing peers. If you are powerful individually, join us, and we will be unstoppable together.&lt;/div&gt;\n&lt;h2&gt;&amp;nbsp;&lt;/h2&gt;",
+   "departments": [
+    {
+     "id": 4028755004,
+     "name": "Field Software Engineering",
+     "child_ids": [],
+     "parent_id": 4028738004
+    }
+   ],
+   "offices": [
+    {
+     "id": 4014144004,
+     "name": "S\u00e3o Paulo",
+     "location": null,
+     "child_ids": [],
+     "parent_id": 4014142004
+    }
+   ],
+   "ai_disclaimer": null,
+   "include_ai_disclaimer": null,
+   "ai_opt_out_request_url": null,
+   "compliance": null,
+   "demographic_questions": {
+    "header": "Demographic Questions",
+    "description": "<p><strong>We invite you to complete this optional survey to help us evaluate our diversity and inclusion efforts. Submission of the information on this form is strictly voluntary and refusal to provide it will not subject you to any adverse treatment or affect your job application.&nbsp;</strong><strong data-stringify-type=\"bold\">Additionally, this is not public information, meaning that it will not be shared to your recruiting team nor interviewers.</strong></p>",
+    "questions": [
+     {
+      "id": 4000505004,
+      "label": "Do you live with any disabilities?",
+      "required": true,
+      "type": "multi_value_single_select",
+      "answer_options": [
+       {
+        "id": 4002722004,
+        "label": "Yes, I live with multiple disabilities",
+        "free_form": false,
+        "decline_to_answer": false
+       },
+       {
+        "id": 4002723004,
+        "label": "Yes, I live with a disability",
+        "free_form": false,
+        "decline_to_answer": false
+       },
+       {
+        "id": 4002725004,
+        "label": " No",
+        "free_form": false,
+        "decline_to_answer": false
+       },
+       {
+        "id": 4002726004,
+        "label": "Other",
+        "free_form": true,
+        "decline_to_answer": false
+       },
+       {
+        "id": 4004494004,
+        "label": "I don't wish to answer",
+        "free_form": false,
+        "decline_to_answer": true
+       }
+      ]
+     },
+     {
+      "id": 4000506004,
+      "label": "Which racial/ethnic group best represents you?",
+      "required": true,
+      "type": "multi_value_single_select",
+      "answer_options": [
+       {
+        "id": 4002727004,
+        "label": "White",
+        "free_form": false,
+        "decline_to_answer": false
+       },
+       {
+        "id": 4002728004,
+        "label": "Black",
+        "free_form": false,
+        "decline_to_answer": false
+       },
+       {
+        "id": 4002729004,
+        "label": "Pardo (based on IBGE - Brazilian Institute of Geography and Statistics - Brazilian category)",
+        "free_form": false,
+        "decline_to_answer": false
+       },
+       {
+        "id": 4002730004,
+        "label": "East, Central and/or Middle East Asian",
+        "free_form": false,
+        "decline_to_answer": false
+       },
+       {
+        "id": 4002731004,
+        "label": "West, South and/or Southeast Asian",
+        "free_form": false,
+        "decline_to_answer": false
+       },
+       {
+        "id": 4002732004,
+        "label": "Indigenous",
+        "free_form": false,
+        "decline_to_answer": false
+       },
+       {
+        "id": 4002733004,
+        "label": "Hispanic or Latino",
+        "free_form": false,
+        "decline_to_answer": false
+       },
+       {
+        "id": 4002735004,
+        "label": "Other",
+        "free_form": true,
+        "decline_to_answer": false
+       },
+       {
+        "id": 4004495004,
+        "label": "I don't wish to answer",
+        "free_form": false,
+        "decline_to_answer": true
+       }
+      ]
+     },
+     {
+      "id": 4000508004,
+      "label": "How would you describe your sexual orientation?",
+      "required": true,
+      "type": "multi_value_single_select",
+      "answer_options": [
+       {
+        "id": 4002743004,
+        "label": "Heterosexual",
+        "free_form": false,
+        "decline_to_answer": false
+       },
+       {
+        "id": 4002744004,
+        "label": "Homosexual",
+        "free_form": false,
+        "decline_to_answer": false
+       },
+       {
+        "id": 4002745004,
+        "label": "Bisexual",
+        "free_form": false,
+        "decline_to_answer": false
+       },
+       {
+        "id": 4002746004,
+        "label": "Asexual",
+        "free_form": false,
+        "decline_to_answer": false
+       },
+       {
+        "id": 4002747004,
+        "label": "Pansexual",
+        "free_form": false,
+        "decline_to_answer": false
+       },
+       {
+        "id": 4002749004,
+        "label": "Other",
+        "free_form": true,
+        "decline_to_answer": false
+       },
+       {
+        "id": 4004497004,
+        "label": "I don't wish to answer",
+        "free_form": false,
+        "decline_to_answer": true
+       }
+      ]
+     },
+     {
+      "id": 4000839004,
+      "label": "How would you describe your gender identity?",
+      "required": true,
+      "type": "multi_value_single_select",
+      "answer_options": [
+       {
+        "id": 4004498004,
+        "label": "Cisgender Woman",
+        "free_form": false,
+        "decline_to_answer": false
+       },
+       {
+        "id": 4004499004,
+        "label": "Cisgender Man",
+        "free_form": false,
+        "decline_to_answer": false
+       },
+       {
+        "id": 4004500004,
+        "label": "Transgender Woman",
+        "free_form": false,
+        "decline_to_answer": false
+       },
+       {
+        "id": 4004501004,
+        "label": "Transgender Man",
+        "free_form": false,
+        "decline_to_answer": false
+       },
+       {
+        "id": 4004502004,
+        "label": "Non Binary",
+        "free_form": false,
+        "decline_to_answer": false
+       },
+       {
+        "id": 4004503004,
+        "label": "Other",
+        "free_form": true,
+        "decline_to_answer": false
+       },
+       {
+        "id": 4004504004,
+        "label": "I don't wish to answer",
+        "free_form": false,
+        "decline_to_answer": true
+       }
+      ]
+     }
+    ]
+   },
+   "questions": [
+    {
+     "description": null,
+     "label": "Nome",
+     "required": true,
+     "fields": [
+      {
+       "name": "first_name",
+       "type": "input_text",
+       "values": []
+      }
+     ]
+    },
+    {
+     "description": null,
+     "label": "Sobrenome",
+     "required": true,
+     "fields": [
+      {
+       "name": "last_name",
+       "type": "input_text",
+       "values": []
+      }
+     ]
+    },
+    {
+     "description": null,
+     "label": "E-mail",
+     "required": true,
+     "fields": [
+      {
+       "name": "email",
+       "type": "input_text",
+       "values": []
+      }
+     ]
+    },
+    {
+     "description": null,
+     "label": "Telefone",
+     "required": true,
+     "fields": [
+      {
+       "name": "phone",
+       "type": "input_text",
+       "values": []
+      }
+     ]
+    },
+    {
+     "description": null,
+     "label": "Curr\u00edculo/CV",
+     "required": true,
+     "fields": [
+      {
+       "name": "resume",
+       "type": "input_file",
+       "values": []
+      },
+      {
+       "name": "resume_text",
+       "type": "textarea",
+       "values": []
+      }
+     ]
+    },
+    {
+     "description": null,
+     "label": "LinkedIn Profile",
+     "required": false,
+     "fields": [
+      {
+       "name": "question_19347613004",
+       "type": "input_text",
+       "values": []
+      }
+     ]
+    },
+    {
+     "description": "<p>We define eligibility as being a citizen, a permanent resident or a work visa holder.</p>",
+     "label": "Are you eligible to work in the country you're applying for?",
+     "required": true,
+     "fields": [
+      {
+       "name": "question_19347619004",
+       "type": "multi_value_single_select",
+       "values": [
+        {
+         "label": "Yes",
+         "value": 1
+        },
+        {
+         "label": "No",
+         "value": 0
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "description": "<p><em data-stringify-type=\"italic\">Please provided these information in your local currency and considering gross remuneration.</em><br><em data-stringify-type=\"italic\">This is an optional question, but the answer will help us to create an interesting offer to you.</em></p>",
+     "label": "What is your total ANNUAL compensation expectation? Of this amount, how much do you expect for base salary and for variable compensation?",
+     "required": true,
+     "fields": [
+      {
+       "name": "question_19347621004",
+       "type": "input_text",
+       "values": []
+      }
+     ]
+    },
+    {
+     "description": null,
+     "label": "Do you have any family members currently working at VTEX? If so, please list their names and their positions.",
+     "required": true,
+     "fields": [
+      {
+       "name": "question_19347622004",
+       "type": "textarea",
+       "values": []
+      }
+     ]
+    },
+    {
+     "description": "<p>(A Public Officer stands for anyone who, even if transitionally, occasionally or without remuneration, holds a position, employment or public function in government bodies, state entities or diplomatic representations, as well as in legal entities controlled, directly or indirectly, by the government or in international public organizations.)</p>",
+     "label": "Do you have any close friends or relatives who are Public Officers? If so, please list their names and their position in their government agency. (Private)",
+     "required": true,
+     "fields": [
+      {
+       "name": "question_19347623004",
+       "type": "textarea",
+       "values": []
+      }
+     ]
+    },
+    {
+     "description": null,
+     "label": "Do you have any special needs that we should be aware of in order to accommodate you during the recruitment process? Feel free to specify which one in affirmative case.",
+     "required": true,
+     "fields": [
+      {
+       "name": "question_19347625004",
+       "type": "textarea",
+       "values": []
+      }
+     ]
+    },
+    {
+     "description": "<p><strong data-stringify-type=\"bold\">Privacy Notice</strong><br>The personal data provided during this selection process will be collected and used exclusively for the purpose of evaluating and selecting candidates. By proceeding with your registration, you are aware of the collection, use, and storage of your personal data by VTEX. For further details on how your data will be processed, please visit <a class=\"notion-link-token notion-focusable-token notion-enable-hover\" tabindex=\"0\" href=\"https://vtex.com/us-en/privacy-and-agreements/hiring-notice/\" rel=\"noopener noreferrer\" data-token-index=\"1\"><span class=\"link-annotation-unknown-block-id--1561425005\">https://vtex.com/us-en/privacy-and-agreements/hiring-notice/</span></a>. You will find information on (i) how personal data is processed in VTEX selection processes; (ii) what types of data VTEX collects; (iii) your rights as a data subject; and (iv) how long VTEX processes your data. If you have any questions, please contact our DPO at <a class=\"notion-link-token notion-focusable-token notion-enable-hover\" tabindex=\"0\" href=\"mailto:dpo@vtex.com\" rel=\"noopener noreferrer\" data-token-index=\"3\"><span class=\"link-annotation-unknown-block-id--1411577783\">dpo@vtex.com</span></a> or request the exercise of your rights as a data subject at <a class=\"notion-link-token notion-focusable-token notion-enable-hover\" tabindex=\"0\" href=\"https://vtex.com/us-en/data-request\" rel=\"noopener noreferrer\" data-token-index=\"5\"><span class=\"link-annotation-unknown-block-id--41912417\">https://vtex.com/us-en/data-request</span></a>.</p>",
+     "label": "On Data Privacy",
+     "required": true,
+     "fields": [
+      {
+       "name": "question_19347626004",
+       "type": "multi_value_single_select",
+       "values": [
+        {
+         "label": "Acknowledge",
+         "value": 161137990004
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "description": "<p>The information shared with you during this selection process is strictly confidential and is intended for your evaluation only, and it must be kept strictly confidential by you. It is prohibited to disclose, copy, reproduce or use this information for any other purpose without VTEX's prior authorization in writing. By enrolling in this selection process, you acknowledge that the improper use of the information shared with you may result in losses for VTEX, which may be the subject to remedies.</p>\n<p>The obligation of confidentiality will remain in force even after the completion of the selection process. <strong>By proceeding with your application, you certify that you read, understood, and agree to the confidentiality terms set forth therein</strong>.</p>\n<p>If you have any questions about your confidentiality responsibilities or need to report any violation or suspected violation, please immediately contact VTEX's designated contact.</p>\n<p>We appreciate your cooperation in protecting and preserving VTEX's confidential information.</p>",
+     "label": "Confidentiality Notice",
+     "required": true,
+     "fields": [
+      {
+       "name": "question_19347627004",
+       "type": "multi_value_single_select",
+       "values": [
+        {
+         "label": "I certify that I read, understood, and agree to the confidentiality terms established for this open position.",
+         "value": 161137991004
+        },
+        {
+         "label": "I certify that I am unaware of the confidentiality terms established for this open position.",
+         "value": 161137992004
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "location_questions": []
+  },
+  "https://boards-api.greenhouse.io/v1/boards/vtex/jobs/6131839004": {
+   "absolute_url": "https://job-boards.greenhouse.io/vtex/jobs/6131839004",
+   "data_compliance": [
+    {
+     "type": "gdpr",
+     "requires_consent": false,
+     "requires_processing_consent": false,
+     "requires_retention_consent": false,
+     "retention_period": null,
+     "demographic_data_consent_applies": true
+    }
+   ],
+   "internal_job_id": 5194343004,
+   "location": {
+    "name": "Brazil"
+   },
+   "metadata": [
+    {
+     "id": 4382224004,
+     "name": "Management Level",
+     "value": "Senior",
+     "value_type": "single_select"
+    },
+    {
+     "id": 4568065004,
+     "name": "Job Emphasis",
+     "value": null,
+     "value_type": "single_select"
+    }
+   ],
+   "id": 6131839004,
+   "updated_at": "2026-09-30T08:26:20-04:00",
+   "requisition_id": "2172",
+   "title": "Associate Field Software Engineer",
+   "company_name": "VTEX",
+   "first_published": "2026-07-31T10:40:28-04:00",
+   "language": "pt",
+   "application_deadline": null,
+   "content": "&lt;h2&gt;About the Role&lt;/h2&gt;\n&lt;p&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;&amp;nbsp;&lt;/span&gt;&lt;/p&gt;\n&lt;p class=&quot;font-claude-response-body break-words whitespace-normal&quot;&gt;Most support engineers wait for the ticket. You won&#39;t.&lt;/p&gt;\n&lt;p class=&quot;font-claude-response-body break-words whitespace-normal&quot;&gt;As a Field Software Engineer at VTEX, you are the technical face of the platform for a portfolio of enterprise brands and retailers. You work inside a cell \u2014 a small, dedicated squad that pairs you with our commercial team \u2014 so you know your customers&#39; businesses, their architectures, and their roadmaps before problems ever reach a queue.&lt;/p&gt;\n&lt;p class=&quot;font-claude-response-body break-words whitespace-normal&quot;&gt;Your job is to unblock. When a customer hits a technical wall \u2014 a tricky integration, a performance bottleneck, a conflict between what they built and what the platform expects \u2014 you step in, diagnose it, and drive it to resolution. Sometimes that means writing code. Sometimes it means getting the right people in a room. Always, it means the customer moves forward.&lt;/p&gt;\n&lt;p class=&quot;font-claude-response-body break-words whitespace-normal&quot;&gt;This is a role for engineers who genuinely enjoy working with people. Deep VTEX technical knowledge is the entry ticket; a real vocation for service is what makes you great at it.&lt;/p&gt;\n&lt;p class=&quot;font-claude-response-body break-words whitespace-normal&quot;&gt;This is an in-office position based at your local VTEX office.&lt;/p&gt;\n&lt;p&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;*For this position you are required to attend the office 4 days a week (Monday - Thursday), and remote work on Friday.&lt;/span&gt;&lt;/p&gt;\n&lt;h2&gt;&amp;nbsp;&lt;/h2&gt;\n&lt;p&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;&amp;nbsp;&lt;/span&gt;&lt;/p&gt;\n&lt;h2&gt;What You Will Do&lt;/h2&gt;\n&lt;div&gt;\n&lt;ul&gt;\n&lt;li class=&quot;font-claude-response-body whitespace-normal break-words pl-2&quot;&gt;Unblock customers proactively: anticipate technical conflicts, identify risks in customer implementations, and resolve them before they become escalations \u2014 not just react to tickets.&lt;/li&gt;\n&lt;li class=&quot;font-claude-response-body whitespace-normal break-words pl-2&quot;&gt;Work embedded in a cell with our commercial team, partnering daily with Sales and Success on your shared portfolio and bringing the technical perspective to renewals, expansions, and strategic conversations.&lt;/li&gt;\n&lt;li class=&quot;font-claude-response-body whitespace-normal break-words pl-2&quot;&gt;Own complex technical cases end to end: debug, reproduce, and resolve implementation issues across the VTEX platform \u2014 storefront, APIs, integrations, checkout, and beyond \u2014 collaborating with customer and partner teams when needed.&lt;/li&gt;\n&lt;li class=&quot;font-claude-response-body whitespace-normal break-words pl-2&quot;&gt;Be the customer&#39;s trusted technical advisor: guide them toward better architecture decisions, best practices, and platform capabilities they didn&#39;t know they had.&lt;/li&gt;\n&lt;li class=&quot;font-claude-response-body whitespace-normal break-words pl-2&quot;&gt;Feed what you learn back into VTEX by turning recurring issues into documentation, product feedback, and playbooks.&lt;/li&gt;\n&lt;/ul&gt;\n&lt;h2&gt;Who you are&lt;br&gt;&lt;br&gt;&lt;/h2&gt;\n&lt;ul class=&quot;[li_&amp;amp;]:mb-0 [li_&amp;amp;]:mt-1 [li_&amp;amp;]:gap-1 [&amp;amp;:not(:last-child)_ul]:pb-1 [&amp;amp;:not(:last-child)_ol]:pb-1 list-disc flex flex-col gap-1 pl-8 mb-3 print:block print:space-y-1&quot;&gt;\n&lt;li class=&quot;font-claude-response-body whitespace-normal break-words pl-2&quot;&gt;Hands-on experience building or implementing on the VTEX platform is a must \u2014 you know VTEX IO / FastStore, Master Data, the core APIs, and how a VTEX store actually works in production.&lt;/li&gt;\n&lt;li class=&quot;font-claude-response-body whitespace-normal break-words pl-2&quot;&gt;Knowledge of REST APIs and GraphQL, and familiarity with debugging tools like Chrome DevTools and Postman.&lt;/li&gt;\n&lt;li class=&quot;font-claude-response-body whitespace-normal break-words pl-2&quot;&gt;A genuine vocation for service \u2014 you find satisfaction in solving someone else&#39;s problem, and customers feel it.&lt;/li&gt;\n&lt;li class=&quot;font-claude-response-body whitespace-normal break-words pl-2&quot;&gt;Strong communication skills: you can explain a technical root cause to a developer and to a business stakeholder in the same meeting.&lt;/li&gt;\n&lt;li class=&quot;font-claude-response-body whitespace-normal break-words pl-2&quot;&gt;A self-taught, proactive mindset \u2014 you ask probing questions, validate assumptions, and go find the answer.&lt;/li&gt;\n&lt;/ul&gt;\n&lt;p class=&quot;font-claude-response-body break-words whitespace-normal&quot;&gt;&lt;strong&gt;Nice to Have&lt;/strong&gt;&lt;/p&gt;\n&lt;ul class=&quot;[li_&amp;amp;]:mb-0 [li_&amp;amp;]:mt-1 [li_&amp;amp;]:gap-1 [&amp;amp;:not(:last-child)_ul]:pb-1 [&amp;amp;:not(:last-child)_ol]:pb-1 list-disc flex flex-col gap-1 pl-8 mb-3 print:block print:space-y-1&quot;&gt;\n&lt;li class=&quot;font-claude-response-body whitespace-normal break-words pl-2&quot;&gt;English (working proficiency)&lt;/li&gt;\n&lt;li class=&quot;font-claude-response-body whitespace-normal break-words pl-2&quot;&gt;Digital commerce experience beyond VTEX&lt;/li&gt;\n&lt;li class=&quot;font-claude-response-body whitespace-normal break-words pl-2&quot;&gt;SEO and front-end performance optimization knowledge&lt;/li&gt;\n&lt;li class=&quot;font-claude-response-body whitespace-normal break-words pl-2&quot;&gt;Degree in Engineering, Computer Science, or related field&lt;/li&gt;\n&lt;/ul&gt;\n&lt;/div&gt;\n&lt;div&gt;&lt;hr&gt;&lt;/div&gt;\n&lt;div&gt;&amp;nbsp;&lt;/div&gt;\n&lt;h2&gt;About VTEX&lt;/h2&gt;\n&lt;div&gt;VTEX (NYSE: VTEX) is the composable and complete commerce platform that delivers more efficiency and less maintenance to organizations seeking to make smarter IT investments and modernize their tech stack. Through our pragmatic composability approach, we empower brands, distributors, and retailers with unparalleled flexibility and comprehensive solutions, enabling them to invest solely in what provides a clear business advantage and boosts profitability. VTEX is trusted by 2.400 global B2C and B2B customers, including Carrefour, Colgate, Motorola, Sony, Stanley Black &amp;amp; Decker, and Whirlpool, having 3.400 active online stores across 43 countries (as of FY ended on December 31, 2024).&lt;/div&gt;\n&lt;div&gt;Founded in the year 2000, VTEX has a history of being unstoppable. Completely against the odds, VTEX is leading a high-tech industry and positioned above market giants. We are building an extraordinary future with more than 1,300 employees scattered across 25 locations in 16 countries in Latin America, North America, Europe, and Asia. For more information, visit &lt;a href=&quot;https://www.vtex.com&quot;&gt;www.vtex.com&lt;/a&gt;.&lt;/div&gt;\n&lt;div&gt;At VTEX, you will work in a challenge-driven environment and collaborate with amazing peers. If you are powerful individually, join us, and we will be unstoppable together.&lt;/div&gt;\n&lt;h2&gt;&amp;nbsp;&lt;/h2&gt;",
+   "departments": [
+    {
+     "id": 4028755004,
+     "name": "Field Software Engineering",
+     "child_ids": [],
+     "parent_id": 4028738004
+    }
+   ],
+   "offices": [
+    {
+     "id": 4014144004,
+     "name": "S\u00e3o Paulo",
+     "location": null,
+     "child_ids": [],
+     "parent_id": 4014142004
+    }
+   ],
+   "ai_disclaimer": null,
+   "include_ai_disclaimer": null,
+   "ai_opt_out_request_url": null
+  }
+ },
+ "blocked": 1
+}

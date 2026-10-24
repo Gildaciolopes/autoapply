@@ -13,8 +13,8 @@ export async function setAnswerEmbedding(db: PrismaClient, id: string, v: number
 
 /** Approved answers closest to the question embedding (cosine distance). */
 export async function similarAnswers(db: PrismaClient, v: number[], limit = 5) {
-  return db.$queryRaw<{ id: string; question: string; answer: string; evidence: string[]; distance: number }[]>`
-    SELECT id, question, answer, evidence, embedding <=> ${toVectorLiteral(v)}::vector AS distance
+  return db.$queryRaw<{ id: string; question: string; normalized: string; answer: string; fieldType: string | null; evidence: string[]; distance: number }[]>`
+    SELECT id, question, normalized, answer, "fieldType", evidence, embedding <=> ${toVectorLiteral(v)}::vector AS distance
     FROM "AnswerMemory" WHERE approved AND embedding IS NOT NULL
     ORDER BY distance LIMIT ${limit}`;
 }

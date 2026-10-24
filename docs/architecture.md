@@ -36,6 +36,7 @@ the user approves in the UI; `autopilot` submits when thresholds pass (constitut
 | `packages/kb` | TS, pure (no I/O) | fact keys, normalization, date parsing, provenance check (`foundInSource`), merge/conflict rules, resume↔facts, GitHub skill evidence, manifest parsers, sync diff |
 | `packages/jobs` | TS, pure (no I/O) | job normalization (title, UF, work mode, seniority, salary), dedupe hash, hard filters, profile text, similarity calibration, judge prompt + `groundMatches`, run planning |
 | `packages/tailor` | TS, pure (no I/O) | F3: deterministic ranking/selection of resume items, Zero-Fabrication validator, years-of-experience computation + placeholders, summary/letter prompts, diff, cover-letter detection, facts hash |
+| `packages/apply` | TS, pure (no I/O) | F4: ATS detection, field classifier (pt/en), standard answers from facts, computed years / evidence yes-no / language-level / demographic rules, answer-memory matching, LLM field prompt + post-checks, `planAnswers` pipeline, blockers (captcha / bot protection / login), application facts hash |
 | `packages/resume` | TS, Playwright + unpdf | PDF text extraction, page PNGs (vision fallback), facts → render model, ATS HTML template, `renderResumePdf`, `atsLint` |
 
 Infra (Docker Compose, Colima on the dev Mac): `pgvector/pgvector:pg16` (host 5433), `redis:7`
@@ -62,8 +63,13 @@ Ollama runs on the host (Metal GPU). From containers use `http://host.docker.int
   profileHash), `DiscoveryRun`, `ProfileVector` (cached profile embedding by hash).
 - Tailoring (F3): `TailoredDocument` (per job × kind resume|cover_letter; status queued → generating →
   draft|needs_review → approved → outdated), `EvalRun` (suite, fabrications, passed).
-- Applications: `Application` (status machine, `tailoredJson` = what was sent; PDF not stored),
-  `FormAnswer` (answer + confidence + evidence fact ids), `Artifact` (MinIO keys), `RunEvent`.
+- Applications (F4): `Application` (one per job; dry_run here; queued → tailoring → applying → ready |
+  needs_input | failed, skipped = kill switch; `ats`, `formUrl`, `needsReasons`, `report` with
+  `submitAttempts`/`blockedRequests`, `factsHash` + `tailoredDocIds` for outdated, `lastRunAt` for
+  daily caps), `FormAnswer` (per field: type, options, step, answer, source, confidence, evidence,
+  blocking + reason, validator findings, filled), `Artifact` (screenshots
+  `applications/<id>/<attempt>/<label>.png`), `AnswerMemory` (approved user answers, `normalized`
+  question + bge-m3 embedding), `RunEvent` (queue `apply`, per step).
 - pgvector: columns are `Unsupported("vector(1024)")`; use `packages/db/src/vector.ts` raw SQL helpers.
   Extension is created by `docker/postgres/init.sql` in the app DB and `template1` (shadow DBs).
 
@@ -87,6 +93,27 @@ with an independent checker and stores `EvalRun` (autopilot requires the latest 
 4. Years of experience etc. computed by code from fact dates.
 5. No-evidence yes/no questions → lowest honest option or `needs_input`, never "yes".
 6. `make eval` (F3): trap questions; autopilot requires 0 fabrications.
+7. Form answers (F4, `packages/apply`): deterministic first — standard fields from Profile/personal
+   facts, approved answer memory, years computed from dates, yes/no for skills/certs/languages from
+   usable facts (else lowest honest option), language level never rounded up, demographics → "prefer
+   not" (never the LLM). Only the tail goes to one batched LLM call: answers must cite facts, free text
+   passes `validateSentences`, a model "yes" is never accepted, confidence capped at 0.85 and compared
+   with `applyConfidence` (0.7). Required + unanswered → `needs_input`. `make answers-eval` checks it.
+
+## Apply engine (F4, dry-run)
+
+Queue `apply` (`ApplyProcessor`, concurrency 1, one shared headless Chromium, daily cap per ATS).
+`runApply`: ensure tailored resume (inline F3) → `openDryRunContext` → detect ATS (URL / HTML /
+iframes) → adapter (`greenhouse` hints from the public questions API, `lever`, `ashby`, `generic`) →
+per step: extract fields across frames → blockers → screenshot → `planAnswers` → fill / attach PDF from
+memory → next step (max 6) → `after` screenshot → persist answers, artifacts, reasons, report.
+**Dry-run guard** (`apps/worker/src/apply/browser.ts`, the only way to open an apply page): every
+non-GET request is aborted for every host (single exception: read-only GraphQL `query` POSTs on
+`jobs.ashbyhq.com`, needed to render the form), websockets closed, service workers blocked, submit
+events / `form.submit()` / `requestSubmit()` trapped in every frame; a run with an application-form
+submit attempt fails. Captcha / bot protection / login → `needs_input`, never solved; plain Chromium,
+no stealth. Kill switch `POST /apply/stop`: removes queued jobs, marks applications `skipped`, the
+running one aborts between steps.
 
 Fact sources (F1): base resume (PDF → unpdf text → qwen3 → ResumeDraft; every item must be found in
 the PDF text or it is flagged `not_in_source`; only the user's confirm creates verified facts),

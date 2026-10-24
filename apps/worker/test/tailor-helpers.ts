@@ -28,6 +28,6 @@ export async function seedTailorPersona(jobOver: { title?: string; description?:
 export const tailorDeps = (responses: unknown[] | ((m: { content: string }[]) => unknown)): KbDeps => ({
   db,
   llm: new FakeLlmProvider(responses as never),
-  storage: { get: async () => Buffer.alloc(0) },
+  storage: { get: async () => Buffer.alloc(0), put: async () => {} },
   models: { chat: 'fake-chat', vision: '' },
 });

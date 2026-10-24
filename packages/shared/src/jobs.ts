@@ -26,6 +26,8 @@ export const Preferences = z.object({
   discoveryCron: z.string().default('0 7 * * *'),
   autoTailor: z.boolean().default(false),
   autoTailorN: z.number().int().min(1).max(20).default(5),
+  applyConfidence: z.number().min(0).max(1).default(0.7),
+  applyDailyCap: z.number().int().min(1).max(200).default(30),
   scoreThreshold: z.number().int().min(0).max(100).default(70),
   saved: z.boolean().default(false),
 });

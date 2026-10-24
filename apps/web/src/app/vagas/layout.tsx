@@ -13,6 +13,9 @@ export default function JobsLayout({ children }: LayoutProps<"/vagas">) {
         <div className="flex items-baseline justify-between gap-4">
           <h1 className="text-2xl font-semibold">Vagas</h1>
           <div className="flex gap-4 text-sm">
+            <Link href="/candidaturas" className="text-muted-foreground hover:underline">
+              Candidaturas
+            </Link>
             <Link href="/conhecimento" className="text-muted-foreground hover:underline">
               Base de conhecimento
             </Link>

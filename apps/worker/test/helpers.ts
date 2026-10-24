@@ -21,6 +21,9 @@ export function deps(llmResponses: unknown[], blobs: Record<string, Buffer> = {}
         if (!b) throw new Error(`no blob ${key}`);
         return b;
       },
+      async put(key, body) {
+        blobs[key] = body;
+      },
     },
     models: { chat: 'fake-chat', vision: 'fake-vision' },
     ...extra,

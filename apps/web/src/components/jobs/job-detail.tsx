@@ -1,12 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
+import { useState } from "react";
+import { toast } from "sonner";
 import type { JobCard } from "@autoapply/shared";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { buttonVariants } from "@/components/ui/button";
-import { jobs, tailor, type JobDetail } from "@/lib/api";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { applications, errorMessage, jobs, tailor, type JobDetail } from "@/lib/api";
+import { AppStatusBadge } from "../apply/badges";
 import { TailorStatusBadge } from "../tailor/review";
 import { useLoad } from "../kb/use-load";
 import { ScoreBadge } from "./feed";
@@ -188,6 +191,41 @@ function TailorLink({ jobId }: { jobId: string }) {
       </Link>
       {data?.resume && <TailorStatusBadge doc={data.resume} />}
       {data?.coverLetter && <span className="text-muted-foreground text-xs">+ carta</span>}
+      <ApplyButton jobId={jobId} />
     </div>
+  );
+}
+
+/** F4: dry-run application — starts a simulation and opens its page; links to an existing one. */
+function ApplyButton({ jobId }: { jobId: string }) {
+  const router = useRouter();
+  const { data: app } = useLoad(async () => (await applications.list()).find((a) => a.jobId === jobId) ?? null, jobId);
+  const [busy, setBusy] = useState(false);
+
+  async function start() {
+    setBusy(true);
+    try {
+      await applications.start(jobId);
+      router.push(`/vagas/${jobId}/candidatura`);
+    } catch (err) {
+      toast.error(errorMessage(err));
+      setBusy(false);
+    }
+  }
+
+  return (
+    <>
+      <Button size="sm" variant="outline" disabled={busy} onClick={() => void start()}>
+        {busy ? "Enviando…" : "Simular candidatura"}
+      </Button>
+      {app && (
+        <>
+          <Link href={`/vagas/${jobId}/candidatura`} className="text-sm hover:underline">
+            Ver simulação
+          </Link>
+          <AppStatusBadge status={app.status} />
+        </>
+      )}
+    </>
   );
 }

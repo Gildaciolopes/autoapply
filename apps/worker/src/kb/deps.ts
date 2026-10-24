@@ -1,9 +1,10 @@
-import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import type { LlmProvider } from '@autoapply/llm';
 import type { Prisma, PrismaClient } from '@autoapply/db';
 
 export interface BlobStore {
   get(key: string): Promise<Buffer>;
+  put(key: string, body: Buffer, contentType: string): Promise<void>;
 }
 
 /** Everything the knowledge-base handlers need; plain object so tests can inject fakes. */
@@ -31,6 +32,10 @@ export class S3BlobStore implements BlobStore {
   async get(key: string): Promise<Buffer> {
     const res = await this.s3.send(new GetObjectCommand({ Bucket: this.bucket, Key: key }));
     return Buffer.from(await res.Body!.transformToByteArray());
+  }
+
+  async put(key: string, body: Buffer, contentType: string): Promise<void> {
+    await this.s3.send(new PutObjectCommand({ Bucket: this.bucket, Key: key, Body: body, ContentType: contentType }));
   }
 }
 
