@@ -55,6 +55,7 @@ describe('apply engine on real form snapshots (US1, FR-001)', { timeout: 120_000
     for (const a of contact) expect(a.blocking).toBe(false);
     // Questions the facts cannot answer (family at the company, consent, demographics) wait for the user.
     expect(res.status).toBe('needs_input');
+    expect(row.preparedAt).toBeInstanceOf(Date); // F7 funnel stage "prepared"
     expect(row.answers.find((a) => /family members/i.test(a.question))).toMatchObject({ answer: null, blocking: true });
     expect(row.answers.find((a) => /data privacy/i.test(a.question))).toMatchObject({ answer: null, blocking: true });
   });
@@ -109,5 +110,6 @@ describe('apply engine on real form snapshots (US1, FR-001)', { timeout: 120_000
     const res = await runApply(applyDeps(browser, []), { applicationId: app.id, attempt: 1 }, { final: true });
     expect(res.status).toBe('failed');
     expect(res.reasons[0]?.code).toBe('job_closed');
+    expect((await db.application.findUniqueOrThrow({ where: { id: app.id } })).preparedAt).toBeNull();
   });
 });

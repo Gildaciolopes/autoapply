@@ -40,6 +40,13 @@ import type {
   NightSettingsBody,
   ReviewQueue,
   SendEstimate,
+  AssistantSettings,
+  FunnelSplit,
+  FunnelView,
+  MailAccountView,
+  ManualReplyBody,
+  ReplyPatchBody,
+  ReplyView,
 } from "@autoapply/shared";
 
 export const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
@@ -407,6 +414,38 @@ export const memories = {
     api<MemoryView[]>(`/memories${qs({ q: f.q, enabled: f.enabled === undefined ? undefined : String(f.enabled) })}`),
   patch: (id: string, body: MemoryPatchBody) => api<MemoryView>(`/memories/${id}`, json("PATCH", body)),
   remove: (id: string) => api<unknown>(`/memories/${id}`, { method: "DELETE" }),
+};
+
+// ---------- F7: analytics, reply tracking, assistant (specs/007-extras) ----------
+
+export const analytics = {
+  /** 400 on schema errors (weeks outside 1–52) → ApiRequestError. */
+  funnel: (weeks: number, split?: FunnelSplit) => api<FunnelView>(`/analytics/funnel${qs({ weeks: String(weeks), split })}`),
+};
+
+export const mail = {
+  get: () => api<MailAccountView>("/mail"),
+  /** Browser navigation (302 to Google consent); never fetched. */
+  connectUrl: () => `${API_URL}/mail/connect`,
+  disconnect: () => api<MailAccountView>("/mail/disconnect", json("POST")),
+  /** "Verificar agora". 409 `not_connected` → ApiRequestError. */
+  check: () => api<{ queued: true }>("/mail/check", json("POST")),
+};
+
+export const replies = {
+  list: (f: { review?: boolean; applicationId?: string } = {}) =>
+    api<ReplyView[]>(`/replies${qs({ review: f.review ? "true" : undefined, applicationId: f.applicationId })}`),
+  forApplication: (appId: string) => api<ReplyView[]>(`/applications/${appId}/replies`),
+  /** 409 `not_submitted` → ApiRequestError. */
+  create: (appId: string, body: ManualReplyBody) => api<ReplyView>(`/applications/${appId}/replies`, json("POST", body)),
+  /** 409 `not_submitted` (relink target) → ApiRequestError. */
+  patch: (id: string, body: ReplyPatchBody) => api<ReplyView>(`/replies/${id}`, json("PATCH", body)),
+  remove: (id: string) => api<unknown>(`/replies/${id}`, { method: "DELETE" }),
+};
+
+export const assistant = {
+  settings: () => api<AssistantSettings>("/assistant/settings"),
+  save: (approveEnabled: boolean) => api<AssistantSettings>("/assistant/settings", json("PUT", { approveEnabled })),
 };
 
 export function errorMessage(err: unknown): string {

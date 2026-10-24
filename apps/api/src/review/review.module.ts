@@ -3,5 +3,5 @@ import { ApplyModule } from '../apply/apply.module.js';
 import { ReviewController } from './review.controller.js';
 import { ReviewService } from './review.service.js';
 
-@Module({ imports: [ApplyModule], controllers: [ReviewController], providers: [ReviewService] })
+@Module({ imports: [ApplyModule], controllers: [ReviewController], providers: [ReviewService], exports: [ReviewService] })
 export class ReviewModule {}

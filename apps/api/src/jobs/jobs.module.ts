@@ -12,5 +12,6 @@ import { JobSourcesService } from './sources.service.js';
   imports: [QueuesModule],
   controllers: [PreferencesController, JobSourcesController, DiscoveryController, FeedController],
   providers: [PreferencesService, JobSourcesService, DiscoveryService, FeedService, flowsProvider],
+  exports: [FeedService],
 })
 export class JobsModule {}

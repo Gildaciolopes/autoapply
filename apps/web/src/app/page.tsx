@@ -26,6 +26,9 @@ const SCREENS: readonly (readonly [string, string, string?])[] = [
   ["Revisão", "F6 · fila da manhã: aprovar, responder ou rejeitar o que a noite preparou", "/revisao"],
   ["Noite", "F6 · janela noturna, rodar agora, relatório e log ao vivo", "/noite"],
   ["Memória", "F6 · respostas salvas reaproveitadas em perguntas iguais", "/memoria"],
+  ["Análises", "F7 · funil por fonte, plataforma e semana; taxa de resposta; skills que faltam", "/analises"],
+  ["Respostas", "F7 · respostas das empresas (Gmail somente leitura ou registro manual)", "/respostas"],
+  ["Integrações", "F7 · Gmail e assistente (MCP local)", "/integracoes"],
 ];
 
 // Dynamic (uncached) data must render inside <Suspense> with cacheComponents (Next 16).

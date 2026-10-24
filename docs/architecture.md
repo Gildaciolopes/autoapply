@@ -52,6 +52,44 @@ reuse needs `approved AND enabled`, counted in `usedCount/lastUsedAt`; fact-back
 computed years, language level, evidence yes/no) run before memory and win, a disagreeing memory adds a
 `memory_conflict` finding shown in `/memoria`.
 
+## Extras (F7): analytics, reply tracking, MCP server
+
+**Analytics** (`GET /analytics/funnel`, `packages/db/src/analytics.ts`, `/analises`): cohort funnel —
+jobs whose `firstSeenAt` falls in the period (Monday-aligned, São Paulo, 1–52 weeks, default 8) —
+through found → above threshold → prepared (`Application.preparedAt`, set the first time the engine
+ends in ready/needs_input) → approved → submitted → replied (`firstReplyAt`, confirmations excluded) →
+interview (`interviewAt`). Stages are cumulative (reaching a later stage counts in every earlier one),
+so conversions never exceed 100%. One aggregate SQL per split (source = first source, platform, week);
+splits sum to the totals; rates/median are pure helpers in `packages/jobs/src/analytics.ts`.
+**Reply tracking** (Gmail, read-only, optional): the user's own Google OAuth "Desktop app" client
+(`GOOGLE_CLIENT_ID/SECRET`); `GET /mail/connect` → Google consent in the user's browser (PKCE, scope
+`gmail.readonly`, loopback redirect `127.0.0.1:<API_PORT>/mail/oauth/callback`); tokens AES-256-GCM
+(`packages/db/src/secret.ts`, same key/format as F5 sessions) in `MailAccount` (single row). Queue
+`mail` (scheduler `mail-check` every 30 min, concurrency 1, runs even when paused — reading is not a
+platform action): `apps/worker/src/mail/check.ts` lists `in:inbox -from:me after:` messages (≤ 200 per
+check), filters platform noise, matches deterministically (`matchReply` in `packages/jobs/src/replies.ts`:
+company legal name or ATS slug in sender/subject/domain, recruiting-platform senders, job-title
+containment; ≥ 0.6, ambiguity → "verificar"), classifies matched emails on the local LLM (enum + confidence
+only, email inside `<email>` tags) combined with pt/en keyword hints (disagreement or < 0.7 →
+"verificar"), and stores a `Reply` (sender, subject ≤ 200, excerpt ≤ 300, Gmail link). `ProcessedMail`
+keeps only message ids (idempotency; unmatched emails leave nothing else). `applyReplyEffects`
+recomputes `Application.outcome` (none | replied | interview | declined; latest reply decides) and
+confirms `submit_uncertain` (`submittedVia = confirmed_by_reply`); `status` is never changed otherwise.
+User corrections (`userEdited`) are never overwritten. Expired access → `MailAccount.status = expired`
+and a `mail_expired` alert in the night report (which also counts replies by type, no sender/subject).
+`make replies-eval`: 30 synthetic labelled emails on the live LLM (link/type accuracy, EvalRun `replies`).
+**MCP server** (`apps/api/src/mcp/`): Streamable HTTP at `http://127.0.0.1:<API_PORT>/mcp`, stateful
+sessions, local only (loopback peer + loopback `Host` + no foreign `Origin` → else 403). Read tools
+(`search_jobs`, `get_job`, `application_status`, `night_report`, `review_summary`, `analytics_summary`)
+call the same Nest services as the web; job descriptions come back in an `<untrusted source=…>` block;
+views are explicit field lists (no sessions, tokens, sent values, answers, resume files, personal facts).
+`stop_everything` = F6 kill switch, always available. Approval is opt-in (`SearchPreference.mcpApproveEnabled`,
+off by default, toggled in `/integracoes`): `approve_applications({ ids })` (1–10 explicit ids, no
+filter) only creates an `ApprovalPreview` bound to the MCP session (10 min) with each item's approval
+fingerprint; `confirm_approval({ previewId })` (same session, once — compare-and-set) re-checks `ready`
++ unchanged fingerprint and calls the F5 `approve`. Refused while paused. Assistant actions write
+RunEvents with `origin: assistant`.
+
 ## Services
 
 | Path | Runtime | Role |
@@ -100,6 +138,10 @@ Ollama runs on the host (Metal GPU). From containers use `http://host.docker.int
   blocking + reason, validator findings, filled), `Artifact` (screenshots
   `applications/<id>/<attempt>/<label>.png`), `AnswerMemory` (approved user answers, `normalized`
   question + bge-m3 embedding), `RunEvent` (queue `apply`, per step).
+- Extras (F7, see `specs/007-extras/data-model.md`): `Reply` (per application; origin email|manual, type,
+  confidence, needsReview, userEdited, excerpt), `MailAccount` (single row `default`, encrypted tokens),
+  `ProcessedMail` (Gmail message ids only), `ApprovalPreview` (assistant two-step approval);
+  `Application.preparedAt/outcome/firstReplyAt/interviewAt/lastReplyAt`; `SearchPreference.mcpApproveEnabled`.
 - pgvector: columns are `Unsupported("vector(1024)")`; use `packages/db/src/vector.ts` raw SQL helpers.
   Extension is created by `docker/postgres/init.sql` in the app DB and `template1` (shadow DBs).
 

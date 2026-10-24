@@ -146,6 +146,8 @@ export const ApplicationListItem = z.object({
   outdated: z.boolean(),
   attempts: z.number(),
   updatedAt: z.string(),
+  /** F7: outcome from replies. */
+  outcome: z.enum(['none', 'replied', 'interview', 'declined']),
 });
 export type ApplicationListItem = z.infer<typeof ApplicationListItem>;
 
@@ -163,6 +165,9 @@ export const ApplicationView = ApplicationListItem.extend({
   submittedVia: z.string().nullable(),
   sentValues: z.array(z.object({ fieldKey: z.string(), question: z.string(), value: z.string() })).nullable(),
   submitError: z.string().nullable(),
+  preparedAt: z.string().nullable(),
+  firstReplyAt: z.string().nullable(),
+  interviewAt: z.string().nullable(),
 });
 export type ApplicationView = z.infer<typeof ApplicationView>;
 

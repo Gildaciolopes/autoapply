@@ -10,6 +10,11 @@ import { ControlModule } from './control/control.module.js';
 import { ReviewModule } from './review/review.module.js';
 import { MemoriesModule } from './memories/memories.module.js';
 import { NightModule } from './night/night.module.js';
+import { AnalyticsModule } from './analytics/analytics.module.js';
+import { MailModule } from './mail/mail.module.js';
+import { RepliesModule } from './replies/replies.module.js';
+import { McpModule } from './mcp/mcp.module.js';
+import { AssistantModule } from './assistant/assistant.module.js';
 import { PrismaModule } from './prisma/prisma.module.js';
 import { QueuesModule } from './queues/queues.module.js';
 
@@ -28,6 +33,11 @@ import { QueuesModule } from './queues/queues.module.js';
     ControlModule,
     ReviewModule,
     MemoriesModule,
+    AnalyticsModule,
+    MailModule,
+    RepliesModule,
+    AssistantModule,
+    McpModule,
   ],
 })
 export class AppModule {}

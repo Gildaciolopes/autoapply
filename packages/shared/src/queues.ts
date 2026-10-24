@@ -13,6 +13,7 @@ export const QUEUES = {
   apply: 'apply',
   notify: 'notify', // F6: morning report + Telegram commands
   night: 'night', // F6: overnight run state machine (night-tick)
+  mail: 'mail', // F7: Gmail reply tracking (mail-check)
   syncProfile: 'sync-profile',
 } as const;
 export type QueueName = (typeof QUEUES)[keyof typeof QUEUES];

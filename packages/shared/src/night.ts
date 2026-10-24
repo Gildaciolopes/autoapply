@@ -55,10 +55,12 @@ export const NightCounters = z.object({
   uncertain: count,
   waitingLimit: count,
   windowEnd: count,
+  /** F7: replies received during the run window, by type. */
+  replies: z.record(z.string(), z.number().int()).optional(),
 });
 export type NightCounters = z.infer<typeof NightCounters>;
 
-export const NightAlertKind = z.enum(['session_expired', 'platform_paused', 'stopped', 'failed', 'missed', 'skipped', 'partial', 'nothing_new']);
+export const NightAlertKind = z.enum(['session_expired', 'platform_paused', 'stopped', 'failed', 'missed', 'skipped', 'partial', 'nothing_new', 'mail_expired']);
 export const NightAlert = z.object({ kind: NightAlertKind, message: z.string() });
 export type NightAlert = z.infer<typeof NightAlert>;
 

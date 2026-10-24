@@ -117,6 +117,8 @@ export const JobCard = z.object({
 export type JobCard = z.infer<typeof JobCard>;
 
 export const JobsQuery = z.object({
+  /** F7: text search on title / company (case-insensitive). */
+  q: z.string().trim().min(1).max(100).optional(),
   minScore: z.coerce.number().int().min(0).max(100).optional(),
   maxScore: z.coerce.number().int().min(0).max(100).optional(),
   source: JobSourceType.optional(),

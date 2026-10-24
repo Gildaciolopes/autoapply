@@ -12,7 +12,7 @@ Mark status here when a feature merges.
 | F4 | Apply engine (dry-run): Greenhouse/Lever/Ashby adapters + generic filler | ✅ implemented 2026-10-23 (branch `004-apply-engine-dry-run`) | correct screenshots on 20 real jobs without submitting (proof script `apps/worker/scripts/apply-proof.ts`; needs the user's real facts) |
 | F5 | Logged-in platforms: Gupy, LinkedIn Easy Apply, session connect, daily caps | ✅ implemented 2026-10-24 (branch `005-logged-in-platforms`) | assisted real submissions in review mode |
 | F6 | Overnight runs: scheduler, answer memory learning, review queue UX, Telegram morning report, kill switch | ✅ implemented 2026-10-24 (branch `006-overnight-runs`) | full night unattended in review mode |
-| F7 | Extras: AutoApply MCP server, Gmail reply tracking, analytics | ⏳ next | — |
+| F7 | Extras: AutoApply MCP server, Gmail reply tracking, analytics | ✅ implemented 2026-10-24 (branch `007-extras`) | replies matched ≥ 90%, typed ≥ 85% (`make replies-eval`) |
 
 ## Suggested `/speckit-specify` prompts
 
@@ -43,3 +43,10 @@ before/after screenshots to MinIO; needs_input on low confidence/captcha.
 
 **F6** — Overnight: BullMQ repeatable schedule from `SearchPreference.scheduleCron`, review queue
 with batch approve, AnswerMemory learning loop, kill switch, Telegram morning report, live log via SSE.
+
+**F7** — Extras: (1) AutoApply MCP server exposing read-only tools (search jobs, job detail, application
+status, night report, review queue summary) plus safe actions behind the existing human-in-the-loop rules
+(stop everything, approve only what the user explicitly names); (2) Gmail reply tracking: read-only Gmail
+access (user-granted OAuth, local tokens) matches recruiter emails to submitted applications, classifies
+them locally and updates the application timeline, never sending email; (3) analytics screen: funnel
+found → interview by source/platform/week, response rate, time to reply, top missing skills.

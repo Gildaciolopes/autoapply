@@ -47,6 +47,9 @@ eval: ## Avaliação anti-invenção (vagas-armadilha) com o LLM local; grava Ev
 answers-eval: ## Avaliação anti-invenção das respostas de formulário (perguntas-armadilha) com o LLM local; grava EvalRun
 	cd apps/worker && pnpm exec tsx --env-file=../../.env scripts/record-apply-eval.ts --store
 
+replies-eval: ## Avalia ligação/classificação de respostas de email (30 emails sintéticos) com o LLM local; grava EvalRun
+	cd apps/worker && pnpm exec tsx --env-file=../../.env scripts/record-replies-eval.ts --store
+
 jobs-eval: ## Avalia ranking de vagas com bge-m3 + qwen3 locais (SC-005, 30 vagas rotuladas, ~6 min)
 	cd apps/worker && JOBS_EVAL_LIVE=1 pnpm exec vitest run test/jobs-eval.test.ts
 

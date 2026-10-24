@@ -28,7 +28,14 @@ export async function buildNightReport(db: PrismaClient, runId: string, now = ne
   const errors = (run.stepErrors as unknown[]).length;
   if (run.status === 'partial') alerts.push({ kind: 'partial', message: `Execução parcial${errors ? ` (${errors} erro(s))` : ''}: veja os detalhes em Noite.` });
 
+  const mail = await db.mailAccount.findUnique({ where: { id: 'default' }, select: { status: true } });
+  if (mail?.status === 'expired') alerts.push({ kind: 'mail_expired', message: 'Gmail desconectado: reconecte em Integrações para acompanhar respostas.' });
+
   const counters = await nightCounters(db, run, s.scoreThreshold);
+  // F7: replies received during the run (types only, never sender/subject).
+  const until = run.finishedAt ?? run.windowEnd ?? now;
+  const replies = await db.reply.groupBy({ by: ['type'], where: { receivedAt: { gte: run.startedAt, lte: until }, type: { not: 'confirmation' } }, _count: { _all: true } });
+  if (replies.length) counters.replies = Object.fromEntries(replies.map((r) => [r.type, r._count._all]));
   const top = await db.application.findMany({
     where: { nightRunId: run.id, status: 'ready' },
     include: { job: { select: { title: true, company: { select: { name: true } }, score: { select: { score: true } } } } },

@@ -4,10 +4,13 @@ import Link from "next/link";
 const SECTIONS = [
   ["/vagas", "Vagas"],
   ["/candidaturas", "Candidaturas"],
+  ["/respostas", "Respostas"],
   ["/revisao", "Revisão"],
   ["/noite", "Noite"],
+  ["/analises", "Análises"],
   ["/memoria", "Memória"],
   ["/plataformas", "Plataformas"],
+  ["/integracoes", "Integrações"],
   ["/conhecimento", "Base de conhecimento"],
 ] as const;
 

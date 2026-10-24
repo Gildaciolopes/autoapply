@@ -1,0 +1,10 @@
+import { Suspense } from "react";
+import { IntegrationsView } from "@/components/integrations/integrations-view";
+
+export default function Page() {
+  return (
+    <Suspense fallback={<p className="text-muted-foreground text-sm">Carregando…</p>}>
+      <IntegrationsView />
+    </Suspense>
+  );
+}

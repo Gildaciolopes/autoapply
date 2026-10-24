@@ -26,6 +26,8 @@ import {
   shotLabel,
 } from "./format";
 import { NeedsInputForm } from "./needs-input-form";
+import { ApplicationReplies } from "../replies/application-replies";
+import { OutcomeBadge } from "../replies/format";
 
 /** Finds the job's application (list ≤ 200) once, then reloads it by id. */
 export function ApplicationPage() {
@@ -124,6 +126,7 @@ function ApplicationDetail({ app, onChange, reload }: { app: ApplicationView; on
           <h2 className="text-xl font-semibold">{app.jobTitle}</h2>
           {app.ats && <Badge variant="outline">{ATS_LABEL[app.ats]}</Badge>}
           <AppStatusBadge status={app.status} submittedVia={app.submittedVia} />
+          <OutcomeBadge outcome={app.outcome} />
         </div>
         <p className="text-muted-foreground text-sm">
           {[
@@ -191,6 +194,7 @@ function ApplicationDetail({ app, onChange, reload }: { app: ApplicationView; on
         <NeedsInputForm app={app} blocking={blocking} lastShotUrl={last ? applications.artifactUrl(app.id, last.id) : null} onSaved={onChange} />
       )}
 
+      <ApplicationReplies app={app} onChanged={reload} />
       <ReportCard app={app} />
       <AnswersCard app={app} />
       <ScreenshotsCard app={app} />

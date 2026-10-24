@@ -15,6 +15,7 @@ import { useLoad } from "../kb/use-load";
 import { AppStatusBadge, ReasonChip } from "./badges";
 import { ConfirmDialog } from "./confirm-dialog";
 import { ATS_LABEL, isAppBusy, isSubmitPending, refusedLabel } from "./format";
+import { OutcomeBadge } from "../replies/format";
 
 type Tab = "ready" | "needs_input" | "approved" | "submitted" | "submit_uncertain" | "failed" | "queued" | "skipped" | "rejected" | "all";
 
@@ -331,6 +332,7 @@ function ApplicationRow({
         ))}
         {app.outdated && <Badge className="bg-orange-500/15 text-orange-700 dark:text-orange-400">desatualizada</Badge>}
         <AppStatusBadge status={app.status} />
+        <OutcomeBadge outcome={app.outcome} />
       </Link>
     </li>
   );

@@ -55,6 +55,25 @@ describe('morning report (US4, FR-016..FR-018)', () => {
     expect(stored.report).toMatchObject({ counters: { ready: 1, prepared: 1 } });
   });
 
+  it('F7: Gmail expired alert and reply counts by type, never sender or subject', async () => {
+    const run = await seedRun();
+    await db.mailAccount.create({ data: { id: 'default', status: 'expired' } });
+    const app = await db.application.findFirstOrThrow({ where: { nightRunId: run.id } });
+    const at = new Date(run.startedAt.getTime() + 60_000);
+    await db.reply.createMany({
+      data: [
+        { applicationId: app.id, origin: 'email', messageId: 'r1', type: 'interview', receivedAt: at, sender: 'Carla <carla@acme.example>', subject: 'Entrevista confidencial' },
+        { applicationId: app.id, origin: 'email', messageId: 'r2', type: 'confirmation', receivedAt: at },
+      ],
+    });
+    const tg = fakeTelegram();
+    await deliverReport(db, run.id, { final: false, config: CFG, fetchImpl: tg.impl });
+    const text = tg.messages()[0]!;
+    expect(text).toContain('Gmail desconectado');
+    expect(text).toContain('Respostas de empresas: 1 (entrevistas 1, recusas 0)');
+    for (const pii of ['carla@acme.example', 'Carla', 'Entrevista confidencial']) expect(text).not.toContain(pii);
+  });
+
   it('not configured → not_configured; send failure → retry, then not_sent on the last attempt (run untouched)', async () => {
     const run = await seedRun();
     expect(await deliverReport(db, run.id, { final: false, config: null })).toBe('not_configured');
