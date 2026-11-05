@@ -17,7 +17,7 @@ setup: ## Primeira vez: .env, deps, modelos, infra, migrations
 dev: infra packages ## Infra no Docker + api/worker/web/scraper em watch no host
 	@trap 'kill 0' EXIT; \
 	(cd services/scraper && uv run autoapply-scraper) & \
-	pnpm exec turbo run dev --parallel --filter=./apps/* --filter=./packages/*
+	pnpm exec turbo run dev --parallel --concurrency=20 --filter=./apps/* --filter=./packages/*
 
 infra: ## Sobe postgres, redis, minio (espera healthy)
 	$(COMPOSE) up -d --wait $(INFRA)
