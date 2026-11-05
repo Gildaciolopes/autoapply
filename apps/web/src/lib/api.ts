@@ -348,6 +348,8 @@ export const applications = {
   approveBatch: (ids: string[]) => api<ApproveBatchResult>("/applications/approve", json("POST", { ids })),
   /** Only from `submit_uncertain`: the user checked the platform and says whether it was sent. */
   mark: (id: string, sent: boolean) => api<unknown>(`/applications/${id}/mark`, json("POST", { sent })),
+  /** The user applied by hand on the platform; only records it. 409 `not_markable` → ApiRequestError. */
+  markManual: (id: string) => api<ApplicationView>(`/applications/${id}/manual`, json("POST")),
   artifactUrl: (appId: string, artifactId: string) => `${API_URL}/applications/${appId}/artifacts/${artifactId}`,
 };
 

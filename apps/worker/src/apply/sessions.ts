@@ -92,7 +92,10 @@ export async function connectSession(deps: KbDeps, kind: SessionPlatform, opts: 
       await db.runEvent.create({ data: { queue: 'apply', level: 'warn', message: `connect ${kind}: not connected (${closed ? 'window closed' : 'cancelled/timeout'})` } });
       return restore;
     }
-    const label = (await page.title().catch(() => '')).replace(/\s*[|–-].*$/, '').trim() || null;
+    await page.waitForLoadState('load', { timeout: 10_000 }).catch(() => undefined);
+    const title = (await page.title().catch(() => '')).replace(/\s*[|–-].*$/, '').trim();
+    // A title read mid-navigation ("Loading https://…") is not an account label.
+    const label = title && !/^loading\b|https?:\/\//i.test(title) ? title : null;
     const state = await context.storageState();
     await db.platform.update({
       where: { kind },

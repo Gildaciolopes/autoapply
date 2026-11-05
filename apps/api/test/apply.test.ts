@@ -167,4 +167,21 @@ describe('apply API (US1/US3/US5)', () => {
     const again = await svc.apply(job.id);
     expect(again.approvedAt).toBeNull();
   });
+
+  it('manual apply: records submitted (manual) from idle statuses only, never while in flight', async () => {
+    const job = await seed();
+    const v = await svc.apply(job.id);
+    const queued = queue.added.length;
+    for (const status of ['queued', 'applying', 'submitting', 'submitted', 'submit_uncertain'] as const) {
+      await db.application.update({ where: { id: v.id }, data: { status } });
+      expect((await apiError(svc.markManual(v.id))).code, status).toBe('not_markable');
+    }
+    await db.application.update({ where: { id: v.id }, data: { status: 'needs_input', submittedAt: null } });
+    const r = await svc.markManual(v.id);
+    expect(r).toMatchObject({ status: 'submitted', submittedVia: 'manual' });
+    expect(r.submittedAt).toBeTruthy();
+    expect(queue.added).toHaveLength(queued);
+    expect(await db.runEvent.findFirst({ where: { applicationId: v.id, message: { contains: 'manualmente' } } })).toBeTruthy();
+    expect((await apiError(svc.markManual('ghost'))).code).toBe('not_found');
+  });
 });
