@@ -19,15 +19,14 @@ export class OllamaProvider implements LlmProvider {
     temperature?: number;
     numCtx?: number;
   }): Promise<z.infer<T>> {
-    const res = await this.post<{ message: { content: string } }>('/api/chat', {
+    const content = await this.chatStream({
       model: opts.model ?? this.cfg.chatModel,
       messages: opts.messages,
       format: z.toJSONSchema(opts.schema),
-      stream: false,
       think: false,
       options: { temperature: opts.temperature ?? 0, ...(opts.numCtx ? { num_ctx: opts.numCtx } : {}) },
     });
-    return opts.schema.parse(JSON.parse(res.message.content));
+    return opts.schema.parse(JSON.parse(content));
   }
 
   async embed(texts: string[], model?: string): Promise<number[][]> {
@@ -38,7 +37,40 @@ export class OllamaProvider implements LlmProvider {
     return res.embeddings;
   }
 
+  /**
+   * /api/chat streamed (NDJSON) and concatenated. Non-streamed, Ollama sends headers only when the
+   * whole answer is done, and Node's fetch drops the request after 5 min without headers
+   * (undici headersTimeout) — long generations failed with "fetch failed".
+   */
+  private async chatStream(body: Record<string, unknown>): Promise<string> {
+    const res = await this.request('/api/chat', { ...body, stream: true });
+    if (!res.body) throw new Error('Ollama /api/chat: empty body');
+    const decoder = new TextDecoder();
+    let buf = '';
+    let out = '';
+    const line = (l: string) => {
+      if (!l.trim()) return;
+      const j = JSON.parse(l) as { message?: { content?: string }; error?: string };
+      if (j.error) throw new Error(`Ollama /api/chat: ${j.error}`);
+      out += j.message?.content ?? '';
+    };
+    for await (const chunk of res.body) {
+      buf += decoder.decode(chunk as Uint8Array, { stream: true });
+      let i: number;
+      while ((i = buf.indexOf('\n')) >= 0) {
+        line(buf.slice(0, i));
+        buf = buf.slice(i + 1);
+      }
+    }
+    line(buf + decoder.decode());
+    return out;
+  }
+
   private async post<R>(path: string, body: unknown): Promise<R> {
+    return (await (await this.request(path, body)).json()) as R;
+  }
+
+  private async request(path: string, body: unknown): Promise<Response> {
     const res = await fetch(`${this.cfg.baseUrl}${path}`, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
@@ -46,7 +78,7 @@ export class OllamaProvider implements LlmProvider {
       signal: AbortSignal.timeout(this.cfg.timeoutMs ?? 300_000),
     });
     if (!res.ok) throw new Error(`Ollama ${path} ${res.status}: ${await res.text()}`);
-    return (await res.json()) as R;
+    return res;
   }
 }
 
