@@ -71,4 +71,9 @@ export class ApplyController {
   mark(@Param('id') id: string, @Body(new ZodPipe(MarkBody)) body: { sent: boolean }) {
     return this.apply.mark(id, body.sent);
   }
+
+  @Post('applications/:id/manual')
+  markManual(@Param('id') id: string) {
+    return this.apply.markManual(id);
+  }
 }

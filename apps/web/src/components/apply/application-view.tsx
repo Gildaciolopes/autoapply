@@ -159,6 +159,7 @@ function ApplicationDetail({ app, onChange, reload }: { app: ApplicationView; on
       {app.status === "ready" && <ApproveBar app={app} onApproved={onChange} />}
       {app.status === "submit_uncertain" && <UncertainCard app={app} onMarked={reload} />}
       {app.status === "submitted" && <SubmittedCard app={app} />}
+      {MANUAL_FROM.has(app.status) && <ManualApplyBar app={app} onMarked={onChange} />}
 
       {app.outdated && !locked && (
         <div className="flex flex-wrap items-center gap-3 rounded-lg border border-orange-500/50 bg-orange-500/10 p-3 text-sm">
@@ -267,6 +268,41 @@ function ApproveBar({ app, onApproved }: { app: ApplicationView; onApproved: (v:
         <p className="rounded-lg border border-amber-500/50 bg-amber-500/10 p-3 font-medium">
           Esta candidatura será ENVIADA DE VERDADE para a empresa com as respostas e o currículo mostrados nesta página.
         </p>
+      </ConfirmDialog>
+    </div>
+  );
+}
+
+/** Mirrors the api's MANUAL_FROM: not in flight, not already sent. */
+const MANUAL_FROM = new Set<ApplicationView["status"]>(["ready", "needs_input", "approved", "failed", "skipped", "already_applied"]);
+
+function ManualApplyBar({ app, onMarked }: { app: ApplicationView; onMarked: (v: ApplicationView) => void }) {
+  const [open, setOpen] = useState(false);
+  const [busy, setBusy] = useState(false);
+  async function mark() {
+    setBusy(true);
+    try {
+      onMarked(await applications.markManual(app.id));
+      setOpen(false);
+      toast.success("Marcada como enviada por você");
+    } catch (err) {
+      toast.error(errorMessage(err));
+    } finally {
+      setBusy(false);
+    }
+  }
+  return (
+    <div className="flex flex-wrap items-center gap-3 rounded-lg border p-3 text-sm">
+      <span className="text-muted-foreground">Se candidatou direto na plataforma? Registre para contar no funil e ligar as respostas do Gmail.</span>
+      <Button size="sm" variant="outline" className="ml-auto" disabled={busy} onClick={() => setOpen(true)}>
+        Já me candidatei manualmente
+      </Button>
+      <ConfirmDialog open={open} onOpenChange={setOpen} title="Marcar como enviada?" confirmLabel="Sim, já me candidatei" busy={busy} onConfirm={() => void mark()}>
+        <p>
+          {app.jobTitle} · {app.company || "empresa não informada"}
+        </p>
+        <p className="text-muted-foreground">Nada é enviado pelo sistema: só registra que você se candidatou por conta própria.</p>
+        {app.status === "approved" && <p className="font-medium">O envio automático na fila será cancelado.</p>}
       </ConfirmDialog>
     </div>
   );

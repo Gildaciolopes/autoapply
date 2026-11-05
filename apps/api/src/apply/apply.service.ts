@@ -10,6 +10,7 @@ import {
   QUEUES,
   ValidationFinding,
   type ApplicationListItem,
+  type ApplicationStatus,
   type ApplicationSummary,
   type ApplicationView,
   type ApplyBatchBody,
@@ -316,4 +317,22 @@ export class ApplyService {
     });
     return this.view(id);
   }
+
+  /**
+   * POST /applications/:id/manual — the user applied by hand on the platform (e.g. Gupy blocks the
+   * automated login). Only records it: nothing is sent. Compare-and-set so an in-flight run never races.
+   */
+  async markManual(id: string): Promise<ApplicationView> {
+    await this.load(id);
+    const { count } = await this.db.application.updateMany({
+      where: { id, status: { in: MANUAL_FROM } },
+      data: { status: 'submitted', submittedAt: new Date(), submittedVia: 'manual', submitError: null },
+    });
+    if (count === 0) throw new ApiError(409, 'not_markable', 'esta candidatura não pode ser marcada como enviada agora');
+    await this.db.runEvent.create({ data: { queue: 'apply', level: 'info', applicationId: id, message: 'candidatura enviada manualmente pelo usuário' } });
+    return this.view(id);
+  }
 }
+
+/** Statuses the user may mark as applied by hand: not in flight, not already sent. */
+const MANUAL_FROM = ['ready', 'needs_input', 'approved', 'failed', 'skipped', 'already_applied'] satisfies ApplicationStatus[];
