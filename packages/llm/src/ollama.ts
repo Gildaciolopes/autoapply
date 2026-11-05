@@ -55,5 +55,7 @@ export function ollamaFromEnv(env = process.env): OllamaProvider {
     baseUrl: env.OLLAMA_BASE_URL ?? 'http://localhost:11434',
     chatModel: env.OLLAMA_CHAT_MODEL ?? 'qwen3:8b',
     embedModel: env.OLLAMA_EMBED_MODEL ?? 'bge-m3',
+    // Long resumes (verbatim bullets + one quoted entry per skill) take > 5 min on qwen3:8b.
+    timeoutMs: Number(env.OLLAMA_TIMEOUT_MS) > 0 ? Number(env.OLLAMA_TIMEOUT_MS) : 900_000,
   });
 }
